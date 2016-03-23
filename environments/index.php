@@ -45,6 +45,9 @@ return [
             'backend/config/main-local.php',
             'frontend/config/main-local.php',
         ],
+        'skipFiles'  => [
+            'common/config/db/db-local.php'
+        ],
     ],
     'Production' => [
         'path' => 'prod',
@@ -60,6 +63,9 @@ return [
         'setCookieValidationKey' => [
             'backend/config/main-local.php',
             'frontend/config/main-local.php',
+        ],
+        'skipFiles'  => [
+            'common/config/db/db-local.php'
         ],
     ],
 ];
