@@ -1,47 +1,44 @@
 <?php
-namespace common\models;
+
+namespace backend\models\ar;
 
 use Yii;
 use yii\base\NotSupportedException;
-use yii\behaviors\TimestampBehavior;
-use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 use yii\web\IdentityInterface;
 
 /**
- * User model
+ * This is the model class for table "admin".
  *
  * @property integer $id
  * @property string $username
+ * @property string $first_name
+ * @property string $last_name
+ * @property string $auth_key
  * @property string $password_hash
  * @property string $password_reset_token
  * @property string $email
- * @property string $auth_key
- * @property integer $status
+ * @property string $phone
+ * @property integer $enabled
  * @property integer $created_at
  * @property integer $updated_at
- * @property string $password write-only password
  */
-class User extends ActiveRecord implements IdentityInterface
+class Admin extends \yii\db\ActiveRecord implements IdentityInterface
 {
-    const STATUS_DELETED = 0;
-    const STATUS_ACTIVE = 10;
-
+    const SCENARIO_CREATE = 'create';
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return '{{%admin}}';
+        return 'admin';
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
+    public function scenarios()
     {
-        return [
-            TimestampBehavior::className(),
-        ];
+        $scenarios[self::SCENARIO_CREATE] = ['username','first_name', 'last_name', 'email', 'phone', 'enabled'];
+        $scenarios = ArrayHelper::merge(parent::scenarios(), $scenarios);
+        return $scenarios;
     }
 
     /**
@@ -50,17 +47,45 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            ['status', 'default', 'value' => self::STATUS_ACTIVE],
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+            [['username', 'first_name', 'last_name', 'auth_key', 'password_hash', 'email', 'created_at', 'updated_at'], 'required'],
+            [['enabled', 'created_at', 'updated_at'], 'integer'],
+            [['username', 'password_hash', 'password_reset_token', 'email', 'phone'], 'string', 'max' => 255],
+            [['first_name', 'last_name'], 'string', 'max' => 20],
+            [['auth_key'], 'string', 'max' => 32],
+            [['email'], 'unique'],
+            [['password_reset_token'], 'unique'],
+            [['username'], 'unique'],
         ];
     }
 
     /**
      * @inheritdoc
      */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'username' => 'Username',
+            'first_name' => 'First Name',
+            'last_name' => 'Last Name',
+            'auth_key' => 'Auth Key',
+            'password_hash' => 'Password Hash',
+            'password_reset_token' => 'Password Reset Token',
+            'email' => 'Email',
+            'phone' => 'Phone',
+            'enabled' => 'Enabled',
+            'created_at' => 'Created At',
+            'updated_at' => 'Updated At',
+        ];
+    }
+
+
+    /**
+     * @inheritdoc
+     */
     public static function findIdentity($id)
     {
-        return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
+        return static::findOne(['id' => $id, 'enabled' => 1]);
     }
 
     /**
@@ -79,7 +104,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findByUsername($username)
     {
-        return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
+        return static::findOne(['username' => $username, 'enabled' => 1]);
     }
 
     /**
@@ -96,7 +121,7 @@ class User extends ActiveRecord implements IdentityInterface
 
         return static::findOne([
             'password_reset_token' => $token,
-            'status' => self::STATUS_ACTIVE,
+            'enabled' => true,
         ]);
     }
 
