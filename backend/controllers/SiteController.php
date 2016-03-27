@@ -66,6 +66,10 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
+//            TODO: Исправить костыль
+            if(strpos(Yii::$app->user->returnUrl, 'reset') !== false){
+                return $this->goHome();
+            }
             return $this->goBack();
         } else {
             return $this->render('login', [

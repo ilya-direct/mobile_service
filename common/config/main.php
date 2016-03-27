@@ -2,6 +2,8 @@
 use yii\helpers\ArrayHelper;
 
 return [
+    'name' => 'Mobile-service',
+    'language' => 'Ru-ru',
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'components' => [
         'cache' => [

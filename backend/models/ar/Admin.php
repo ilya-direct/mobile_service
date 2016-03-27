@@ -26,6 +26,8 @@ use yii\web\IdentityInterface;
 class Admin extends \yii\db\ActiveRecord implements IdentityInterface
 {
     const SCENARIO_CREATE = 'create';
+    const SCENARIO_UPDATE = 'update';
+    public $recoverPassword;
     /**
      * @inheritdoc
      */
@@ -36,7 +38,9 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
 
     public function scenarios()
     {
-        $scenarios[self::SCENARIO_CREATE] = ['username','first_name', 'last_name', 'email', 'phone', 'enabled'];
+        $basic = ['username', 'first_name', 'last_name', 'email', 'phone', 'enabled'];
+        $scenarios[self::SCENARIO_CREATE] = $basic;
+        $scenarios[self::SCENARIO_UPDATE] = ArrayHelper::merge($basic, ['recoverPassword']);
         $scenarios = ArrayHelper::merge(parent::scenarios(), $scenarios);
         return $scenarios;
     }
@@ -47,14 +51,14 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['username', 'first_name', 'last_name', 'auth_key', 'password_hash', 'email', 'created_at', 'updated_at'], 'required'],
+            [['username', 'first_name', 'last_name',
+                'auth_key', 'password_hash', 'email', 'created_at', 'updated_at', 'enabled'], 'required'],
             [['enabled', 'created_at', 'updated_at'], 'integer'],
             [['username', 'password_hash', 'password_reset_token', 'email', 'phone'], 'string', 'max' => 255],
             [['first_name', 'last_name'], 'string', 'max' => 20],
+            ['email', 'email'],
             [['auth_key'], 'string', 'max' => 32],
-            [['email'], 'unique'],
-            [['password_reset_token'], 'unique'],
-            [['username'], 'unique'],
+            [['username', 'email', 'password_reset_token'], 'unique'],
         ];
     }
 
@@ -121,7 +125,7 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
 
         return static::findOne([
             'password_reset_token' => $token,
-            'enabled' => true,
+            'enabled' => 1,
         ]);
     }
 

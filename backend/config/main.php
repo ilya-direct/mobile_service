@@ -47,7 +47,13 @@ return [
         'rules' => [
             [
                 'allow' => true,
+                'controllers' => ['site'],
                 'actions' => ['login', 'error'],
+            ],
+            [
+                'allow' => true,
+                'controllers' => ['settings/admin'],
+                'actions' => ['reset-password'],
             ],
             [
                 'allow' => true,

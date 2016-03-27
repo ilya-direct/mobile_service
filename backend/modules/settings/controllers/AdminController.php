@@ -2,9 +2,11 @@
 
 namespace backend\modules\settings\controllers;
 
+use common\models\ResetPasswordForm;
 use Yii;
 use backend\models\ar\Admin;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -27,6 +29,25 @@ class AdminController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['reset-password'],
+                        'allow' => true,
+                        'roles' => ['?'],
+                    ],
+                    [
+                        'actions' => ['reset-password'],
+                        'allow' => false,
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ]
+                ],
+            ]
         ];
     }
 
@@ -65,14 +86,24 @@ class AdminController extends Controller
     public function actionCreate()
     {
         $model = new Admin();
-        $model->scenario=Admin::SCENARIO_CREATE;
+        $model->scenario = Admin::SCENARIO_CREATE;
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $model->created_at = $model->updated_at = DateTime::createFromFormat(DateTime::W3C, time());
             $model->generatePasswordResetToken();
             $model->generateAuthKey();
             $model->setPassword(Yii::$app->security->generateRandomString());
+            $model->generatePasswordResetToken();
             $model->save();
+            if(Yii::$app->mailer
+                ->compose('passwordResetToken-html', ['user' => $model, 'link' => 'settings/admin/reset-password'])
+                ->setFrom('info@mobile-service.ru')
+                ->setTo($model->email)
+                ->setSubject('Содание пароля для ' . Yii::$app->name)
+                ->send()){
+                Yii::$app->session->setFlash('success',
+                    'На email ' . $model->email . ' выслана инструкция по созданию пароля');
+            };
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
@@ -90,8 +121,25 @@ class AdminController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $model->scenario = Admin::SCENARIO_UPDATE;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $model->updated_at = DateTime::createFromFormat(DateTime::W3C, time());
+            if($model->recoverPassword){
+                $model->generatePasswordResetToken();
+                $model->save(false);
+                $sended = Yii::$app->mailer
+                    ->compose('passwordResetToken-html', ['user' => $model, 'link' => 'settings/admin/reset-password'])
+                    ->setFrom('info@mobile-service.ru')
+                    ->setTo($model->email)
+                    ->setSubject('Восстановление пароля для ' . Yii::$app->name)
+                    ->send();
+                if($sended){
+                    Yii::$app->session
+                        ->setFlash('success', 'На email ' . $model->email . ' выслана инструкция по изменению пароля');
+                }
+            }
+            $model->save(false);
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
@@ -127,5 +175,17 @@ class AdminController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    public function actionResetPassword($token)
+    {
+        $resetForm = new ResetPasswordForm($token);
+
+        if ($resetForm->load(Yii::$app->request->post()) && $resetForm->validate() && $resetForm->resetPassword()) {
+            Yii::$app->session->setFlash('success', 'Новый пароль сохранён.');
+            return $this->goHome();
+        }
+
+        return $this->render('reset-password',['model' => $resetForm]);
     }
 }

@@ -24,6 +24,12 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'enabled')->textInput() ?>
 
+    <?php if(!$model->isNewRecord): ?>
+
+        <?= $form->field($model, 'recoverPassword')->checkbox() ?>
+
+    <?php endif; ?>
+
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
