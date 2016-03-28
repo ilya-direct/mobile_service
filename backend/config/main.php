@@ -7,7 +7,7 @@ $params = array_merge(
 );
 
 return [
-    'id' => 'app-backend',
+    'id' => 'Mobile-backend',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
@@ -25,8 +25,14 @@ return [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
                 [
-                    'class' => 'yii\log\FileTarget',
-                    'levels' => ['error', 'warning'],
+                    'class' => 'yii\log\DbTarget',
+                    'levels' => ['error', 'warning', 'info'],
+                    'except' => [
+                        'yii\web\Session::open',
+                        'yii\db\Connection::open',
+                        'yii\db\Command::execute',
+                        'yii\db\Command::query',
+                    ]
                 ],
             ],
         ],
