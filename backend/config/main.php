@@ -13,8 +13,23 @@ return [
     'bootstrap' => ['log'],
     'modules' => [
         'settings' => [
-            'class' => 'backend\modules\settings\settings',
+            'class' => 'backend\modules\settings\Settings',
         ],
+        'content' => [
+            'class' => 'backend\modules\content\Content',
+        ],
+
+        'treemanager' =>  [
+            'class' => '\kartik\tree\Module',
+            'treeStructure' => [
+                'depthAttribute' => 'depth',
+            ],
+            'dataStructure' => [
+                'icon' => null,
+                'icon_type' => 1,
+            ]
+            // other module settings, refer detailed documentation
+        ]
     ],
     'components' => [
         'user' => [
