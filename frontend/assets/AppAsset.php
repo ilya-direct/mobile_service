@@ -15,12 +15,21 @@ use yii\web\AssetBundle;
  */
 class AppAsset extends AssetBundle
 {
-    public $basePath = '@webroot';
-    public $baseUrl = '@web';
+    public $sourcePath = '@app/themes/classic/resources';
+
     public $css = [
-        'css/site.css',
+        'css/reset-min.css',
+        'css/main.css',
+        'css/jquery.bxslider.css',
+        'https://file.myfontastic.com/n6vo44Re5QaWo8oCKShBs7/icons.css',
     ];
     public $js = [
+        'js/bootstrap.min.js',
+        'js/respond.js',
+        'js/jquery.bxslider.min.js',
+        'js/jquery.maskedinput-1.4.1.js',
+        'js/jquery.dropdown.min.js',
+        'js/main.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

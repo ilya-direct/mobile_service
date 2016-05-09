@@ -13,7 +13,7 @@ return [
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => common\models\ar\Customer::className(),
             'enableAutoLogin' => true,
         ],
         'log' => [
@@ -28,14 +28,20 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
+
+        'view' => [
+            'theme' => [
+                'pathMap' => ['@app/views' => '@app/themes/classic'],
+                'baseUrl' => '@web/themes/classic',
+            ],
+        ],
+
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
             ],
         ],
-        */
     ],
     'params' => $params,
 ];
