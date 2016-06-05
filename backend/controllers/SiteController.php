@@ -1,11 +1,14 @@
 <?php
 namespace backend\controllers;
 
+
 use Yii;
-use yii\filters\AccessControl;
 use yii\web\Controller;
-use backend\models\LoginForm;
 use yii\filters\VerbFilter;
+use yii\web\Response;
+use backend\models\ar\Admin;
+use backend\models\LoginForm;
+use common\models\ResetPasswordForm;
 
 /**
  * Site controller
@@ -18,24 +21,11 @@ class SiteController extends Controller
     public function behaviors()
     {
         return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
-                    [
-                        'actions' => ['login', 'error'],
-                        'allow' => true,
-                    ],
-                    [
-                        'actions' => ['logout', 'index'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'logout' => ['post'],
+                    'remember-password' => ['post'],
                 ],
             ],
         ];
@@ -60,7 +50,7 @@ class SiteController extends Controller
 
     public function actionLogin()
     {
-        if (!\Yii::$app->user->isGuest) {
+        if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
 
@@ -83,5 +73,55 @@ class SiteController extends Controller
         Yii::$app->user->logout();
 
         return $this->goHome();
+    }
+
+    public function actionRememberPassword()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        /** @var Admin $admin */
+        $admin = Admin::findOne(['email' => Yii::$app->request->post('email', '')]);
+
+        if (!$admin) {
+            return ['msg' => 'Данного администратора не существует'];
+        }
+
+        $admin->generatePasswordResetToken();
+        return ($admin->save() && $this->sendResetPasswordMail($admin))
+            ? ['msg' => 'Письмо с инструкциями по восстановлению пароля отправлено на почту']
+            : ['msg' => 'Не удалось восстановить пароль. Обратитесь по данному вопросу к администратору: '
+            . Yii::$app->params['adminEmail']];
+
+    }
+
+    public function actionResetPassword($token)
+    {
+        $resetForm = new ResetPasswordForm($token);
+        if ($resetForm->load(Yii::$app->request->post()) && $resetForm->validate()) {
+            $resetForm->resetPassword()
+                ? Yii::$app->session->setFlash('success', 'Пароль успешно изменён!')
+                : Yii::$app->session->setFlash('error', 'Не удалось изменить пароль. Обратитесь к администратору');
+            return $this->redirect(['login']);
+        }
+
+        return $this->render('reset-password', ['model' => $resetForm]);
+    }
+
+    /*
+     * Sends reset password message
+     * @param Admin $user
+     * @return boolean
+     */
+    public function sendResetPasswordMail($user)
+    {
+        return Yii::$app->mailer->compose([
+            'html' => 'passwordResetToken-html',
+            'text' => 'passwordResetToken-text'], [
+                'user' => $user,
+                'link' => 'site/reset-password',
+            ])
+            ->setFrom(Yii::$app->params['companyEmail'])
+            ->setTo($user->email)
+            ->setSubject('Восстановление пароля для ' . Yii::$app->name)
+            ->send();
     }
 }

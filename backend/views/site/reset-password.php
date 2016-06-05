@@ -1,12 +1,14 @@
 <?php
+
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
 /**
- * @var $model \common\models\ResetPasswordForm
+ * @var \yii\web\View $this
+ * @var \common\models\ResetPasswordForm $model
  */
 
-$this->title = 'Создание нового пароля';
+$this->title = 'Установка нового пароля';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="container">
@@ -15,10 +17,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="col-lg-5">
         <?php $form = ActiveForm::begin(['id' => 'reset-password']); ?>
-        <?= $form->field($model, 'password')->passwordInput(); ?>
-        <?= $form->field($model, 'passwordRepeat')->passwordInput(); ?>
+        <?= $form->field($model, 'password')->passwordInput() ?>
+        <?= $form->field($model, 'passwordRepeat')->passwordInput() ?>
         <div class="form-group">
-            <?= Html::submitButton('Сохранить', ['class' => 'btn btn-primary']); ?>
+            <?= Html::submitButton('Сохранить', ['class' => 'btn btn-primary']) ?>
         </div>
         <?php ActiveForm::end(); ?>
     </div>

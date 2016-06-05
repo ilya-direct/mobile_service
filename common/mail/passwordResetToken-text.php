@@ -1,12 +1,22 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $user common\models\User */
+/**
+ * @var host string кастомный хост для url
+ * @var $this  yii\web\View
+ * @var $user backend\models\ar\Admin
+ */
 
-$resetLink = Yii::$app->urlManager->createAbsoluteUrl(['site/reset-password', 'token' => $user->password_reset_token]);
+if(!empty($host)){
+    $oldHost=Yii::$app->urlManager->hostInfo;
+    Yii::$app->urlManager->hostInfo=$host;
+    $resetLink = Yii::$app->urlManager->createAbsoluteUrl([$link, 'token' => $user->password_reset_token]);
+    Yii::$app->urlManager->hostInfo=$oldHost;
+}else {
+    $resetLink = Yii::$app->urlManager->createAbsoluteUrl([$link, 'token' => $user->password_reset_token]);
+}
 ?>
-Hello <?= $user->username ?>,
+Здравствуйте <?= $user->username ?>,
 
-Follow the link below to reset your password:
+Используйте ссылку ниже чтобы изменить пароль:
 
 <?= $resetLink ?>

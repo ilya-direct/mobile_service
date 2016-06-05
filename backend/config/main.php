@@ -69,11 +69,12 @@ return [
             [
                 'allow' => true,
                 'controllers' => ['site'],
-                'actions' => ['login', 'error'],
+                'actions' => ['login', 'error', 'remember-password', 'reset-password'],
             ],
             [
-                'allow' => true,
-                'controllers' => ['settings/admin'],
+                'allow' => false,
+                'roles' => ['@'],
+                'controllers' => ['site'],
                 'actions' => ['reset-password'],
             ],
             [

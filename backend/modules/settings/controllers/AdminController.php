@@ -29,25 +29,6 @@ class AdminController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
-            'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
-                    [
-                        'actions' => ['reset-password'],
-                        'allow' => true,
-                        'roles' => ['?'],
-                    ],
-                    [
-                        'actions' => ['reset-password'],
-                        'allow' => false,
-                        'roles' => ['@'],
-                    ],
-                    [
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ]
-                ],
-            ]
         ];
     }
 
@@ -95,15 +76,9 @@ class AdminController extends Controller
             $model->setPassword(Yii::$app->security->generateRandomString());
             $model->generatePasswordResetToken();
             $model->save();
-            if(Yii::$app->mailer
-                ->compose('passwordResetToken-html', ['user' => $model, 'link' => 'settings/admin/reset-password'])
-                ->setFrom('info@mobile-service.ru')
-                ->setTo($model->email)
-                ->setSubject('Содание пароля для ' . Yii::$app->name)
-                ->send()){
-                Yii::$app->session->setFlash('success',
-                    'На email ' . $model->email . ' выслана инструкция по созданию пароля');
-            };
+            if (Yii::$app->createControllerByID('site')->sendResetPasswordMail($model)) {
+                Yii::$app->session->setFlash('success', 'На email ' . $model->email . ' выслана инструкция по созданию пароля');
+            }
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
@@ -128,13 +103,7 @@ class AdminController extends Controller
             if($model->recoverPassword){
                 $model->generatePasswordResetToken();
                 $model->save(false);
-                $sended = Yii::$app->mailer
-                    ->compose('passwordResetToken-html', ['user' => $model, 'link' => 'settings/admin/reset-password'])
-                    ->setFrom('info@mobile-service.ru')
-                    ->setTo($model->email)
-                    ->setSubject('Восстановление пароля для ' . Yii::$app->name)
-                    ->send();
-                if($sended){
+                if (Yii::$app->createControllerByID('site')->sendResetPasswordMail($model)) {
                     Yii::$app->session
                         ->setFlash('success', 'На email ' . $model->email . ' выслана инструкция по изменению пароля');
                 }
@@ -175,17 +144,5 @@ class AdminController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
-    }
-
-    public function actionResetPassword($token)
-    {
-        $resetForm = new ResetPasswordForm($token);
-
-        if ($resetForm->load(Yii::$app->request->post()) && $resetForm->validate() && $resetForm->resetPassword()) {
-            Yii::$app->session->setFlash('success', 'Новый пароль сохранён.');
-            return $this->goHome();
-        }
-
-        return $this->render('reset-password',['model' => $resetForm]);
     }
 }
