@@ -82,7 +82,7 @@ class SiteController extends Controller
         $admin = Admin::findOne(['email' => Yii::$app->request->post('email', '')]);
 
         if (!$admin) {
-            return ['msg' => 'Данного администратора не существует'];
+            return ['msg' => 'Данного сотрудника не существует'];
         }
 
         $admin->generatePasswordResetToken();
