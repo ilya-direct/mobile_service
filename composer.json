@@ -6,7 +6,8 @@
         "yiisoft/yii2-bootstrap": "*",
         "yiisoft/yii2-swiftmailer": "*",
         "creocoder/yii2-nested-sets": "^0.9.0",
-        "kartik-v/yii2-tree-manager": "@dev"
+        "kartik-v/yii2-tree-manager": "@dev",
+        "rmrevin/yii2-fontawesome": "~2.12"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",

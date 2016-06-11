@@ -2,9 +2,12 @@
 
 namespace common\models\ar;
 
+
 use Yii;
+use yii\behaviors\SluggableBehavior;
 use creocoder\nestedsets\NestedSetsBehavior;
-use common\models\CategoryQuery;
+use creocoder\nestedsets\NestedSetsQueryBehavior;
+use kartik\tree\models\Tree;
 
 /**
  * This is the model class for table "device_category".
@@ -20,54 +23,33 @@ use common\models\CategoryQuery;
  * @property integer $enabled
  *
  * @property Device[] $devices
+ *
+ * @method static \yii\db\ActiveQuery find()
+ *
  */
-class DeviceCategory extends \yii\db\ActiveRecord
+class DeviceCategory extends Tree
 {
-    use \kartik\tree\models\TreeTrait {
-        isDisabled as parentIsDisabled; // note the alias
-    }
+    public $icon = null;
 
-    /**
-     * @var string the classname for the TreeQuery that implements the NestedSetQueryBehavior.
-     * If not set this will default to `kartik	ree\models\TreeQuery`.
-     */
-    public static $treeQueryClass; // change if you need to set your own TreeQuery
+    public $active;
+    public $selected;
+    public $disabled;
+    public $readonly;
+    public $visible;
+    public $collapsed;
+    public $movable_u;
+    public $movable_d;
+    public $movable_r;
+    public $movable_l;
+    public $removable;
+    public $removable_all;
 
-    /**
-     * @var bool whether to HTML encode the tree node names. Defaults to `true`.
-     */
-    public $encodeNodeNames = true;
-
-    /**
-     * @var bool whether to HTML purify the tree node icon content before saving.
-     * Defaults to `true`.
-     */
-    public $purifyNodeIcons = true;
-
-    /**
-     * @var array activation errors for the node
-     */
-    public $nodeActivationErrors = [];
-
-    /**
-     * @var array node removal errors
-     */
-    public $nodeRemovalErrors = [];
-
-    /**
-     * @var bool attribute to cache the `active` state before a model update. Defaults to `true`.
-     */
-    public $activeOrig = true;
+    public $icon_type = 1;
 
     /**
      * Note overriding isDisabled method is slightly different when
      * using the trait. It uses the alias.
      */
-
-    public $icon = null;
-
-    public $icon_type = 1;
-
     public function isDisabled()
     {
         return false;
@@ -75,12 +57,19 @@ class DeviceCategory extends \yii\db\ActiveRecord
 
     public function behaviors() {
         return [
+            NestedSetsQueryBehavior::className(),
             'tree' => [
                 'class' => NestedSetsBehavior::className(),
                 'treeAttribute' => 'tree',
                 'leftAttribute' => 'lft',
                 'rightAttribute' => 'rgt',
                 'depthAttribute' => 'depth',
+            ],
+            [
+                'class' => SluggableBehavior::className(),
+                'slugAttribute' => 'alias',
+                'attribute' => 'name',
+                'ensureUnique' => true,
             ],
         ];
     }
@@ -89,7 +78,7 @@ class DeviceCategory extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'device_category';
+        return '{{%device_category}}';
     }
 
     /**
@@ -103,7 +92,6 @@ class DeviceCategory extends \yii\db\ActiveRecord
             [['description'], 'string'],
             [['name', 'alias'], 'string', 'max' => 255],
             [['name'], 'unique'],
-            [['tree'], 'unique'],
         ];
     }
 
@@ -138,10 +126,5 @@ class DeviceCategory extends \yii\db\ActiveRecord
         return [
             self::SCENARIO_DEFAULT => self::OP_ALL,
         ];
-    }
-
-    public static function find()
-    {
-        return new CategoryQuery(get_called_class());
     }
 }

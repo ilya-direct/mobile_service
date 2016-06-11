@@ -18,7 +18,7 @@ class m160324_065716_tables extends Migration
         $this->createTable('{{%device_category}}', [
             'id' => $this->primaryKey(),
             'name' => $this->string()->notNull()->unique(),
-            'tree' => $this->integer()->notNull()->unique(),
+            'tree' => $this->integer()->notNull(),
             'lft' => $this->integer()->notNull(),
             'rgt' => $this->integer()->notNull(),
             'depth' => $this->integer()->notNull(),
