@@ -30,11 +30,10 @@ use kartik\tree\models\Tree;
 class DeviceCategory extends Tree
 {
     public $icon = null;
-
     public $active;
     public $selected;
-    public $disabled;
-    public $readonly;
+    public $disabled = false;
+    public $readonly = false;
     public $visible;
     public $collapsed;
     public $movable_u;
@@ -43,17 +42,8 @@ class DeviceCategory extends Tree
     public $movable_l;
     public $removable;
     public $removable_all;
-
     public $icon_type = 1;
 
-    /**
-     * Note overriding isDisabled method is slightly different when
-     * using the trait. It uses the alias.
-     */
-    public function isDisabled()
-    {
-        return false;
-    }
 
     public function behaviors() {
         return [
@@ -102,7 +92,7 @@ class DeviceCategory extends Tree
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
+            'name' => 'Название категории',
             'tree' => 'Tree',
             'lft' => 'Lft',
             'rgt' => 'Rgt',

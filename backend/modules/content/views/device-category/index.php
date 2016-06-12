@@ -1,35 +1,49 @@
 <?php
 
+use yii\helpers\Html;
+use yii\helpers\Url;
+use kartik\tree\Module;
 use kartik\tree\TreeView;
+use rmrevin\yii\fontawesome\AssetBundle;
 
 /**
  * @var \yii\web\View $this
  * @var \yii\db\ActiveQuery $deviceCategoryQuery
  */
+
 $this->title = 'Категории устройств';
-$this->registerAssetBundle(\rmrevin\yii\fontawesome\AssetBundle::className());
+$this->params['breadcrumbs'][] = $this->title;
+$this->registerAssetBundle(AssetBundle::className());
+
+$mainTemplate = <<<HTML
+<div class="row">
+    <div class="col-sm-4">
+        {wrapper}
+    </div>
+    <div class="col-sm-8">
+        {detail}
+    </div>
+</div>
+HTML;
 ?>
 
+<h1><?= Html::encode($this->title) ?></h1>
 <?= TreeView::widget([
-    // single query fetch to render the tree
-    // use the Product model you have in the previous step
     'query' => $deviceCategoryQuery,
-    'headingOptions' => ['label' => 'Категории устройств'],
+    'headingOptions' => ['label' => 'Категории'],
     'fontAwesome' => true,     // optional
     'displayValue' => 1,        // initial display value
     'softDelete' => false,       // defaults to true
     'cacheSettings' => [
         'enableCache' => true   // defaults to true
     ],
-
-    'rootOptions' => ['label'=>'<span class="text-primary">Корень</span>'],
-    'iconEditSettings'=> [
-        'show' => 'list',
-        'listData' => [
-            'folder' => 'Folder',
-            'file' => 'File',
-            'mobile' => 'Phone',
-            'bell' => 'Bell',
-        ]
+    'rootOptions' => ['label'=>'<span class="text-primary"></span>'],
+    'nodeActions' => [
+        Module::NODE_REMOVE => Url::to(['remove']),
     ],
+    'showIDAttribute' => false,
+    'mainTemplate' => $mainTemplate,
+    'iconEditSettings' => [
+        'show' => 'none',
+    ]
 ]) ?>
