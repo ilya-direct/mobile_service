@@ -17,6 +17,6 @@ class Content extends \yii\base\Module
     public function init()
     {
         parent::init();
-        Yii::$app->view->params['breadcrumbs'][] = ['label' => 'Контент', 'url' => ['/content']];
+        Yii::$app->view->params['breadcrumbs'][] = ['label' => 'Контент'];
     }
 }

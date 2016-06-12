@@ -23,6 +23,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <h4 class="list-group-item-heading">Категории</h4>
                 <p class="list-group-item-text">Категории устройств по брендам. Древовидная структура</p>
             </a>
+        </div>
+        <div class="list-group">
             <a href="<?= Url::to(['/settings/admin']) ?>" class="list-group-item">
                 <h4 class="list-group-item-heading">Сотрудники компании</h4>
                 <p class="list-group-item-text">Редактирование профилей сотрудников</p>

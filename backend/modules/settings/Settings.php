@@ -16,6 +16,6 @@ class Settings extends \yii\base\Module
     public function init()
     {
         parent::init();
-        Yii::$app->view->params['breadcrumbs'][] = ['label' => 'Настройки', 'url' => ['/settings']];
+        Yii::$app->view->params['breadcrumbs'][] = ['label' => 'Настройки'];
     }
 }
