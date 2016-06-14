@@ -4,6 +4,8 @@ namespace backend\models\ar;
 
 use Yii;
 use yii\base\NotSupportedException;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
 use yii\helpers\ArrayHelper;
 use yii\web\IdentityInterface;
 
@@ -28,12 +30,23 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
     const SCENARIO_CREATE = 'create';
     const SCENARIO_UPDATE = 'update';
     public $recoverPassword;
+
+    public function behaviors()
+    {
+        return [
+          'timestamp' => [
+              'class' => TimestampBehavior::className(),
+              'value' => new Expression('NOW()'),
+          ],
+        ];
+    }
+
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'admin';
+        return '{{%admin}}';
     }
 
     public function scenarios()
@@ -51,14 +64,16 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['username', 'first_name', 'last_name',
-                'auth_key', 'password_hash', 'email', 'created_at', 'updated_at', 'enabled'], 'required'],
+            [['username', 'first_name', 'last_name', 'email', 'phone', 'enabled'], 'required'],
             [['enabled', 'created_at', 'updated_at'], 'integer'],
-            [['username', 'password_hash', 'password_reset_token', 'email', 'phone'], 'string', 'max' => 255],
+            [['username', 'email', 'phone'], 'string', 'max' => 255],
             [['first_name', 'last_name'], 'string', 'max' => 20],
             ['email', 'email'],
-            [['auth_key'], 'string', 'max' => 32],
-            [['username', 'email', 'password_reset_token'], 'unique'],
+            [['username', 'email'], 'unique'],
+            ['phone', 'match',
+                'pattern' => '/^\+7\(\d{3}\) \d{3} \d{2} \d{2}$/',
+                'message' => 'Формат: +7(ХХХ) ХХХ ХХ ХХ',
+            ],
         ];
     }
 
@@ -69,17 +84,15 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
     {
         return [
             'id' => 'ID',
-            'username' => 'Username',
-            'first_name' => 'First Name',
-            'last_name' => 'Last Name',
-            'auth_key' => 'Auth Key',
-            'password_hash' => 'Password Hash',
-            'password_reset_token' => 'Password Reset Token',
+            'username' => 'Логин',
+            'first_name' => 'Имя',
+            'last_name' => 'Фамилия',
             'email' => 'Email',
-            'phone' => 'Phone',
-            'enabled' => 'Enabled',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'phone' => 'Телефон',
+            'enabled' => 'Активен',
+            'created_at' => 'Создан',
+            'updated_at' => 'Обновлён',
+            'recoverPassword' => 'Восстановить пароль',
         ];
     }
 

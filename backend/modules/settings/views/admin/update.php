@@ -2,13 +2,18 @@
 
 use yii\helpers\Html;
 
-/* @var $this yii\web\View */
-/* @var $model backend\models\ar\Admin */
+/**
+ * @var $this yii\web\View
+ * @var $model backend\models\ar\Admin
+ */
 
-$this->title = 'Update Admin: ' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Admins', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->title = 'Редактирование сотрудника: ' . $model->last_name . ' ' . $model->first_name;
+$this->params['breadcrumbs'][] = ['label' => 'Сотрудники', 'url' => ['index']];
+$this->params['breadcrumbs'][] = [
+    'label' => $model->last_name . ' ' . $model->first_name,
+    'url' => ['view', 'id' => $model->id]
+];
+$this->params['breadcrumbs'][] = 'Редактирование';
 ?>
 <div class="admin-update">
 
