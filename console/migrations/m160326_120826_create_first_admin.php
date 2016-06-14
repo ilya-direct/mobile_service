@@ -8,14 +8,12 @@ class m160326_120826_create_first_admin extends Migration
     {
         $this->insert('{{%admin}}', [
             'username' => 'root',
-            'first_name' => 'ROOT',
-            'last_name' => 'ROOT',
-            'email' => 'root@root.root',
-            'enabled' => true,
-            'created_at' => time(),
-            'updated_at' => time(),
+            'first_name' => 'Илья',
+            'last_name' => 'Смирнов',
+            'email' => 'ilya-direct@ya.ru',
             'auth_key' => Yii::$app->security->generateRandomString(),
             'password_hash' => Yii::$app->security->generatePasswordHash('tour'),
+            'enabled' => true,
         ]);
     }
 

@@ -79,10 +79,13 @@ class SiteController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
         /** @var Admin $admin */
-        $admin = Admin::findOne(['email' => Yii::$app->request->post('email', '')]);
+        $admin = Admin::findOne([
+            'email' => Yii::$app->request->post('email', ''),
+            'enabled' => true,
+        ]);
 
         if (!$admin) {
-            return ['msg' => 'Данного сотрудника не существует'];
+            return ['msg' => 'Сотрудника с введённым email не существует'];
         }
 
         $admin->generatePasswordResetToken();

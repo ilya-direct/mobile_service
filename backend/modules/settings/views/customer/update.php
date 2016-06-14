@@ -2,13 +2,18 @@
 
 use yii\helpers\Html;
 
-/* @var $this yii\web\View */
-/* @var $model common\models\ar\Customer */
+/**
+ * @var $this yii\web\View
+ * @var $model common\models\ar\Customer
+ */
 
-$this->title = 'Update Customer: ' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Customers', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->title = 'Редактирование клиента: ' . $model->last_name . ' ' . $model->first_name;
+$this->params['breadcrumbs'][] = ['label' => 'Клиенты', 'url' => ['index']];
+$this->params['breadcrumbs'][] = [
+    'label' => $model->last_name . ' ' . $model->first_name,
+    'url' => ['view', 'id' => $model->id]
+];
+$this->params['breadcrumbs'][] = 'Редактирование';
 ?>
 <div class="customer-update">
 

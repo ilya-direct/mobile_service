@@ -2,12 +2,13 @@
 
 use yii\helpers\Html;
 
+/**
+ * @var $this yii\web\View
+ * @var $model common\models\ar\Customer
+ */
 
-/* @var $this yii\web\View */
-/* @var $model common\models\ar\Customer */
-
-$this->title = 'Create Customer';
-$this->params['breadcrumbs'][] = ['label' => 'Customers', 'url' => ['index']];
+$this->title = 'Добавление клиента';
+$this->params['breadcrumbs'][] = ['label' => 'Клиенты', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="customer-create">

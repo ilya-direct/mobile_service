@@ -12,19 +12,19 @@ class m160324_065716_tables extends Migration
             'description' => $this->text(),
             'image' => $this->string(),
             'device_category_id' => $this->integer(),
-            'enabled' => $this->smallInteger()->defaultValue(1),
+            'enabled' => $this->boolean()->defaultValue(true)->notNull(),
         ]);
 
         $this->createTable('{{%device_category}}', [
             'id' => $this->primaryKey(),
             'name' => $this->string()->notNull()->unique(),
-            'tree' => $this->integer()->notNull(),
+            'tree' => $this->integer(),
             'lft' => $this->integer()->notNull(),
             'rgt' => $this->integer()->notNull(),
             'depth' => $this->integer()->notNull(),
-            'alias' => $this->string()->notNull(),
+            'alias' => $this->string()->unique()->notNull(),
             'description' => $this->text(),
-            'enabled' => $this->smallInteger()->defaultValue(1),
+            'enabled' => $this->boolean()->defaultValue(true)->notNull(),
         ]);
 
         $this->createTable('{{%service}}', [
@@ -33,7 +33,7 @@ class m160324_065716_tables extends Migration
             'small_description' => $this->text(),
             'service_category_id' => $this->integer(),
             'position' => $this->integer(),
-            'enabled' => $this->smallInteger()->defaultValue(1),
+            'enabled' => $this->boolean()->defaultValue(true)->notNull(),
         ]);
 
         $this->createTable('{{%service_category}}', [
@@ -49,7 +49,7 @@ class m160324_065716_tables extends Migration
             'service_id' => $this->integer()->notNull(),
             'price' => $this->integer()->notNull(),
             'price_old' => $this->integer(),
-            'enabled' => $this->smallInteger()->defaultValue(1),
+            'enabled' => $this->boolean()->defaultValue(true)->notNull(),
         ]);
 
         $this->createTable('{{%news}}', [
@@ -57,9 +57,9 @@ class m160324_065716_tables extends Migration
             'title' => $this->string()->notNull()->notNull(),
             'description_short' => $this->text(),
             'description' => $this->text()->notNull(),
-            'created_at' => $this->dateTime()->notNull(),
-            'updated_at' => $this->dateTime(),
-            'enabled' => $this->smallInteger()->defaultValue(1),
+            'created_at' => $this->dateTime()->notNull()->defaultExpression('NOW()'),
+            'updated_at' => $this->dateTime()->notNull()->defaultExpression('NOW()'),
+            'enabled' => $this->boolean()->defaultValue(true)->notNull(),
         ]);
 
         $this->addForeignKey(

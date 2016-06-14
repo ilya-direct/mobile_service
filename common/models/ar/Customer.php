@@ -27,12 +27,22 @@ use yii\web\IdentityInterface;
  */
 class Customer extends ActiveRecord  implements IdentityInterface
 {
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'value' => new Expression('NOW()'),
+            ],
+        ];
+    }
+
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'customer';
+        return '{{%customer}}';
     }
 
     /**
@@ -42,9 +52,11 @@ class Customer extends ActiveRecord  implements IdentityInterface
     {
         return [
             [['username', 'first_name', 'email'], 'required'],
-            [['status', 'enabled'], 'integer'],
+            ['status', 'integer'],
             [['username', 'first_name', 'last_name', 'middle_name', 'email'], 'string', 'max' => 255],
             [['email', 'username'], 'unique'],
+            ['email', 'email'],
+            ['enabled', 'boolean']
         ];
     }
 
@@ -55,18 +67,15 @@ class Customer extends ActiveRecord  implements IdentityInterface
     {
         return [
             'id' => 'ID',
-            'username' => 'Username',
-            'first_name' => 'First Name',
-            'last_name' => 'Last Name',
-            'middle_name' => 'Middle Name',
-            'auth_key' => 'Auth Key',
-            'password_hash' => 'Password Hash',
-            'password_reset_token' => 'Password Reset Token',
+            'username' => 'Логин',
+            'first_name' => 'Имя',
+            'last_name' => 'Фамилия',
+            'middle_name' => 'Отчество',
             'email' => 'Email',
             'status' => 'Status',
-            'enabled' => 'Enabled',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'enabled' => 'Отображать на сайте',
+            'created_at' => 'Создан',
+            'updated_at' => 'Обновлён',
         ];
     }
 
@@ -200,17 +209,5 @@ class Customer extends ActiveRecord  implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
-    }
-
-    public function behaviors()
-    {
-        return [
-            /*'timestamp' => [
-                'class' => TimestampBehavior::className(),
-                'value' => new Expression('NOW()'),
-            ],*/
-
-            TimestampBehavior::className(),
-        ];
     }
 }

@@ -65,7 +65,7 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
     {
         return [
             [['username', 'first_name', 'last_name', 'email', 'phone', 'enabled'], 'required'],
-            [['enabled', 'created_at', 'updated_at'], 'integer'],
+            [['enabled'], 'boolean'],
             [['username', 'email', 'phone'], 'string', 'max' => 255],
             [['first_name', 'last_name'], 'string', 'max' => 20],
             ['email', 'email'],
