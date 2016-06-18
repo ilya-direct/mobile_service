@@ -3,6 +3,7 @@
 namespace common\models\ar;
 
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "device".
@@ -17,14 +18,14 @@ use Yii;
  * @property DeviceCategory $deviceCategory
  * @property DeviceAssign[] $deviceAssigns
  */
-class Device extends \yii\db\ActiveRecord
+class Device extends ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'device';
+        return '{{%device}}';
     }
 
     /**
@@ -54,11 +55,10 @@ class Device extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'description' => 'Description',
-            'image' => 'Image',
-            'device_category_id' => 'Device Category ID',
-            'enabled' => 'Enabled',
+            'name' => 'Название',
+            'description' => 'Описание',
+            'image' => 'Изображение',
+            'enabled' => 'Активен',
         ];
     }
 

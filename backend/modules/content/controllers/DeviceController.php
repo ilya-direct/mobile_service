@@ -37,7 +37,7 @@ class DeviceController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Device::find(),
+            'query' => Device::find()->joinWith('deviceCategory'),
         ]);
 
         return $this->render('index', [
@@ -52,8 +52,15 @@ class DeviceController extends Controller
      */
     public function actionView($id)
     {
+        $model = Device::find()
+            ->joinWith(['deviceCategory'])
+            ->where([ Device::tableName() . '.id' => $id])
+            ->one();
+        if (!$model) {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
         ]);
     }
 
@@ -121,17 +128,5 @@ class DeviceController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
-    }
-
-    public function actionCategory(){
-
-        return $this->render('category');
-    }
-
-    public function actionCategoryTest(){
-
-        $cat = new DeviceCategory(['name' => 'Мобильные телефоны', 'alias' => 'mobile-phones']);
-        $cat->makeRoot();
-//        return $this->render('category');
     }
 }

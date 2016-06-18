@@ -2,12 +2,13 @@
 
 use yii\helpers\Html;
 
+/**
+ * @var $this yii\web\View
+ * @var $model common\models\ar\Device
+ */
 
-/* @var $this yii\web\View */
-/* @var $model common\models\ar\Device */
-
-$this->title = 'Create Device';
-$this->params['breadcrumbs'][] = ['label' => 'Devices', 'url' => ['index']];
+$this->title = 'Добавление устройства';
+$this->params['breadcrumbs'][] = ['label' => 'Устройства', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="device-create">

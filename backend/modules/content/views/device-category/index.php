@@ -31,13 +31,16 @@ HTML;
 <?= TreeView::widget([
     'query' => $deviceCategoryQuery,
     'headingOptions' => ['label' => 'Категории'],
+    'defaultChildNodeIcon'=> '<i class="fa fa-folder"></i>',
     'fontAwesome' => true,     // optional
     'displayValue' => 1,        // initial display value
     'softDelete' => false,       // defaults to true
     'cacheSettings' => [
         'enableCache' => true   // defaults to true
     ],
-    'rootOptions' => ['label'=>'<span class="text-primary"></span>'],
+    'rootOptions' => [
+        'label' => '<i class="fa fa-tree text-success"></i>',
+    ],
     'nodeActions' => [
         Module::NODE_REMOVE => Url::to(['remove']),
     ],

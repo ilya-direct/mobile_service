@@ -39,7 +39,7 @@ class Service extends \yii\db\ActiveRecord
             [['enabled'], 'boolean'],
             [['name'], 'string', 'max' => 255],
             [['name'], 'unique'],
-//            [['service_category_id'], 'exist', 'skipOnError' => true, 'targetClass' => ServiceCategory::className(), 'targetAttribute' => ['service_category_id' => 'id']],
+            [['service_category_id'], 'exist', 'skipOnError' => true, 'targetClass' => ServiceCategory::className(), 'targetAttribute' => ['service_category_id' => 'id']],
         ];
     }
 
@@ -50,11 +50,10 @@ class Service extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'small_description' => 'Small Description',
-            'service_category_id' => 'Service Category ID',
-            'position' => 'Position',
-            'enabled' => 'Enabled',
+            'name' => 'Название',
+            'small_description' => 'Описание',
+            'position' => 'Позиция',
+            'enabled' => 'Активна',
         ];
     }
 
