@@ -23,7 +23,12 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             'id',
             'title',
-            'description_short:ntext',
+            [
+                'attribute' => 'description_short',
+                'value' => function($model) {
+                        return \yii\helpers\StringHelper::truncate($model->description_short, 60);
+                }
+            ],
             'created_at',
             ['class' => 'yii\grid\ActionColumn'],
         ],
