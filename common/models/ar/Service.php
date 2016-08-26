@@ -3,6 +3,7 @@
 namespace common\models\ar;
 
 use Yii;
+use common\components\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%service}}".
@@ -17,7 +18,7 @@ use Yii;
  * @property DeviceAssign[] $deviceAssigns
  * @property ServiceCategory $serviceCategory
  */
-class Service extends \yii\db\ActiveRecord
+class Service extends ActiveRecord
 {
     /**
      * @inheritdoc
@@ -72,4 +73,5 @@ class Service extends \yii\db\ActiveRecord
     {
         return $this->hasOne(ServiceCategory::className(), ['id' => 'service_category_id']);
     }
+
 }

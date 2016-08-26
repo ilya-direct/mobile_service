@@ -3,7 +3,7 @@
 namespace common\models\ar;
 
 use Yii;
-use yii\db\ActiveRecord;
+use common\components\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%device_assign}}".
@@ -72,4 +72,5 @@ class DeviceAssign extends ActiveRecord
     {
         return $this->hasOne(Service::className(), ['id' => 'service_id']);
     }
+
 }
