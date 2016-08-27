@@ -21,10 +21,10 @@ class AppAsset extends AssetBundle
         'css/reset-min.css',
         'css/main.css',
         'css/jquery.bxslider.css',
-        'https://file.myfontastic.com/n6vo44Re5QaWo8oCKShBs7/icons.css',
+        'css/icons.css',
     ];
     public $js = [
-        'js/bootstrap.min.js',
+//        'js/bootstrap.min.js',
         'js/respond.js',
         'js/jquery.bxslider.min.js',
         'js/jquery.maskedinput-1.4.1.js',

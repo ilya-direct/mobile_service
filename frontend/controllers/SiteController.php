@@ -8,38 +8,33 @@ use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
 use yii\base\InvalidParamException;
-use yii\web\BadRequestHttpException;
-use yii\web\Controller;
+use yii\db\Exception;
 use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
+use yii\web\BadRequestHttpException;
+use yii\web\Controller;;
+use yii\web\NotFoundHttpException;;
+use common\models\ar\Order;
+use common\models\ar\OrderPerson;
+use common\models\ar\OrderProvider;
+use common\models\ar\OrderStatus;
+use frontend\models\OrderModalForm;
 
 /**
  * Site controller
  */
 class SiteController extends Controller
 {
+    public function init()
+    {
+        $this->view->params['form'] = new OrderModalForm();
+    }
+
     /**
      * @inheritdoc
      */
     public function behaviors()
     {
         return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'only' => ['logout', 'signup'],
-                'rules' => [
-                    [
-                        'actions' => ['signup'],
-                        'allow' => true,
-                        'roles' => ['?'],
-                    ],
-                    [
-                        'actions' => ['logout'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -210,4 +205,50 @@ class SiteController extends Controller
             'model' => $model,
         ]);
     }
+
+    public function actionQuickOrder()
+    {
+        $model = new OrderModalForm();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                $orderPerson = new OrderPerson();
+                $orderPerson->first_name = $model->name;
+                $orderPerson->phone = $model->phone;
+                $orderPerson->email = $model->email;
+                $orderPerson->save(false);
+
+                $order = new Order();
+                $order->order_person_id = $orderPerson->id;
+                $order->comment = $model->comment;
+                $order->order_provider_id = OrderProvider::get('top_form');
+                $order->order_status_id = OrderStatus::get('new');
+                $order->save(false);
+                $uid = $order->setUid();
+                $order->update(false);
+                $transaction->commit();
+            } catch (Exception $e) {
+                $transaction->rollBack();
+                $model->addError('db', 'Ошибка базы данных! Пожалуйста оформите заказ по телефону +7 (963) 656-83-77, Вас ждёт приятный бонус!');
+                return $this->render('quick-order', ['model' => $model]);
+            }
+            Yii::$app->session->set('uid', $uid);
+            return $this->redirect('success');
+        } else {
+            return $this->render('quick-order', ['model' => $model]);
+        }
+    }
+
+
+    public function actionSuccess()
+    {
+        $uid = Yii::$app->session->remove('uid');
+        if ($uid) {
+
+            return $this->render('success',['uid' => $uid]);
+        } else {
+            throw new NotFoundHttpException();
+        }
+    }
+
 }

@@ -35,9 +35,17 @@ AppAsset::register($this);
             </div>
         </div>
         <div class = "col-xs-12 col-sm-6 col-md-4 col-lg-5">
-            <div class="oform_order">
-                <a href="#">оформить заявку</a>
-            </div>
+            <?php
+            $modalWindow = \yii\bootstrap\Modal::begin([
+                'header' => '<h2>Оформление заявки </h2>',
+                'toggleButton' => [
+                    'tag' => 'div',
+                    'label' => '<a>оформить заявку</a>',
+                    'class' => 'oform_order',
+                ],
+            ]); ?>
+            <?= $this->render('//site/quick-order-form', ['model' => $this->params['form'], 'id' => 'small']); ?>
+            <?php $modalWindow->end(); ?>
         </div>
         <div class = "col-xs-12 col-sm-3 col-md-4 col-lg-3 hidden-sm hidden-xs">
             <div class="hd_ttle">
