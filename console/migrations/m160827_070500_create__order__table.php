@@ -43,8 +43,10 @@ class m160827_070500_create__order__table extends Migration
             'time_from' => $this->time()->comment('Время с'),
             'time_to' => $this->time()->comment('Время по'),
             'comment' => $this->string()->comment('Комментарий к заказу'),
-            'referer' => $this->string()->comment('Откуда был заход на сайт'),
+            'referer' => $this->string()->notNull()->comment('Откуда был заход на сайт'),
+            'ip' => 'inet NOT NULL',
         ]);
+        $this->addCommentOnColumn('{{%order}}', 'ip', 'IP адрес клиента');
 
         $this->addForeignKey(
             'FK__order__order_status_id__order_status__id',
@@ -77,7 +79,8 @@ class m160827_070500_create__order__table extends Migration
         );
 
         $this->insert('{{%order_status}}',['name' => 'Новый заказ']);
-        $this->insert('{{%order_provider}}',['name' => 'Верхняя форма "Оформить заявку"']);
+        $this->insert('{{%order_provider}}',['name' => 'Верхняя форма "Оформить заявку" модальная']);
+        $this->insert('{{%order_provider}}',['name' => 'Верхняя форма "Оформить заявку" на отдельной странице']);
     }
 
     /**

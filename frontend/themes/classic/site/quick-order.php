@@ -12,7 +12,7 @@ $this->title = 'Оформление заявки';
 <div class="row">
     <div class="col-lg-4"></div>
     <div class="col-lg-4">
-        <?= $this->render('//site/quick-order-form', ['model' => $model, 'id' => 'full']); ?>
+        <?= $this->render('//site/quick-order-form', ['model' => $model, 'full' => true]); ?>
     </div>
     <div class="col-lg-4"></div>
 </div>

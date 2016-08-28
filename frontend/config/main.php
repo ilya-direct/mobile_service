@@ -11,6 +11,12 @@ return [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
+    'on beforeRequest' => function (yii\base\Event $event) {
+        if (is_null(Yii::$app->session->get('referer'))) {
+            $referer = Yii::$app->request->referrer ?: '';
+            Yii::$app->session->set('referer', $referer);
+        }
+    },
     'components' => [
         'user' => [
             'identityClass' => common\models\ar\Customer::className(),

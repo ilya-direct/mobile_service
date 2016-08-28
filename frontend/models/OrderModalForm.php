@@ -11,6 +11,8 @@ class OrderModalForm extends Model
     public $phone;
     public $email;
     public $comment;
+    // Полная форма на странице site/quick-order
+    public $fullForm = false;
 
     public function rules()
     {
@@ -24,7 +26,8 @@ class OrderModalForm extends Model
                 $newValue = '+' . preg_replace('/\D/', '', $value);
                 return $newValue;
             }],
-            [['email', 'comment'], 'default'],
+            ['fullForm', 'boolean'],
+            [['email', 'comment', 'fullForm'], 'default'],
         ];
     }
 

@@ -4,8 +4,9 @@
 /* @var $content string */
 
 use yii\helpers\Html;
-use frontend\assets\AppAsset;
+use yii\helpers\Url;
 use common\widgets\Alert;
+use frontend\assets\AppAsset;
 
 AppAsset::register($this);
 
@@ -28,24 +29,30 @@ AppAsset::register($this);
     <div class = "row">
         <div class = "col-xs-12 col-sm-6 col-md-4 col-lg-4">
             <div class="logo">
-                <a href="#">
+                <a href="<?= Url::toRoute('/') ?>">
                     <h1>BMSTU <span>Сервис</span></h1>
                     <p>ремонт портативной техники</p>
                 </a>
             </div>
         </div>
         <div class = "col-xs-12 col-sm-6 col-md-4 col-lg-5">
-            <?php
-            $modalWindow = \yii\bootstrap\Modal::begin([
-                'header' => '<h2>Оформление заявки </h2>',
-                'toggleButton' => [
-                    'tag' => 'div',
-                    'label' => '<a>оформить заявку</a>',
-                    'class' => 'oform_order',
-                ],
-            ]); ?>
-            <?= $this->render('//site/quick-order-form', ['model' => $this->params['form'], 'id' => 'small']); ?>
-            <?php $modalWindow->end(); ?>
+            <?php if (empty($this->params['hideTopModalForm'])): ?>
+                <?php
+                $modalWindow = \yii\bootstrap\Modal::begin([
+                    'header' => '<h2>Оформление заявки </h2>',
+                    'toggleButton' => [
+                        'tag' => 'div',
+                        'label' => '<a>оформить заявку</a>',
+                        'class' => 'oform_order',
+                    ],
+                ]); ?>
+                <?= $this->render('//site/quick-order-form', ['model' => $this->params['form']]); ?>
+                <?php $modalWindow->end(); ?>
+            <?php else: ?>
+                <div class="oform_order">
+                    <a href="#full-form">оформить заявку</a>
+                </div>
+            <?php endif; ?>
         </div>
         <div class = "col-xs-12 col-sm-3 col-md-4 col-lg-3 hidden-sm hidden-xs">
             <div class="hd_ttle">

@@ -53,7 +53,8 @@ class OrderProvider extends \yii\db\ActiveRecord
     }
 
     private static $providers = [
-        'top_form' => 'Верхняя форма "Оформить заявку"',
+        'top_form' => 'Верхняя форма "Оформить заявку" модальная',
+        'top_form_full' => 'Верхняя форма "Оформить заявку" на отдельной странице'
     ];
 
     public static function get($providerAlias)

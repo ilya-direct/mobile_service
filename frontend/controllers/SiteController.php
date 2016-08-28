@@ -221,20 +221,26 @@ class SiteController extends Controller
                 $order = new Order();
                 $order->order_person_id = $orderPerson->id;
                 $order->comment = $model->comment;
-                $order->order_provider_id = OrderProvider::get('top_form');
+                $order->order_provider_id = $model->fullForm
+                    ? OrderProvider::get('top_form_full')
+                    : OrderProvider::get('top_form');
                 $order->order_status_id = OrderStatus::get('new');
+                $order->referer = Yii::$app->session->get('referer');
+                $order->ip = Yii::$app->request->userIP;
                 $order->save(false);
                 $uid = $order->setUid();
                 $order->update(false);
                 $transaction->commit();
             } catch (Exception $e) {
                 $transaction->rollBack();
-                $model->addError('db', 'Ошибка базы данных! Пожалуйста оформите заказ по телефону +7 (963) 656-83-77, Вас ждёт приятный бонус!');
+                $model->addError('db', 'Ошибка базы данных! Пожалуйста попробуйте ещё раз или оформите заказ по телефону +7 (963) 656-83-77. Вас ждёт приятный бонус!');
+                $this->view->params['hideTopModalForm'] = true;
                 return $this->render('quick-order', ['model' => $model]);
             }
             Yii::$app->session->set('uid', $uid);
             return $this->redirect('success');
         } else {
+            $this->view->params['hideTopModalForm'] = true;
             return $this->render('quick-order', ['model' => $model]);
         }
     }
