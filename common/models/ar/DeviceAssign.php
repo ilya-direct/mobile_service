@@ -73,4 +73,31 @@ class DeviceAssign extends ActiveRecord
         return $this->hasOne(Service::className(), ['id' => 'service_id']);
     }
 
+    public static function validateCommaStr($str)
+    {
+        $assigns = explode(',', $str);
+        $errors = [];
+
+        $deviceAssignIds = [];
+        foreach ($assigns as $assign) {
+            $assign = intval(trim($assign));
+            if ($assign) {
+                if (static::findOne($assign)) {
+                    $deviceAssignIds[] = $assign;
+                } else {
+                    $errors[] = $assign;
+                }
+            }
+        }
+        $deviceAssignIds = array_unique($deviceAssignIds);
+
+        $success = empty($errors);
+
+        return [
+            'valid' => $success,
+            'ids' => $deviceAssignIds,
+            'errors' => $errors,
+        ];
+    }
+
 }

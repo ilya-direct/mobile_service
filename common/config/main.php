@@ -15,5 +15,12 @@ return [
             require __DIR__ . '/db/db-local.php'
         ),
 
+        'formatter' => [
+            'class' => 'yii\i18n\Formatter',
+            'dateFormat' => 'dd.MM.yyyy',
+            'datetimeFormat' => 'dd.MM.yyyy H:i:s',
+            'timeFormat' => 'H:i:s',
+        ]
+
     ],
 ];

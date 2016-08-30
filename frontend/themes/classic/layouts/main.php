@@ -1,15 +1,15 @@
 <?php
 
-/* @var $this \yii\web\View */
-/* @var $content string */
-
 use yii\helpers\Html;
 use yii\helpers\Url;
+use common\models\ar\Order;
+use common\models\ar\OrderPerson;
 use common\widgets\Alert;
 use frontend\assets\AppAsset;
 
+/* @var $this \yii\web\View */
+/* @var $content string */
 AppAsset::register($this);
-
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -46,7 +46,10 @@ AppAsset::register($this);
                         'class' => 'oform_order',
                     ],
                 ]); ?>
-                <?= $this->render('//site/quick-order-form', ['model' => $this->params['form']]); ?>
+                <?= $this->render('//site/quick-order-form', [
+                        'order' => new Order(),
+                        'orderPerson' => new OrderPerson(),
+                ]); ?>
                 <?php $modalWindow->end(); ?>
             <?php else: ?>
                 <div class="oform_order">

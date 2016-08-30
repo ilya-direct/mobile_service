@@ -11,6 +11,14 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="site-index">
     <div class="body-content">
         <div class="panel panel-default">
+            <div class="list-group">
+                <a href="<?= Url::to(['/order']) ?>" class="list-group-item">
+                    <h4 class="list-group-item-heading">Заказы</h4>
+                    <p class="list-group-item-text">Создание и редактирование заказов</p>
+                </a>
+            </div>
+        </div>
+        <div class="panel panel-default">
             <div class="panel-heading">Контент</div>
             <div class="list-group">
                 <a href="<?= Url::to(['/content/news']) ?>" class="list-group-item">

@@ -3,6 +3,7 @@
 namespace common\models\ar;
 
 use Yii;
+use yii\db\Exception;
 
 /**
  * This is the model class for table "{{%order_status}}".
@@ -53,18 +54,31 @@ class OrderStatus extends \yii\db\ActiveRecord
     }
 
 
-    private static $providers = [
-        'new' => 'Новый заказ',
+    private static $statuses = [
+        'new' => 'Новый',
     ];
 
     public static function get($statusAlias)
     {
-        $status = self::$providers[$statusAlias];
+        $status = self::$statuses[$statusAlias];
         $status_id = self::find()
             ->select('id')
             ->where(['name' => $status])
             ->scalar();
-
+        if (!$status_id) {
+            throw new Exception('Undefined order status');
+        }
         return $status_id;
+    }
+
+    public static function getList()
+    {
+        $list =self::find()
+            ->select('name')
+            ->indexBy('id')
+            ->orderBy('id')
+            ->column();
+
+        return $list;
     }
 }
