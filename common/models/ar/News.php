@@ -6,6 +6,7 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
+use common\components\behaviors\RevisionBehavior;
 
 /**
  * This is the model class for table "news".
@@ -26,6 +27,15 @@ class News extends ActiveRecord
             'timestamp' => [
                 'class' => TimestampBehavior::className(),
                 'value' => new Expression('NOW()'),
+            ],
+            'revision' => [
+                'class' => RevisionBehavior::className(),
+                'attributes' => [
+                    'enabled',
+                    'description',
+                    'description_short',
+                    'title',
+                ]
             ]
         ];
     }
@@ -48,6 +58,8 @@ class News extends ActiveRecord
             [['description_short', 'description'], 'string'],
             [['enabled'], 'boolean'],
             [['title'], 'string', 'max' => 255],
+            [['enabled'], 'filter', 'filter' => 'boolval'],
+            [['description_short'], 'default']
         ];
     }
 

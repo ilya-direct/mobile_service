@@ -4,6 +4,7 @@ namespace common\models\ar;
 
 use Yii;
 use yii\base\Exception;
+use common\components\behaviors\RevisionBehavior;
 use linslin\yii2\curl\Curl;
 
 /**
@@ -23,6 +24,24 @@ use linslin\yii2\curl\Curl;
  */
 class OrderPerson extends \yii\db\ActiveRecord
 {
+
+    public function behaviors()
+    {
+        return [
+            'revision' => [
+                'class' => RevisionBehavior::className(),
+                'attributes' => [
+                    'address',
+                    'email',
+                    'first_name',
+                    'last_name',
+                    'middle_name',
+                    'phone',
+                ]
+            ]
+        ];
+    }
+
     /**
      * @inheritdoc
      */
@@ -78,6 +97,9 @@ class OrderPerson extends \yii\db\ActiveRecord
 
     public function validateAddress($attribute)
     {
+        if (empty($this->getDirtyAttributes([$attribute]))) {
+            return null;
+        }
         $value = $this->$attribute;
 
         $yandexGeocoder = new Curl();

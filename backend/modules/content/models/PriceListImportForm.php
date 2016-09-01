@@ -43,7 +43,7 @@ class PriceListImportForm extends Model
                 $deviceName = (string)$row[0] ?: $oldDeviceName;
                 $serviceName = (string)$row[1];
                 $price = (int)$row[2];
-                $priceOld = (int)$row[3];
+                $priceOld = (trim($row[3]) == '0' || $row[3]) ? (integer) $row[3] : null;
                 /** @var Service $serviceModel */
                 $serviceModel = Service::findOneOrFail(['name' => $serviceName]);
                 /** @var Device $deviceModel */
@@ -53,8 +53,9 @@ class PriceListImportForm extends Model
                     'device_id' => $deviceModel->id,
                     'service_id' => $serviceModel->id
                 ]);
-                $deviceAssignModel->price_old = $priceOld ?: $deviceAssignModel->price_old ?: (($deviceAssignModel->price > $price) ? $deviceAssignModel->price : null);
-                $deviceAssignModel->price = $price;
+                $deviceAssignModel->price_old = is_int($priceOld) ? $priceOld:
+                    ($deviceAssignModel->price_old ?: (($deviceAssignModel->price > $price) ? $deviceAssignModel->price : null));
+                $deviceAssignModel->price = (integer)$price;
                 $deviceAssignModel->enabled = true;
                 if ($deviceAssignModel->dirtyAttributes) {
                     $updatedPrices[] = [

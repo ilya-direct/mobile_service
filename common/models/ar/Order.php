@@ -5,6 +5,7 @@ namespace common\models\ar;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
+use common\components\behaviors\RevisionBehavior;
 use common\components\db\ActiveRecord;
 
 /**
@@ -23,6 +24,7 @@ use common\components\db\ActiveRecord;
  * @property string $referer
  * @property string $client_lead
  * @property string $ip
+ * @property boolean $deleted
  *
  * @property OrderPerson $orderPerson
  * @property OrderProvider $orderProvider
@@ -31,6 +33,29 @@ use common\components\db\ActiveRecord;
  */
 class Order extends ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'updatedAtAttribute' => false,
+                'value' => new Expression('NOW()'),
+            ],
+            'revision' => [
+                'class' => RevisionBehavior::className(),
+                'attributes' => [
+                    'comment',
+                    'client_lead',
+                    'deleted',
+                    'order_status_id',
+                    'preferable_date',
+                    'time_from',
+                    'time_to',
+                ]
+            ],
+        ];
+    }
+
     /**
      * @inheritdoc
      */
@@ -56,9 +81,9 @@ class Order extends ActiveRecord
             [['time_from', 'time_to'], 'date', 'format' => 'H:i', 'message' => 'XX:XX'],
             ['time_to', 'compare', 'compareAttribute' => 'time_from', 'operator' => '>=', 'message' => '< время с'],
             [['preferable_date', 'time_from', 'time_to', 'client_lead', 'comment'], 'default'],
+            ['order_status_id', 'filter', 'filter' => 'intval'],
         ];
     }
-
     /**
      * @inheritdoc
      */
@@ -75,20 +100,9 @@ class Order extends ActiveRecord
             'time_from' => 'Время с',
             'time_to' => 'Время по',
             'comment' => 'Комментарий к заказу',
-            'referer' => 'Откуда был заход на сайт',
+            'referer' => 'Откуда был заход на сайт(referer)',
             'client_lead' => 'Откуда узнали про нас?',
             'ip' => 'IP',
-        ];
-    }
-
-    public function behaviors()
-    {
-        return [
-            'timestamp' => [
-                'class' => TimestampBehavior::className(),
-                'updatedAtAttribute' => false,
-                'value' => new Expression('NOW()'),
-            ],
         ];
     }
 
@@ -132,6 +146,10 @@ class Order extends ActiveRecord
 
     public function beforeSave($insert)
     {
+        $this->time_from = $this->time_from ? date('H:i:s', strtotime($this->time_from)) : null;
+        $this->time_to = $this->time_to ? date('H:i:s', strtotime($this->time_to)) : null;
+        $this->preferable_date = $this->preferable_date ? date('Y-m-d', strtotime($this->preferable_date)) : null;
+
         if ($insert) {
             $this->referer = empty(Yii::$app->session->get('referer')) ? null : Yii::$app->session->get('referer');
             $this->ip = Yii::$app->request->userIP;
@@ -146,7 +164,7 @@ class Order extends ActiveRecord
 
         if ($insert && !$this->uid) {
             $this->setUid();
-            $this->save();
+            $this->save(false);
         }
     }
 
@@ -161,5 +179,33 @@ class Order extends ActiveRecord
         if (!empty($this->time_to)) {
             $this->time_to = substr($this->time_to, 0, 5);
         }
+    }
+
+    public function afterDelete()
+    {
+        parent::afterDelete();
+        OrderPerson::findOne($this->order_person_id)->delete(false);
+        Yii::$app->db->transaction->commit();
+    }
+
+    public function delete($soft = true)
+    {
+        if ($soft) {
+            $this->deleted = true;
+            return $this->update();
+        }
+        Yii::$app->db->beginTransaction();
+        return parent::delete();
+    }
+
+    /**
+     * Нельзя удалять заказы массово, так как используется тригер на удаление у модели
+     * @param string $condition
+     * @param array $params
+     * @return bool
+     */
+    public static function  deleteAll($condition = '', $params = [])
+    {
+        return false;
     }
 }

@@ -3,6 +3,7 @@
 namespace common\models\ar;
 
 use Yii;
+use common\components\behaviors\RevisionBehavior;
 use common\components\db\ActiveRecord;
 
 /**
@@ -17,9 +18,25 @@ use common\components\db\ActiveRecord;
  *
  * @property Device $device
  * @property Service $service
+ *
+ * @method mixed revisionValue(string $attribute,string $dateTime)
  */
 class DeviceAssign extends ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            'revision' => [
+                'class' => RevisionBehavior::className(),
+                'attributes' => [
+                    'enabled',
+                    'price',
+                    'price_old',
+                ]
+            ]
+        ];
+    }
+
     /**
      * @inheritdoc
      */
@@ -36,7 +53,7 @@ class DeviceAssign extends ActiveRecord
         return [
             [['device_id', 'service_id', 'price'], 'required'],
             [['device_id', 'service_id', 'price', 'price_old'], 'integer'],
-            [['enabled'], 'boolean'],
+            ['enabled', 'boolean'],
             [['device_id'], 'exist', 'skipOnError' => true, 'targetClass' => Device::className(), 'targetAttribute' => ['device_id' => 'id']],
             [['service_id'], 'exist', 'skipOnError' => true, 'targetClass' => Service::className(), 'targetAttribute' => ['service_id' => 'id']],
         ];

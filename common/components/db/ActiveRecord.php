@@ -13,6 +13,18 @@ use yii\db\Exception;
 class ActiveRecord extends \yii\db\ActiveRecord
 {
     /**
+     * @return ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public static function find()
+    {
+        return Yii::createObject([
+            'class' => ActiveQuery::className(),
+            'tableName' => static::tableName()
+        ], [get_called_class()]);
+    }
+
+    /**
      * @param $condition
      * @return null|static
      * @throws Exception
@@ -41,5 +53,29 @@ class ActiveRecord extends \yii\db\ActiveRecord
         }
 
         return $model;
+    }
+
+    /**
+     * Найти или создать запись по условию, вернуть значение $attribute
+     *
+     * @param array|string $condition условие where()
+     * @param string $attribute атрибут, который нужно вернуть (id по умолчанию)
+     * @return string|int|boolean
+     */
+    public static function findOrCreateReturnScalar($condition, $attribute = 'id')
+    {
+        $value = static::find()
+            ->select($attribute)
+            ->where($condition)
+            ->scalar();
+
+        if ($value === false) {
+            $model = new static($condition);
+            $model->save(false);
+            $value = $model->{$attribute};
+
+        }
+
+        return $value;
     }
 }

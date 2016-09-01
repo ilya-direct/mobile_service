@@ -10,6 +10,7 @@ use yii\db\Exception;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
+use common\components\db\ActiveQuery;
 use common\models\ar\DeviceAssign;
 use common\models\ar\Order;
 use common\models\ar\OrderPerson;
@@ -44,7 +45,7 @@ class OrderController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Order::find(),
+            'query' => Order::find()->notDeleted(),
         ]);
 
         return $this->render('index', [
@@ -60,13 +61,21 @@ class OrderController extends Controller
     public function actionView($id)
     {
         $model = Order::find()
-            ->joinWith('orderStatus')
-            ->joinWith('orderProvider')
-            ->joinWith('orderPerson')
-            ->joinWith('orderServices.deviceAssign.device')
-            ->joinWith('orderServices.deviceAssign.service')
+            ->innerJoinWith('orderStatus')
+            ->innerJoinWith('orderProvider')
+            ->innerJoinWith('orderPerson')
+            ->with([
+                'orderServices' => function (ActiveQuery $query) {
+                    $query->innerJoinWith('deviceAssign.device');
+                    $query->innerJoinWith('deviceAssign.service');
+                    $query->notDeleted();
+             }])
             ->where(['order.id' => $id])
+            ->notDeleted()
             ->one();
+        if (!$model) {
+            throw new NotFoundHttpException('Страница не существует');
+        }
 
         return $this->render('view', [
             'model' => $model,
@@ -120,6 +129,7 @@ class OrderController extends Controller
                     ->select('device_assign_id')
                     ->where(['order_id' => $order->id])
                     ->orderBy(['device_assign_id' => SORT_ASC])
+                    ->notDeleted()
                     ->column()
             );
         }
@@ -146,14 +156,18 @@ class OrderController extends Controller
                     $order->order_provider_id = OrderProvider::get('admin_panel');
                     $order->save(false);
                     if (!$isNew) {
-                        OrderService::deleteAll(['not', ['id' => $validator['ids']]]);
+                        OrderService::deleteAll([
+                            'and',
+                            ['order_id' => $order->id],
+                            ['not', ['device_assign_id' => $validator['ids']]]
+                        ]);
                     }
                     foreach ($validator['ids'] as $id) {
                         OrderService::findOrNew([
                             'order_id' => $order->id,
                             'device_assign_id' => $id,
-                        ])
-                            ->save(false);
+                            'deleted' => false,
+                        ])->save(false);
                     }
                 } catch (Exception $e) {
                     $transaction->rollBack();
