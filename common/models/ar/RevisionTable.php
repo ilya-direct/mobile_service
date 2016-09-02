@@ -20,7 +20,7 @@ class RevisionTable extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'revision_table';
+        return '{{%revision_table}}';
     }
 
     /**

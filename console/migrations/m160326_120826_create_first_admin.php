@@ -14,6 +14,7 @@ class m160326_120826_create_first_admin extends Migration
             'auth_key' => Yii::$app->security->generateRandomString(),
             'password_hash' => Yii::$app->security->generatePasswordHash('tour'),
             'enabled' => true,
+            'phone' => '+7(963) 656 83 77',
         ]);
     }
 

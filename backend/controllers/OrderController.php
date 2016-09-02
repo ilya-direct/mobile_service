@@ -54,9 +54,9 @@ class OrderController extends Controller
     }
 
     /**
-     * Displays a single Order model.
-     * @param integer $id
-     * @return mixed
+     * @param $id
+     * @return string
+     * @throws NotFoundHttpException
      */
     public function actionView($id)
     {
@@ -70,7 +70,7 @@ class OrderController extends Controller
                     $query->innerJoinWith('deviceAssign.service');
                     $query->notDeleted();
              }])
-            ->where(['order.id' => $id])
+            ->where([ Order::tableName() . '.id' => $id])
             ->notDeleted()
             ->one();
         if (!$model) {

@@ -63,45 +63,53 @@ class m160324_065716_tables extends Migration
         ]);
 
         $this->addForeignKey(
-            'device-device_category',
+            'FK__device__device_category_id__device_category__id',
             '{{%device}}',
             'device_category_id',
             '{{%device_category}}',
-            'id'
+            'id',
+            'RESTRICT',
+            'CASCADE'
         );
 
         $this->addForeignKey(
-            'service-service_category',
+            'FK__service__service_category_id__service_category__id',
             '{{%service}}',
             'service_category_id',
             '{{%service_category}}',
-            'id'
+            'id',
+            'RESTRICT',
+            'CASCADE'
         );
 
         $this->addForeignKey(
-            'device_assign-device',
+            'FK__device_assign__device_id__device__id',
             '{{%device_assign}}',
             'device_id',
             '{{%device}}',
-            'id'
+            'id',
+            'RESTRICT',
+            'CASCADE'
         );
 
         $this->addForeignKey(
-            'device_assign-service',
+            'FK__device_assign__service_id__service__id',
             '{{%device_assign}}',
             'service_id',
             '{{%service}}',
-            'id'
+            'id',
+            'RESTRICT',
+            'CASCADE'
         );
 
     }
 
     public function safeDown()
     {
-        $this->dropForeignKey('device_assign-service','{{%device_assign}}');
-        $this->dropForeignKey('device_assign-device','{{%device_assign}}');
-        $this->dropForeignKey('service-service_category','{{%service}}');
-        $this->dropForeignKey('device-device_category','{{%device}}');
+        $this->dropForeignKey('FK__device_assign__service_id__service__id','{{%device_assign}}');
+        $this->dropForeignKey('FK__device_assign__device_id__device__id','{{%device_assign}}');
+        $this->dropForeignKey('FK__service__service_category_id__service_category__id','{{%service}}');
+        $this->dropForeignKey('FK__device__device_category_id__device_category__id','{{%device}}');
 
         $this->dropTable('{{%news}}');
         $this->dropTable('{{%device_assign}}');

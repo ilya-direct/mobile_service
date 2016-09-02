@@ -83,9 +83,9 @@ class m160831_110934_revision_tables extends Migration
             'CASCADE'
         );
 
-        $this->createIndex('revision_user_id', '{{%revision}}', 'admin_id');
-        $this->createIndex('revision_created_at', '{{%revision}}', 'created_at');
-        $this->createIndex('IDX_revision_record', '{{%revision}}', ['revision_table_id', 'revision_field_id', 'record_id']);
+        $this->createIndex('IDX__revision__admin_id', '{{%revision}}', 'admin_id');
+        $this->createIndex('IDX__revision__created_at', '{{%revision}}', 'created_at');
+        $this->createIndex('IDX__revision__revision_table_id__revision_field_id__record_id', '{{%revision}}', ['revision_table_id', 'revision_field_id', 'record_id']);
     }
 
     public function safeDown()

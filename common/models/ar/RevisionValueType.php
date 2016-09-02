@@ -30,7 +30,7 @@ class RevisionValueType extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'revision_value_type';
+        return '{{%revision_value_type}}';
     }
 
     /**

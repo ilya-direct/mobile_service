@@ -66,6 +66,7 @@ class Device extends ActiveRecord
             ],
             ['enabled', 'filter', 'filter' => 'boolval'],
             ['device_category_id', 'filter', 'filter' => 'intval'],
+            [['device_category_id', 'description', 'image'] , 'default', 'isEmpty' => function($var) { return empty($var); }],
         ];
     }
 

@@ -21,6 +21,6 @@ class m160618_151726_news__add_column extends Migration
     public function safeDown()
     {
         $this->dropForeignKey('FK__news__created_by__admin__id', '{{%news}}');
-        $this->dropColumn('{{%news}}','created_by');
+        $this->dropColumn('{{%news}}', 'created_by');
     }
 }

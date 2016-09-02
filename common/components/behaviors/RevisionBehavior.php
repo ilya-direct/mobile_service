@@ -52,7 +52,7 @@ class RevisionBehavior extends Behavior
     {
         /** @var ActiveRecord $owner */
         $owner = $this->owner;
-        $revisionTableId = RevisionTable::findOrCreateReturnScalar(['name' => $owner->getTableSchema()->fullName]);
+        $revisionTableId = RevisionTable::findOrCreateReturnScalar(['name' => $owner->getTableSchema()->name]);
 
         if ($event->name == ActiveRecord::EVENT_AFTER_UPDATE) {
             $operationType = Revision::OPERATION_UPDATE;
@@ -65,7 +65,7 @@ class RevisionBehavior extends Behavior
                     'revision_table_id' =>  $revisionTableId,
                     'record_id' => $owner->id,
                     'operation_type' => Revision::OPERATION_INSERT,
-                    'revision_field.name' => array_keys($this->changedAttributes),
+                    RevisionField::tableName() . '.name' => array_keys($this->changedAttributes),
                 ])
                 ->count();
             if (count($this->changedAttributes) != $initializedFields) {
@@ -104,7 +104,7 @@ class RevisionBehavior extends Behavior
         /** @var ActiveRecord $owner */
         $owner = $this->owner;
         /** @var RevisionTable $revisionTable */
-        $revisionTable = RevisionTable::findOne(['name' => $owner->getTableSchema()->fullName]);
+        $revisionTable = RevisionTable::findOne(['name' => $owner->getTableSchema()->name]);
         // Условие нужно, потому что на ревизия была применена не сразу(некоторые таблицы вообще не присутствовали в ревизии на момент удаление записи)
         if (!is_null($revisionTable)) {
             Revision::deleteAll([
@@ -128,7 +128,7 @@ class RevisionBehavior extends Behavior
     public function revisionValue($attribute, $dateTime)
     {
         if (in_array($attribute, $this->attributes)) {
-            $tableName = $this->owner->getTableSchema()->fullName;
+            $tableName = $this->owner->getTableSchema()->name;
             $value = Revision::getValue($tableName, $this->owner->id, $attribute, $dateTime);
             return $value;
         } else {

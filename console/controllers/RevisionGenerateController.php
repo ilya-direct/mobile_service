@@ -63,21 +63,22 @@ class RevisionGenerateController extends Controller
         foreach ($tables as $table) {
 
             $models = $table::find()->all();
-            $revisionTableId = RevisionTable::findOrCreateReturnScalar(['name' => $table::getTableSchema()->fullName]);
+            $revisionTableId = RevisionTable::findOrCreateReturnScalar(['name' => $table::getTableSchema()->name]);
             foreach ($models as $model) {
                 if (!isset($model->behaviors['revision'])) {
                     continue;
                 }
                 $attributes = $model->behaviors['revision']->attributes;
 
+                $revisionTableName = Revision::tableName();
                 $versionedFields = Revision::find()
-                    ->select('revision_field.name')
+                    ->select( RevisionField::tableName() . '.name')
                     ->joinWith('revisionField')
                     ->where([
-                        'revision.revision_table_id' => $revisionTableId,
-                        'revision.operation_type' => Revision::OPERATION_INSERT,
-                        'revision.record_id' => $model->id,
-                        'revision_field.name' => $attributes,
+                        $revisionTableName . '.revision_table_id' => $revisionTableId,
+                        $revisionTableName . '.operation_type' => Revision::OPERATION_INSERT,
+                        $revisionTableName . '.record_id' => $model->id,
+                        RevisionField::tableName() . '.name' => $attributes,
                     ])
                     ->distinct()
                     ->column();
@@ -86,7 +87,7 @@ class RevisionGenerateController extends Controller
 
                 foreach ($notVersionedFields as $field) {
                     Yii::$app->db->createCommand()
-                        ->insert('{{%revision}}', [
+                        ->insert($revisionTableName, [
                                 'revision_table_id' => $revisionTableId,
                                 'revision_field_id' => RevisionField::findOrCreateReturnScalar(['name' => $field]),
                                 'record_id' => $model->id,
