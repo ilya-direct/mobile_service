@@ -16,19 +16,19 @@ use common\models\ar\Revision;
 use common\models\ar\RevisionField;
 use common\models\ar\RevisionTable;
 use common\models\ar\RevisionValueType;
-use backend\models\ar\Admin;
+use common\models\ar\User;
 
 class RevisionGenerateController extends Controller
 {
-    private $admin_id;
+    private $userId;
 
     public function init()
     {
         parent::init();
-        $admin = Admin::findByUsername('console');
+        $user = User::findByUsername('console');
 
-        if (is_null($admin)) {
-            $admin = (new Admin([
+        if (is_null($user)) {
+            $user = (new User([
                 'username' => 'console',
                 'first_name' => 'console',
                 'last_name' => 'console',
@@ -37,10 +37,10 @@ class RevisionGenerateController extends Controller
                 'email' => 'console@console.ru',
                 'enabled' => true,
             ]));
-            $admin->save(false);
+            $user->save(false);
         }
 
-        $this->admin_id = $admin->id;
+        $this->userId = $user->id;
     }
 
     /**
@@ -93,7 +93,7 @@ class RevisionGenerateController extends Controller
                                 'record_id' => $model->id,
                                 'revision_value_type_id' => RevisionValueType::findOrCreateReturnScalar(['name' => gettype($model->{$field})]),
                                 'value' => $model->{$field},
-                                'admin_id' => $this->admin_id,
+                                'user_id' => $this->userId,
                                 'operation_type' => Revision::OPERATION_INSERT,
                                 'created_at' => new Expression('NOW()'),
                             ]

@@ -4,7 +4,7 @@ namespace backend\modules\settings\controllers;
 
 use common\models\ResetPasswordForm;
 use Yii;
-use backend\models\ar\Admin;
+use common\models\ar\User;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -13,9 +13,9 @@ use yii\filters\VerbFilter;
 use DateTime;
 
 /**
- * AdminController implements the CRUD actions for Admin model.
+ * UserController implements the CRUD actions for User model.
  */
-class AdminController extends Controller
+class UserController extends Controller
 {
     /**
      * @inheritdoc
@@ -33,13 +33,13 @@ class AdminController extends Controller
     }
 
     /**
-     * Lists all Admin models.
+     * Lists all User models.
      * @return mixed
      */
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Admin::find(),
+            'query' => User::find(),
         ]);
 
         return $this->render('index', [
@@ -48,7 +48,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Displays a single Admin model.
+     * Displays a single User model.
      * @param integer $id
      * @return mixed
      */
@@ -60,14 +60,13 @@ class AdminController extends Controller
     }
 
     /**
-     * Creates a new Admin model.
+     * Creates a new User model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Admin();
-        $model->scenario = Admin::SCENARIO_CREATE;
+        $model = new User();
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $model->created_at = $model->updated_at = DateTime::createFromFormat(DateTime::W3C, time());
@@ -88,7 +87,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Updates an existing Admin model.
+     * Updates an existing User model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -96,11 +95,12 @@ class AdminController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $model->scenario = Admin::SCENARIO_UPDATE;
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+        $post = Yii::$app->request->post();
+
+        if ($model->load($post) && $model->validate()) {
             $model->updated_at = DateTime::createFromFormat(DateTime::W3C, time());
-            if($model->recoverPassword){
+            if(!empty($post['recover-password'])){
                 $model->generatePasswordResetToken();
                 $model->save(false);
                 if (Yii::$app->createControllerByID('site')->sendResetPasswordMail($model)) {
@@ -118,7 +118,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Deletes an existing Admin model.
+     * Deletes an existing User model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -131,15 +131,15 @@ class AdminController extends Controller
     }
 
     /**
-     * Finds the Admin model based on its primary key value.
+     * Finds the User model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Admin the loaded model
+     * @return User the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Admin::findOne($id)) !== null) {
+        if (($model = User::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

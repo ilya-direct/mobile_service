@@ -8,7 +8,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use yii\db\Query;
 use common\components\db\ActiveRecord;
-use backend\models\ar\Admin;
+use common\models\ar\User;
 
 /**
  * This is the model class for table "revision".
@@ -19,11 +19,11 @@ use backend\models\ar\Admin;
  * @property integer $record_id
  * @property integer $revision_value_type_id
  * @property string $value
- * @property integer $admin_id
+ * @property integer $user_id
  * @property string $created_at
  * @property boolean $operation_type
  *
- * @property Admin $admin
+ * @property User $user
  * @property RevisionField $revisionField
  * @property RevisionTable $revisionTable
  * @property RevisionValueType $revisionValueType
@@ -44,7 +44,7 @@ class Revision extends \yii\db\ActiveRecord
             'blamable' => [
                 'class' => BlameableBehavior::className(),
                 'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => ['admin_id'],
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['user_id'],
                 ],
             ],
         ];
@@ -70,7 +70,7 @@ class Revision extends \yii\db\ActiveRecord
             'record_id' => 'id записи в изменённой таблице',
             'revision_value_type_id' => 'Тип данных у значения',
             'value' => 'Новое значение',
-            'admin_id' => 'Пользователь, изменивший значение',
+            'user_id' => 'Пользователь, изменивший значение',
             'created_at' => 'Время изменения',
         ];
     }
@@ -78,9 +78,9 @@ class Revision extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAdmin()
+    public function getUser()
     {
-        return $this->hasOne(Admin::className(), ['id' => 'admin_id']);
+        return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
 
     /**

@@ -5,7 +5,7 @@ use yii\widgets\DetailView;
 
 /**
  * @var $this yii\web\View
- * @var $model backend\models\ar\Admin
+ * @var $model \common\models\ar\User
  */
 
 $this->title = $model->last_name . ' ' . $model->first_name;
@@ -31,7 +31,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'username',
             'last_name',
             'first_name',
             'email:email',

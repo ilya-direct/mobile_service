@@ -1,4 +1,7 @@
 <?php
+
+use common\models\ar\User;
+
 $params = array_merge(
     require(__DIR__ . '/../../common/config/params.php'),
     require(__DIR__ . '/../../common/config/params-local.php'),
@@ -33,7 +36,7 @@ return [
     ],
     'components' => [
         'user' => [
-            'identityClass' => 'backend\models\ar\Admin',
+            'identityClass' => User::className(),
             'enableAutoLogin' => true,
         ],
         'log' => [

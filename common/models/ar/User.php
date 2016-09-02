@@ -1,43 +1,46 @@
 <?php
 
-namespace backend\models\ar;
+namespace common\models\ar;
 
 use Yii;
-use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
-use yii\helpers\ArrayHelper;
 use yii\web\IdentityInterface;
 
 /**
- * This is the model class for table "admin".
+ * This is the model class for table "{{%user}}".
  *
  * @property integer $id
- * @property string $username
+ * @property string $email
  * @property string $first_name
  * @property string $last_name
+ * @property string $middle_name
+ * @property string $address
+ * @property double $address_latitude
+ * @property double $address_longitude
  * @property string $auth_key
  * @property string $password_hash
  * @property string $password_reset_token
- * @property string $email
  * @property string $phone
- * @property integer $enabled
- * @property integer $created_at
- * @property integer $updated_at
+ * @property boolean $enabled
+ * @property string $created_at
+ * @property string $updated_at
+ *
+ * @property News[] $newsCreator
+ * @property News[] $newsUpdater
+ * @property Order[] $ordersCreator
+ * @property Order[] $ordersUpdater
+ * @property Revision[] $revisions
  */
-class Admin extends \yii\db\ActiveRecord implements IdentityInterface
+class User extends \yii\db\ActiveRecord implements IdentityInterface
 {
-    const SCENARIO_CREATE = 'create';
-    const SCENARIO_UPDATE = 'update';
-    public $recoverPassword;
-
     public function behaviors()
     {
         return [
-          'timestamp' => [
-              'class' => TimestampBehavior::className(),
-              'value' => new Expression('NOW()'),
-          ],
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'value' => new Expression('NOW()'),
+            ],
         ];
     }
 
@@ -46,16 +49,7 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
      */
     public static function tableName()
     {
-        return '{{%admin}}';
-    }
-
-    public function scenarios()
-    {
-        $basic = ['username', 'first_name', 'last_name', 'email', 'phone', 'enabled'];
-        $scenarios[self::SCENARIO_CREATE] = $basic;
-        $scenarios[self::SCENARIO_UPDATE] = ArrayHelper::merge($basic, ['recoverPassword']);
-        $scenarios = ArrayHelper::merge(parent::scenarios(), $scenarios);
-        return $scenarios;
+        return '{{%user}}';
     }
 
     /**
@@ -64,16 +58,22 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['username', 'first_name', 'last_name', 'email', 'phone', 'enabled'], 'required'],
+            [['email', 'first_name','phone', 'enabled'], 'required'],
+            [['address_latitude', 'address_longitude'], 'number'],
             [['enabled'], 'boolean'],
-            [['username', 'email', 'phone'], 'string', 'max' => 255],
-            [['first_name', 'last_name'], 'string', 'max' => 20],
-            ['email', 'email'],
-            [['username', 'email'], 'unique'],
+            [['email'], 'string', 'max' => 100],
+            [['email'], 'email'],
+            [['first_name', 'last_name', 'middle_name'], 'string', 'max' => 50],
+            ['address', 'string', 'max' => 255],
+            [['email'], 'unique'],
             ['phone', 'match',
-                'pattern' => '/^\+7\(\d{3}\) \d{3} \d{2} \d{2}$/',
+                'pattern' => '/^\+7 \(\d{3}\) \d{3} \d{2} \d{2}$/',
                 'message' => 'Формат: +7(ХХХ) ХХХ ХХ ХХ',
             ],
+            ['phone', 'filter', 'filter' => function ($value) {
+                $newValue = '+' . preg_replace('/\D/', '', $value);
+                return $newValue;
+            }],
         ];
     }
 
@@ -84,18 +84,60 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
     {
         return [
             'id' => 'ID',
-            'username' => 'Логин',
+            'email' => 'Email',
             'first_name' => 'Имя',
             'last_name' => 'Фамилия',
-            'email' => 'Email',
+            'middle_name' => 'Отчество',
+            'address' => 'Адрес',
+            'address_latitude' => 'Address Latitude',
+            'address_longitude' => 'Address Longitude',
+            'password_reset_token' => 'Password Reset Token',
             'phone' => 'Телефон',
             'enabled' => 'Активен',
-            'created_at' => 'Создан',
-            'updated_at' => 'Обновлён',
-            'recoverPassword' => 'Восстановить пароль',
+            'created_at' => 'Время создания',
+            'updated_at' => 'Время последнего обновления',
         ];
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getNewsCreator()
+    {
+        return $this->hasMany(News::className(), ['created_by' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getNewsUpdater()
+    {
+        return $this->hasMany(News::className(), ['updated_by' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrderCreator()
+    {
+        return $this->hasMany(Order::className(), ['created_by' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrdersUpdater()
+    {
+        return $this->hasMany(Order::className(), ['updated_by' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRevisions()
+    {
+        return $this->hasMany(Revision::className(), ['user_id' => 'id']);
+    }
 
     /**
      * @inheritdoc
@@ -110,18 +152,18 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
+        return false;
     }
 
     /**
-     * Finds user by username
+     * Finds user by username  (email)
      *
-     * @param string $username
+     * @param string $email
      * @return static|null
      */
-    public static function findByUsername($username)
+    public static function findByUsername($email)
     {
-        return static::findOne(['username' => $username, 'enabled' => 1]);
+        return static::findOne(['email' => $email, 'enabled' => 1]);
     }
 
     /**
@@ -141,7 +183,6 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
             'enabled' => 1,
         ]);
     }
-
     /**
      * Finds out if password reset token is valid
      *
@@ -164,7 +205,7 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
      */
     public function getId()
     {
-        return $this->getPrimaryKey();
+        return $this->id;
     }
 
     /**

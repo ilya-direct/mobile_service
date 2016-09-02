@@ -6,7 +6,7 @@ use Yii;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\web\Response;
-use backend\models\ar\Admin;
+use common\models\ar\User;
 use backend\models\LoginForm;
 use common\models\ResetPasswordForm;
 
@@ -78,18 +78,18 @@ class SiteController extends Controller
     public function actionRememberPassword()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
-        /** @var Admin $admin */
-        $admin = Admin::findOne([
+        /** @var User $user */
+        $user = User::findOne([
             'email' => Yii::$app->request->post('email', ''),
             'enabled' => true,
         ]);
 
-        if (!$admin) {
+        if (!$user) {
             return ['msg' => 'Сотрудника с введённым email не существует'];
         }
 
-        $admin->generatePasswordResetToken();
-        return ($admin->save() && $this->sendResetPasswordMail($admin))
+        $user->generatePasswordResetToken();
+        return ($user->save() && $this->sendResetPasswordMail($user))
             ? ['msg' => 'Письмо с инструкциями по восстановлению пароля отправлено на почту']
             : ['msg' => 'Не удалось восстановить пароль. Обратитесь по данному вопросу к администратору: '
             . Yii::$app->params['adminEmail']];
@@ -111,7 +111,7 @@ class SiteController extends Controller
 
     /*
      * Sends reset password message
-     * @param Admin $user
+     * @param User $user
      * @return boolean
      */
     public function sendResetPasswordMail($user)

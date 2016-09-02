@@ -3,6 +3,7 @@
 namespace common\models\ar;
 
 use Yii;
+use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use common\components\behaviors\RevisionBehavior;
@@ -38,7 +39,6 @@ class Order extends ActiveRecord
         return [
             'timestamp' => [
                 'class' => TimestampBehavior::className(),
-                'updatedAtAttribute' => false,
                 'value' => new Expression('NOW()'),
             ],
             'revision' => [
@@ -53,6 +53,9 @@ class Order extends ActiveRecord
                     'time_to',
                 ]
             ],
+            'blamable' => [
+                'class' => BlameableBehavior::className(),
+            ]
         ];
     }
 

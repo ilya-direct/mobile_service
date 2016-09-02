@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @var host string кастомный хост для url
+ * @var $host string кастомный хост для url
  * @var $this  yii\web\View
- * @var $user backend\models\ar\Admin
+ * @var $user \common\models\ar\User
  */
 
 if(!empty($host)){
@@ -15,7 +15,7 @@ if(!empty($host)){
     $resetLink = Yii::$app->urlManager->createAbsoluteUrl([$link, 'token' => $user->password_reset_token]);
 }
 ?>
-Здравствуйте <?= $user->username ?>,
+Здравствуйте <?= $user->first_name; ?>,
 
 Используйте ссылку ниже чтобы изменить пароль:
 

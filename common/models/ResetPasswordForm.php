@@ -1,7 +1,7 @@
 <?php
 namespace common\models;
 
-use backend\models\ar\Admin;
+use common\models\ar\User;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\base\Model;
@@ -15,7 +15,7 @@ class ResetPasswordForm extends Model
     public $password;
     public $passwordRepeat;
 
-    /** @var Admin  */
+    /** @var User  */
     private $_user;
 
 
@@ -34,7 +34,7 @@ class ResetPasswordForm extends Model
             if (empty($token) || !is_string($token)) {
                 throw new InvalidParamException('token не может быть пустым');
             }
-            $this->_user = Admin::findByPasswordResetToken($token);
+            $this->_user = User::findByPasswordResetToken($token);
             if (!$this->_user) {
                 throw new InvalidParamException('Неправильный token');
             }
@@ -77,6 +77,6 @@ class ResetPasswordForm extends Model
         $user = $this->_user;
         $user->setPassword($this->password);
         $user->removePasswordResetToken();
-        return $user->save();
+        return $user->save(false);
     }
 }

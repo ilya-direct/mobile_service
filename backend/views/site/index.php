@@ -46,7 +46,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="panel panel-default">
             <div class="panel-heading">Настройки</div>
             <div class="list-group">
-                <a href="<?= Url::to(['/settings/admin']) ?>" class="list-group-item">
+                <a href="<?= Url::to(['/settings/user']) ?>" class="list-group-item">
                     <h4 class="list-group-item-heading">Сотрудники компании</h4>
                     <p class="list-group-item-text">Редактирование профилей сотрудников</p>
                 </a>

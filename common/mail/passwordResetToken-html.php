@@ -5,7 +5,7 @@ use yii\helpers\Html;
 /**
  * @var host string кастомный хост для url
  * @var yii\web\View $this
- * @var $user backend\models\ar\Admin
+ * @var $user \common\models\ar\User
  */
 
 if(!empty($host)){
@@ -18,7 +18,7 @@ if(!empty($host)){
 }
 ?>
 <div class="password-reset">
-    <p>Здравствуйте <?= Html::encode($user->username) ?>,</p>
+    <p>Здравствуйте <?= Html::encode($user->first_name) ?>,</p>
 
     <p>Перейдите по следующей ссылке чтобы изменить пароль:</p>
 
