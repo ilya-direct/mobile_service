@@ -1,7 +1,5 @@
 <?php
 
-use common\models\ar\User;
-
 $params = array_merge(
     require(__DIR__ . '/../../common/config/params.php'),
     require(__DIR__ . '/../../common/config/params-local.php'),
@@ -13,13 +11,12 @@ return [
     'id' => 'Mobile-backend',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
-    'bootstrap' => ['log'],
     'modules' => [
         'settings' => [
-            'class' => 'backend\modules\settings\Settings',
+            'class' => backend\modules\settings\Settings::className(),
         ],
         'content' => [
-            'class' => 'backend\modules\content\Content',
+            'class' => backend\modules\content\Content::className(),
         ],
 
         'treemanager' =>  [
@@ -36,24 +33,10 @@ return [
     ],
     'components' => [
         'user' => [
-            'identityClass' => User::className(),
+            'identityClass' => common\models\ar\User::className(),
             'enableAutoLogin' => true,
         ],
-        'log' => [
-            'traceLevel' => YII_DEBUG ? 3 : 0,
-            'targets' => [
-                [
-                    'class' => 'yii\log\DbTarget',
-                    'levels' => ['error', 'warning', 'info'],
-                    'except' => [
-                        'yii\web\Session::open',
-                        'yii\db\Connection::open',
-                        'yii\db\Command::execute',
-                        'yii\db\Command::query',
-                    ]
-                ],
-            ],
-        ],
+
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
@@ -67,7 +50,7 @@ return [
     ],
 
     'as beforeRequest' => [
-        'class' => 'yii\filters\AccessControl',
+        'class' => yii\filters\AccessControl::className(),
         'rules' => [
             [
                 'allow' => true,

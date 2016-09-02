@@ -22,15 +22,7 @@ return [
             'identityClass' => common\models\ar\Customer::className(),
             'enableAutoLogin' => true,
         ],
-        'log' => [
-            'traceLevel' => YII_DEBUG ? 3 : 0,
-            'targets' => [
-                [
-                    'class' => 'yii\log\FileTarget',
-                    'levels' => ['error', 'warning'],
-                ],
-            ],
-        ],
+
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
