@@ -89,7 +89,7 @@ class SiteController extends Controller
         }
 
         $user->generatePasswordResetToken();
-        return ($user->save() && $this->sendResetPasswordMail($user))
+        return ($user->save(false) && $this->sendResetPasswordMail($user))
             ? ['msg' => 'Письмо с инструкциями по восстановлению пароля отправлено на почту']
             : ['msg' => 'Не удалось восстановить пароль. Обратитесь по данному вопросу к администратору: '
             . Yii::$app->params['adminEmail']];
