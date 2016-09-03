@@ -73,12 +73,18 @@ class RevisionBehavior extends Behavior
             }
         } elseif ($event->name == ActiveRecord::EVENT_AFTER_INSERT) {
             $operationType = Revision::OPERATION_INSERT;
+            // При добавлении записи все атрибуты должны попасть в ревизию
+            foreach ($this->attributes as $attribute) {
+                if (!array_key_exists($attribute, $this->changedAttributes)) {
+                    $this->changedAttributes[$attribute] = null;
+                }
+            }
         } else {
             throw new Exception('Undefined Revision Operation ' . $event->name);
         }
 
-        foreach ($this->changedAttributes as $changedAttribute => $value) {
-            $fieldId = RevisionField::findOrCreateReturnScalar(['name' => $changedAttribute]);
+        foreach ($this->changedAttributes as $attribute => $value) {
+            $fieldId = RevisionField::findOrCreateReturnScalar(['name' => $attribute]);
             $typeId = RevisionValueType::findOrCreateReturnScalar(['name' => gettype($value)]);
             (new Revision([
                 'revision_table_id' => $revisionTableId,

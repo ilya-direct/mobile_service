@@ -3,9 +3,12 @@
 namespace common\models\ar;
 
 use Yii;
+use yii\behaviors\AttributeBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use yii\web\IdentityInterface;
+use common\components\behaviors\RevisionBehavior;
+use common\components\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%user}}".
@@ -25,14 +28,16 @@ use yii\web\IdentityInterface;
  * @property boolean $enabled
  * @property string $created_at
  * @property string $updated_at
+ * @property boolean $deleted
  *
  * @property News[] $newsCreator
  * @property News[] $newsUpdater
  * @property Order[] $ordersCreator
  * @property Order[] $ordersUpdater
  * @property Revision[] $revisions
+ *
  */
-class User extends \yii\db\ActiveRecord implements IdentityInterface
+class User extends ActiveRecord implements IdentityInterface
 {
     public function behaviors()
     {
@@ -40,6 +45,28 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
             'timestamp' => [
                 'class' => TimestampBehavior::className(),
                 'value' => new Expression('NOW()'),
+            ],
+            'attribute' => [
+                'class' => AttributeBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['deleted'],
+                ],
+                'value' => false,
+            ],
+            'revision' => [
+                'class' => RevisionBehavior::className(),
+                'attributes' => [
+                    'email',
+                    'first_name',
+                    'last_name',
+                    'middle_name',
+                    'address',
+                    'address_latitude',
+                    'address_longitude',
+                    'phone',
+                    'enabled',
+                    'deleted',
+                ]
             ],
         ];
     }
@@ -68,12 +95,13 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
             [['email'], 'unique'],
             ['phone', 'match',
                 'pattern' => '/^\+7 \(\d{3}\) \d{3} \d{2} \d{2}$/',
-                'message' => 'Формат: +7(ХХХ) ХХХ ХХ ХХ',
+                'message' => 'Формат: +7 (ХХХ) ХХХ ХХ ХХ',
             ],
             ['phone', 'filter', 'filter' => function ($value) {
                 $newValue = '+' . preg_replace('/\D/', '', $value);
                 return $newValue;
             }],
+            ['enabled', 'filter', 'filter' => 'boolval'],
         ];
     }
 
@@ -267,5 +295,15 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    public function delete($soft = true)
+    {
+        if ($soft) {
+            $this->deleted = true;
+            return $this->update(false, ['deleted']);
+        }
+        Yii::$app->db->beginTransaction();
+        return parent::delete();
     }
 }

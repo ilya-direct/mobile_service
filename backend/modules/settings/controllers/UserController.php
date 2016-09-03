@@ -2,15 +2,13 @@
 
 namespace backend\modules\settings\controllers;
 
-use common\models\ResetPasswordForm;
 use Yii;
-use common\models\ar\User;
 use yii\data\ActiveDataProvider;
-use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use DateTime;
+use common\models\ar\User;
 
 /**
  * UserController implements the CRUD actions for User model.
@@ -39,7 +37,7 @@ class UserController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => User::find(),
+            'query' => User::find()->notDeleted(),
         ]);
 
         return $this->render('index', [
@@ -69,12 +67,11 @@ class UserController extends Controller
         $model = new User();
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $model->created_at = $model->updated_at = DateTime::createFromFormat(DateTime::W3C, time());
             $model->generatePasswordResetToken();
             $model->generateAuthKey();
             $model->setPassword(Yii::$app->security->generateRandomString());
             $model->generatePasswordResetToken();
-            $model->save();
+            $model->save(false);
             if (Yii::$app->createControllerByID('site')->sendResetPasswordMail($model)) {
                 Yii::$app->session->setFlash('success', 'На email ' . $model->email . ' выслана инструкция по созданию пароля');
             }
@@ -139,7 +136,11 @@ class UserController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = User::findOne($id)) !== null) {
+        $model = User::find()
+            ->where(['id' => $id])
+            ->notDeleted()
+            ->one();
+        if ( $model !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

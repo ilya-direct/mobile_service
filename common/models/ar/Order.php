@@ -3,6 +3,7 @@
 namespace common\models\ar;
 
 use Yii;
+use yii\behaviors\AttributeBehavior;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
@@ -41,6 +42,16 @@ class Order extends ActiveRecord
                 'class' => TimestampBehavior::className(),
                 'value' => new Expression('NOW()'),
             ],
+            'blamable' => [
+                'class' => BlameableBehavior::className(),
+            ],
+            'attribute' => [
+                'class' => AttributeBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['deleted'],
+                ],
+                'value' => false,
+            ],
             'revision' => [
                 'class' => RevisionBehavior::className(),
                 'attributes' => [
@@ -53,9 +64,6 @@ class Order extends ActiveRecord
                     'time_to',
                 ]
             ],
-            'blamable' => [
-                'class' => BlameableBehavior::className(),
-            ]
         ];
     }
 
@@ -106,6 +114,9 @@ class Order extends ActiveRecord
             'referer' => 'Откуда был заход на сайт(referer)',
             'client_lead' => 'Откуда узнали про нас?',
             'ip' => 'IP',
+            'created_by' => 'Кем создан(id)',
+            'updated_at' => 'Время изменения',
+            'updated_by' => 'Кем изменён(id)',
         ];
     }
 
@@ -195,7 +206,7 @@ class Order extends ActiveRecord
     {
         if ($soft) {
             $this->deleted = true;
-            return $this->update();
+            return $this->update(false, ['deleted']);
         }
         Yii::$app->db->beginTransaction();
         return parent::delete();
@@ -210,5 +221,21 @@ class Order extends ActiveRecord
     public static function  deleteAll($condition = '', $params = [])
     {
         return false;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCreator()
+    {
+        return $this->hasOne(User::className(), ['id' => 'created_by']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUpdater()
+    {
+        return $this->hasOne(User::className(), ['id' => 'updated_by']);
     }
 }

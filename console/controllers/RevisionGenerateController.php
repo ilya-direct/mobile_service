@@ -25,17 +25,16 @@ class RevisionGenerateController extends Controller
     public function init()
     {
         parent::init();
-        $user = User::findByUsername('console');
+        $user = User::findByUsername('console@console.ru');
 
         if (is_null($user)) {
             $user = (new User([
-                'username' => 'console',
                 'first_name' => 'console',
                 'last_name' => 'console',
                 'auth_key' => '',
-                'password_hash' => '',
                 'email' => 'console@console.ru',
-                'enabled' => true,
+                'phone' => '+77777777777',
+                'enabled' => false,
             ]));
             $user->save(false);
         }
@@ -58,6 +57,7 @@ class RevisionGenerateController extends Controller
             OrderService::className(),
             News::className(),
             Service::className(),
+            User::className(),
         ];
 
         foreach ($tables as $table) {

@@ -1,18 +1,18 @@
 <?php
 
-
 namespace console\controllers;
 
+use Yii;
+use yii\console\Controller;
 use common\models\ar\Device;
 use common\models\ar\DeviceAssign;
+use common\models\ar\DeviceCategory;
 use common\models\ar\News;
 use common\models\ar\Order;
 use common\models\ar\OrderPerson;
 use common\models\ar\OrderService;
 use common\models\ar\Service;
 use common\models\ar\User;
-use Yii;
-use yii\console\Controller;
 
 class FixController extends Controller
 {
@@ -21,6 +21,7 @@ class FixController extends Controller
         $tables = [
             Device::className(),
             DeviceAssign::className(),
+            DeviceCategory::className(),
             Order::className(),
             OrderPerson::className(),
             OrderService::className(),

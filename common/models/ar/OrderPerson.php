@@ -32,6 +32,8 @@ class OrderPerson extends \yii\db\ActiveRecord
                 'class' => RevisionBehavior::className(),
                 'attributes' => [
                     'address',
+                    'address_latitude',
+                    'address_longitude',
                     'email',
                     'first_name',
                     'last_name',
