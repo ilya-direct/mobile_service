@@ -149,6 +149,12 @@ class OrderController extends Controller
                 $transaction = Yii::$app->db->beginTransaction();
                 $flag = true;
                 try {
+                    // Обновление время обновление заказа и того, кто изменил, если изменён OrderPerson
+                    if (!$isNew && $orderPerson->dirtyAttributes) {
+                        $order->getBehavior('blameable')->skipUpdateOnClean = false;
+                        $order->getBehavior('timestamp')->skipUpdateOnClean = false;
+                    }
+
                     $orderPerson->save(false);
                     if ($isNew) {
                         $order->order_person_id = $orderPerson->id;

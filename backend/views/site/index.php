@@ -37,9 +37,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     <h4 class="list-group-item-heading">Категории</h4>
                     <p class="list-group-item-text">Категории устройств по брендам. Древовидная структура</p>
                 </a>
-                <a href="<?= Url::to(['/content/price-list-import']) ?>" class="list-group-item">
-                    <h4 class="list-group-item-heading">Загрузка цен</h4>
-                    <p class="list-group-item-text">Загрузка цен по услугам на устройства в формате CSV</p>
+                <a href="<?= Url::to(['/content/price-list']) ?>" class="list-group-item">
+                    <h4 class="list-group-item-heading">Прайс-листы</h4>
+                    <p class="list-group-item-text">Загрузка и выгрузка цен по услугам на устройства в формате CSV</p>
                 </a>
             </div>
         </div>

@@ -42,7 +42,7 @@ class Order extends ActiveRecord
                 'class' => TimestampBehavior::className(),
                 'value' => new Expression('NOW()'),
             ],
-            'blamable' => [
+            'blameable' => [
                 'class' => BlameableBehavior::className(),
             ],
             'attribute' => [
