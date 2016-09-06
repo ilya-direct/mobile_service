@@ -332,7 +332,7 @@ header {
 	width: 330px;
 	position: absolute;
 	right: 15%;
-	bottom: 10%;
+	top: 10%;
 	z-index: 20;
 	overflow: hidden;
 }
@@ -350,24 +350,11 @@ header {
     right: 1px;
     width: 26px;
     height: 8px;
-    background: url(../images/select.jpg) no-repeat;
+    /*background: url(../images/select.jpg) no-repeat;*/
 }
 
 .select select {
 	outline: none;
-}
-
-
-.slider_form input {
-	width: 328px;
-	height: 45px;
-	color: #9c9c9c;
-	font: 14px/45px robotoregular;
-	margin: 10px 0 0 1px;
-	border: none;
-	outline: none;
-	border-radius: 5px;
-	padding-left: 15px;
 }
 
 .slider_form input::-webkit-input-placeholder { 
@@ -392,7 +379,6 @@ header {
 	border: none;
 	outline: none;
 	border-radius: 5px;
-	margin-top: 25px;
 	text-transform: uppercase;
 }
 
@@ -714,25 +700,27 @@ footer {
 	overflow: hidden;
 }
 
-.ft_colum_left {
+.ft_column_left {
+    padding: 0 10px;
 	float: left;
 }
 
-.ft_colum_left p {
+.ft_column_left p {
 	color: #fff;
     font: 13px/1.1 open_sansregular;
 }
 
-.ft_colum_right {
+.ft_column_right {
+    padding: 0 10px;
 	float: right;
 }
 
-.ft_colum_right li {
+.ft_column_right li {
 	display: inline-block;
 	vertical-align: top;
 }
 
-.ft_colum_right a {
+.ft_column_right a {
 	display: inline-block;
 	vertical-align: top;
 	color: #BBC0C3;
@@ -1305,16 +1293,7 @@ footer {
 	.advantages_img  {
 		margin-bottom: 10px;
 	}
-	
-	.ft_colum_left, .ft_colum_right {
-		float: none;
-		text-align: center;
-	}
-	
-	.ft_colum_right {
-		margin-top: 10px;
-	}
-	
+
 	.associate li {
 		display: block;
 	}
@@ -1351,7 +1330,40 @@ footer {
 	}
 }
 
+/* added by ilya-direct */
 
+.navbar-default {
+    margin-bottom: 0;
+    border: 0;
+}
 
+@media (min-width: 768px) {
+    .navbar-toggle {
+        display: block;
+        float: right;
+    }
 
+    .navbar-header {
+        float: right;
+    }
 
+    .navbar-nav > li {
+        float: none;
+    }
+}
+
+@media (max-width: 991px) {
+    .navbar-nav .open .dropdown-menu {
+        position: static;
+        float: none;
+        width: auto;
+        margin-top: 0;
+        background-color: transparent;
+        border: 0;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+    }
+}
+.form-control {
+    border-radius: 0;
+}

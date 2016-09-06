@@ -2,6 +2,7 @@
 
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Html;
+use yii\helpers\Url;
 use yii\widgets\MaskedInput;
 
 /**
@@ -11,7 +12,7 @@ use yii\widgets\MaskedInput;
  */
 ?>
 
-<?php $form = ActiveForm::begin(['action' => '/site/quick-order', 'options' => ['id' => 'full-form']]); ?>
+<?php $form = ActiveForm::begin(['action' => Url::to(['site/quick-order']), 'options' => ['id' => 'full-form']]); ?>
 <?= $order->getFirstError('db'); ?>
 <?= $form->field($orderPerson, 'first_name')->textInput()->label('Имя *'); ?>
 <?= $form->field($orderPerson, 'phone')->widget(MaskedInput::className(),

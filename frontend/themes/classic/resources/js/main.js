@@ -8,6 +8,31 @@ $(document).ready(function(){
         pager: false,
         adaptiveHeight: true
     });
+
+    /* Отправка нижней формы */
+    $('#footer-callback-form').submit(function () {
+        var formData = $(this).serialize();
+        $.ajax({
+            url : '/footer-form/',
+            method : 'post',
+            data: formData,
+            dataType : 'json',
+            success : function(data) {
+                if (data.success) {
+                    h2 = $('.bottom .feedback h2')[0];
+                    $(h2).hide();
+                    $('#footer-callback-form').hide();
+                    $('#footer-callback-form-success').text(data.msg);
+                    $('#footer-callback-form-success').show();
+                } else if(data.validation_failed) {
+                    $('#footer-callback-form').yiiActiveForm('updateMessages', data.errors);
+                } else {
+                    alert(data.msg);
+                }
+            }
+        });
+        return false;
+    });
 });
 $(function($) {
     $.mask.definitions['~']='[+-]';

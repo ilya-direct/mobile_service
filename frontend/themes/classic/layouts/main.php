@@ -1,15 +1,25 @@
 <?php
 
+use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\widgets\MaskedInput;
 use common\models\ar\Order;
 use common\models\ar\OrderPerson;
 use common\widgets\Alert;
 use frontend\assets\AppAsset;
+use frontend\models\FooterCallbackForm;
 
 /* @var $this \yii\web\View */
 /* @var $content string */
-AppAsset::register($this);
+$bundle = AppAsset::register($this);
+$baseUrl = $bundle->baseUrl;
+
+/** @var FooterCallbackForm $callbackModel Нижняя форма заказа звонка */
+$callbackModel = isset($this->params['footerCallbackForm'])
+    ? $this->params['footerCallbackForm']
+    : new FooterCallbackForm();
+
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -18,18 +28,19 @@ AppAsset::register($this);
     <meta charset="<?= Yii::$app->charset ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <?= Html::csrfMetaTags() ?>
-    <title><?= Html::encode($this->title) ?></title>
-    <?php $this->head() ?>
+    <?= Html::csrfMetaTags(); ?>
+    <title><?= Html::encode($this->title); ?></title>
+    <link rel="stylesheet" href="<?= $baseUrl; ?>/css/reset-min.css">
+    <?php $this->head(); ?>
 </head>
 <body>
 <?php $this->beginBody() ?>
 <?= Alert::widget() ?>
 <header>
-    <div class = "row">
+    <div class="row">
         <div class = "col-xs-12 col-sm-6 col-md-4 col-lg-4">
             <div class="logo">
-                <a href="<?= Url::toRoute('/') ?>">
+                <a href="<?= Url::to(['site/index']); ?>">
                     <h1>BMSTU <span>Сервис</span></h1>
                     <p>ремонт портативной техники</p>
                 </a>
@@ -185,14 +196,13 @@ AppAsset::register($this);
                     </ul>
                 </div>
                 <div class = "col-xs-12 col-sm-6 col-md-4 col-lg-2 hidden-md hidden-sm hidden-xs">
-                    <div class="status">
+                    <!--<div class="status">
                         <a href="#">Статус заявки</a>
-                    </div>
+                    </div>-->
                 </div>
                 <div class = "col-xs-12 col-sm-12 col-md-4 col-lg-3">
                     <div class="navbar-header hidden-lg hidden-md">
                         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                            <span class="sr-only">Toggle navigation</span>
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
@@ -200,13 +210,13 @@ AppAsset::register($this);
                     </div>
                     <ul class="mini_menu hidden-sm hidden-xs">
                         <li>
-                            <a href="#" class="discounts">Скидки</a>
+                            <a href="<?= Url::to(['site/discounts']); ?>" class="discounts">Скидки</a>
                         </li>
                         <li>
-                            <a href="#">О нас</a>
+                            <a href="<?= Url::to(['site/about-us']); ?>">О нас</a>
                         </li>
                         <li>
-                            <a href="#">Контакты</a>
+                            <a href="<?= Url::to(['site/contacts']); ?>">Контакты</a>
                         </li>
                     </ul>
                 </div>
@@ -361,9 +371,8 @@ AppAsset::register($this);
                 </div>
             </div>
         </div>
+        <!-- Меню для мобильных устройств -->
 </nav>
-<!-- Меню для мобильных устройств -->
-</div>
 <?= $content ?>
 <div class="wr_bottom">
     <div class="bottom">
@@ -374,22 +383,22 @@ AppAsset::register($this);
                     <h2>О НАС</h2>
                     <ul>
                         <li>
-                            <a href="#">Как мы работаем?</a>
+                            <a href="<?= Url::to(['site/working-order']); ?>">Как мы работаем?</a>
                         </li>
                         <li>
-                            <a href="#">Выезд мастера и курьера</a>
+                            <a href="<?= Url::to(['site/courier']); ?>">Выезд мастера и курьера</a>
                         </li>
                         <li>
-                            <a href="#">Гарантии</a>
+                            <a href="<?= Url::to(['site/guarantees']); ?>">Гарантии</a>
                         </li>
                         <li>
-                            <a href="#">Наш блог</a>
+                            <a href="<?= Url::to(['site/blog']); ?>">Наш блог</a>
                         </li>
                         <li>
-                            <a href="#">Вопросы и ответы</a>
+                            <a href="<?= Url::to(['site/faq']); ?>">Вопросы и ответы</a>
                         </li>
                         <li>
-                            <a href="#">Отзывы</a>
+                            <a href="<?= Url::to(['site/feedback']); ?>">Отзывы</a>
                         </li>
                     </ul>
                 </div>
@@ -400,16 +409,16 @@ AppAsset::register($this);
                     <h2>Контакты</h2>
                     <ul>
                         <li>
-                            <p class="phone">+7 (343) 777 77 77</p>
+                            <p class="phone">+7 (963) 656 83 77</p>
                         </li>
                         <li>
-                            <p class="email">support@tel.ru</p>
+                            <p class="email">ilya-direct@ya.ru</p>
                         </li>
                         <li>
-                            <p class="adress">г.Екатеринбург ул. Ленина 35</p>
+                            <p class="adress">г. Москва, ул. Фридриха Энгельса, д. 22</p>
                         </li>
                         <li>
-                            <p class="work">пн-пт: 10:00 - 17:00 св,вс: 10:00 - 13: 00</p>
+                            <p class="work">пн-пт: 10:00 - 20:00 сб-вс: 10:00 - 18:00</p>
                         </li>
                     </ul>
                 </div>
@@ -417,15 +426,13 @@ AppAsset::register($this);
             <div class = "col-xs-12 col-sm-12 col-md-4 col-lg-4">
                 <div class="feedback">
                     <h2>Оставьте заявку на звонок</h2>
-                    <form name="myfrom" action="#" method="post">
-                        <div>
-                            <label>Ваше имя:</label>
-                            <input type="text" name="name" placeholder="" />
-                            <label>Ваш телефон:</label>
-                            <input type="text" name="phone" placeholder="" />
-                            <button>Оставить заявку</button>
-                        </div>
-                    </form>
+                    <?php $form = ActiveForm::begin(['action' => Url::to(['site/footer-callback-form']), 'id' => 'footer-callback-form']); ?>
+                    <?= $form->field($callbackModel, 'first_name'); ?>
+                    <?= $form->field($callbackModel, 'phone')->widget(MaskedInput::className(),
+                        ['mask' => '+7 (999) 999-99-99']); ?>
+                    <?= Html::submitButton('Оставить заявку'); ?>
+                    <?php $form->end(); ?>
+                    <div id="footer-callback-form-success" class="well" style="font: 13px/1.4 robotoregular;font-size: 1.5em;display: none;"></div>
                 </div>
             </div>
         </div>
@@ -433,10 +440,10 @@ AppAsset::register($this);
 </div>
 <footer>
     <div class="footer">
-        <div class="ft_colum_left">
-            <p>&copy; 2013 BMSTUСервис</p>
+        <div class="ft_column_left">
+            <p>&copy; 2013 BMSTU Сервис</p>
         </div>
-        <div class="ft_colum_right">
+        <div class="ft_column_right">
             <ul>
                 <li>
                     <a href="#" class="socicon-vkontakte"></a>
@@ -454,7 +461,7 @@ AppAsset::register($this);
         </div>
     </div>
 </footer>
-<?php $this->endBody() ?>
+<?php $this->endBody(); ?>
 </body>
 </html>
-<?php $this->endPage() ?>
+<?php $this->endPage(); ?>

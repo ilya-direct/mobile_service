@@ -2,21 +2,19 @@
 namespace frontend\controllers;
 
 use Yii;
-use yii\base\InvalidParamException;
+use yii\bootstrap\ActiveForm;
 use yii\db\Exception;
 use yii\filters\VerbFilter;
-use yii\web\BadRequestHttpException;
+use yii\helpers\Url;
 use yii\web\Controller;;
 use yii\web\NotFoundHttpException;;
-use frontend\models\ContactForm;
-use frontend\models\PasswordResetRequestForm;
-use frontend\models\ResetPasswordForm;
-use frontend\models\SignupForm;
+use yii\web\Response;
 use common\models\ar\Order;
 use common\models\ar\OrderPerson;
 use common\models\ar\OrderProvider;
 use common\models\ar\OrderStatus;
-use common\models\LoginForm;
+use frontend\models\FooterCallbackForm;
+use frontend\models\PriceCalculatorForm;
 
 /**
  * Site controller
@@ -62,40 +60,41 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $model = new PriceCalculatorForm();
+
+        // Форма калькулятора
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $transaction = Yii::$app->db->beginTransaction();
+            $flag = true;
+            try {
+                $orderPerson = new OrderPerson();
+                $orderPerson->first_name = $model->name;
+                $orderPerson->phone = $model->phone;
+                $orderPerson->save(false);
+                $order = new Order();
+                $order->order_person_id = $orderPerson->id;
+                $order->order_status_id = OrderStatus::get('new');
+                $order->order_provider_id = OrderProvider::get('calculator');
+                $order->save(false);
+                $transaction->commit();
+            } catch (Exception $e) {
+                $transaction->rollBack();
+                $flag = false;
+                $model->addError('db', 'Ошибка базы данных! Пожалуйста попробуйте ещё раз или оформите заказ по телефону +7 (963) 656-83-77. Вас ждёт приятный бонус!');
+            }
+            if ($flag) {
+                Yii::$app->session->set('uid', $order->uid);
+                return $this->redirect(Url::to(['site/success']));
+            }
+        }
+        return $this->render('index', [
+            'model' => $model,
+        ]);
     }
 
-    /**
-     * Logs in a user.
-     *
-     * @return mixed
-     */
-    public function actionLogin()
+    public function actionAboutUs()
     {
-        if (!\Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
-
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        } else {
-            return $this->render('login', [
-                'model' => $model,
-            ]);
-        }
-    }
-
-    /**
-     * Logs out the current user.
-     *
-     * @return mixed
-     */
-    public function actionLogout()
-    {
-        Yii::$app->user->logout();
-
-        return $this->goHome();
+        return $this->render('about-us');
     }
 
     /**
@@ -103,22 +102,11 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionContact()
+    public function actionContacts()
     {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            if ($model->sendEmail(Yii::$app->params['adminEmail'])) {
-                Yii::$app->session->setFlash('success', 'Thank you for contacting us. We will respond to you as soon as possible.');
-            } else {
-                Yii::$app->session->setFlash('error', 'There was an error sending email.');
-            }
+        return $this->render('contacts', [
 
-            return $this->refresh();
-        } else {
-            return $this->render('contact', [
-                'model' => $model,
-            ]);
-        }
+        ]);
     }
 
     /**
@@ -129,76 +117,6 @@ class SiteController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
-    }
-
-    /**
-     * Signs user up.
-     *
-     * @return mixed
-     */
-    public function actionSignup()
-    {
-        $model = new SignupForm();
-        if ($model->load(Yii::$app->request->post())) {
-            if ($user = $model->signup()) {
-                if (Yii::$app->getUser()->login($user)) {
-                    return $this->goHome();
-                }
-            }
-        }
-
-        return $this->render('signup', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Requests password reset.
-     *
-     * @return mixed
-     */
-    public function actionRequestPasswordReset()
-    {
-        $model = new PasswordResetRequestForm();
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            if ($model->sendEmail()) {
-                Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
-
-                return $this->goHome();
-            } else {
-                Yii::$app->session->setFlash('error', 'Sorry, we are unable to reset password for email provided.');
-            }
-        }
-
-        return $this->render('requestPasswordResetToken', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Resets password.
-     *
-     * @param string $token
-     * @return mixed
-     * @throws BadRequestHttpException
-     */
-    public function actionResetPassword($token)
-    {
-        try {
-            $model = new ResetPasswordForm($token);
-        } catch (InvalidParamException $e) {
-            throw new BadRequestHttpException($e->getMessage());
-        }
-
-        if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->resetPassword()) {
-            Yii::$app->session->setFlash('success', 'New password was saved.');
-
-            return $this->goHome();
-        }
-
-        return $this->render('resetPassword', [
-            'model' => $model,
-        ]);
     }
 
     public function actionQuickOrder()
@@ -228,7 +146,7 @@ class SiteController extends Controller
                 }
                 if ($flag) {
                     Yii::$app->session->set('uid', $order->uid);
-                    return $this->redirect('success');
+                    return $this->redirect(Url::to(['site/success']));
                 }
             }
         }
@@ -250,6 +168,59 @@ class SiteController extends Controller
         } else {
             throw new NotFoundHttpException();
         }
+    }
+
+    /**
+     * Нижняя форма с просьбой перезвонить
+     * @return array
+     * @throws Exception
+     */
+    public function actionFooterCallbackForm()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = new FooterCallbackForm();
+
+        $success = false;
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $transaction = Yii::$app->db->beginTransaction();
+
+            try {
+                $orderPerson = new OrderPerson();
+                $orderPerson->first_name = $model->first_name;
+                $orderPerson->phone = '+' . preg_replace('/\D/', '', $model->phone);
+                $orderPerson->save(false);
+
+                $order = new Order();
+                $order->order_status_id = OrderStatus::get('new');
+                $order->order_person_id = $orderPerson->id;
+                $order->order_provider_id = OrderProvider::get('footer_callback_form');
+                $order->save(false);
+            } catch(Exception $e) {
+                $transaction->rollBack();
+
+                return [
+                    'success' => $success,
+                    'validation' => true,
+                    'msg' => 'Ошибка базы данных! Пожалуйста попробуйте ещё раз или оформите заказ по телефону +7 (963) 656-83-77. Вас ждёт приятный бонус!',
+                ];
+            }
+
+            $success = true;
+            $transaction->commit();
+
+            return [
+                'success' => $success,
+                'msg' => 'Спасибо за заявку! Наши специалисты свяжутся с Вами в ближайшее время. Номер заявки: '
+                    . $order->uid,
+            ];
+        }
+
+        return [
+            'success' => $success,
+            'validation_failed' => true,
+            'msg' => 'validation failed',
+            'errors' => ActiveForm::validate($model),
+        ];
     }
 
 }

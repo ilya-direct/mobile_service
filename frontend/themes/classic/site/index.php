@@ -1,7 +1,13 @@
 <?php
 
-/* @var $this yii\web\View */
+use yii\bootstrap\ActiveForm;
+use common\models\ar\DeviceCategory;
+use common\models\ar\Vendor;
 
+/**
+ * @var yii\web\View $this
+ * @var \frontend\models\PriceCalculatorForm $model
+ */
 $this->title = 'Сервис по ремонту портативной техники';
 
 $asset = $this->registerAssetBundle(\frontend\assets\AppAsset::className());
@@ -10,59 +16,47 @@ $baseUrl = $asset->baseUrl;
 
 ?>
 <div class="slider">
-    <div class="slider_form hidden-md hidden-sm hidden-xs">
-        <form name="myfrom" action="#" method="post">
-            <div>
-                <div class="select">
-                    <select class="form-control">
-                        <option>Тип устройства</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                    </select>
-                </div>
-                <div class="select">
-                    <select class="form-control">
-                        <option>Производитель</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                    </select>
-                </div>
-                <div class="select">
-                    <select class="form-control">
-                        <option>Модель</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                    </select>
-                </div>
-                <div class="select">
-                    <select class="form-control">
-                        <option>Тип ремонта</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                    </select>
-                </div>
-                <input type="text" name="phone" id="phone" placeholder="+7-___-___-__-__" />
-                <button>Расчитать</button>
+    <div class="slider_form visible-lg" style="padding: 10px;background: rgba(51, 51, 51, 0.8);font: 13px/1.4 robotoregular;top:5%">
+        <h2 style="font-size: 1.5em;color: white;margin-bottom: 15px"> Калькулятор стоимости услуг</h2>
+        <?php $form = ActiveForm::begin(); ?>
+        <div style="color: red;text-align: center;margin-bottom: 10px;">
+            <?= \yii\bootstrap\Html::error($model, 'db'); ?>
+        </div>
+        <?= $form->field($model, 'device_category_id')
+            ->dropDownList(DeviceCategory::getRootList(), [
+                'prompt' => 'Выберете тип устройства...',
+            ])
+            ->label(false); ?>
+        <?= $form->field($model, 'vendor_id')
+            ->dropDownList(Vendor::getList(['enabled' => true]), ['prompt' => 'Выберете производителя...'])
+            ->label(false); ?>
+        <?= $form->field($model, 'device_id')
+            ->dropDownList(\common\models\ar\Device::getList(['enabled' => true]), ['prompt' => 'Выберете устройство...'])
+            ->label(false); ?>
+        <?= $form->field($model, 'service_id')
+            ->dropDownList(\common\models\ar\Service::getList(['enabled' => true]), ['prompt' => 'Выберете услугу...'])
+            ->label(false); ?>
+        <div class="row">
+            <div class="col-xs-6" style="padding: 5px">
+                <?= $form->field($model, 'name')->textInput(['maxlength' => true, 'placeholder' => 'Имя *'])->label(false); ?>
             </div>
-        </form>
+            <div class="col-xs-6" style="padding: 5px">
+                <?= $form->field($model, 'phone')->widget(\yii\widgets\MaskedInput::className(),
+                    ['mask' => '+7 (999) 999-99-99'])->textInput(['placeholder' => 'Телефон *'])->label(false); ?>
+            </div>
+        </div>
+        <?= \yii\helpers\Html::submitButton('Рассчитать'); ?>
+        <?php $form->end(); ?>
     </div>
     <ul class="bxslider">
         <li>
-            <img src="<?= $baseUrl ?>/images/slider_img1.jpg" alt="" />
+            <img src="<?= $baseUrl; ?>/images/slider_img1.jpg" alt="" />
         </li>
         <li>
-            <img src="<?= $baseUrl ?>/images/slider_img2.jpg" alt="" />
+            <img src="<?= $baseUrl; ?>/images/slider_img2.jpg" alt="" />
         </li>
         <li>
-            <img src="<?= $baseUrl ?>/images/slider_img3.jpg" alt="" />
+            <img src="<?= $baseUrl; ?>/images/slider_img3.jpg" alt="" />
         </li>
     </ul>
 </div>
@@ -73,7 +67,7 @@ $baseUrl = $asset->baseUrl;
                 <div class = "row">
                     <div class = "col-xs-12 col-sm-1 col-md-2 col-lg-2">
                         <div class="advantages_img">
-                            <img src="<?= $baseUrl ?>/images/advantages_img1.jpg" alt="" />
+                            <img src="<?= $baseUrl; ?>/images/advantages_img1.jpg" alt="" />
                         </div>
                     </div>
                     <div class = "col-xs-12 col-sm-10 col-md-10 col-lg-10">
@@ -90,7 +84,7 @@ $baseUrl = $asset->baseUrl;
                 <div class = "row">
                     <div class = "col-xs-12 col-sm-1 col-md-2 col-lg-2">
                         <div class="advantages_img">
-                            <img src="<?= $baseUrl ?>/images/advantages_img2.jpg" alt="" />
+                            <img src="<?= $baseUrl; ?>/images/advantages_img2.jpg" alt="" />
                         </div>
                     </div>
                     <div class = "col-xs-12 col-sm-10 col-md-10 col-lg-10">
@@ -107,7 +101,7 @@ $baseUrl = $asset->baseUrl;
                 <div class = "row">
                     <div class = "col-xs-12 col-sm-1 col-md-2 col-lg-2">
                         <div class="advantages_img">
-                            <img src="<?= $baseUrl ?>/images/advantages_img3.jpg" alt="" />
+                            <img src="<?= $baseUrl; ?>/images/advantages_img3.jpg" alt="" />
                         </div>
                     </div>
                     <div class = "col-xs-12 col-sm-10 col-md-10 col-lg-10">
@@ -124,7 +118,7 @@ $baseUrl = $asset->baseUrl;
                 <div class = "row">
                     <div class = "col-xs-12 col-sm-1 col-md-2 col-lg-2">
                         <div class="advantages_img">
-                            <img src="<?= $baseUrl ?>/images/advantages_img4.jpg" alt="" />
+                            <img src="<?= $baseUrl; ?>/images/advantages_img4.jpg" alt="" />
                         </div>
                     </div>
                     <div class = "col-xs-12 col-sm-10 col-md-10 col-lg-10">
@@ -143,28 +137,28 @@ $baseUrl = $asset->baseUrl;
         <div class = "row">
             <div class = "col-xs-12 col-sm-12 col-md-3 col-lg-3">
                 <div class="services_ttle">
-                    <img src="<?= $baseUrl ?>/images/services_img1.jpg" alt="" />
+                    <img src="<?= $baseUrl; ?>/images/services_img1.jpg" alt="" />
                     <a href="#">Ремонт Apple</a>
                     <p>Если Вам понадобился профессиональный ремонт Apple, обращайтесь к нам.</p>
                 </div>
             </div>
             <div class = "col-xs-12 col-sm-12 col-md-3 col-lg-3">
                 <div class="services_ttle">
-                    <img src="<?= $baseUrl ?>/images/services_img2.jpg" alt="" />
+                    <img src="<?= $baseUrl; ?>/images/services_img2.jpg" alt="" />
                     <a href="#">Ремонт телефонов</a>
                     <p>Так же наш сервисный центр предлагает услугу по ремонту смартфонов.</p>
                 </div>
             </div>
             <div class = "col-xs-12 col-sm-12 col-md-3 col-lg-3">
                 <div class="services_ttle">
-                    <img src="<?= $baseUrl ?>/images/services_img3.jpg" alt="" />
+                    <img src="<?= $baseUrl; ?>/images/services_img3.jpg" alt="" />
                     <a href="#">Ремонт планшетов</a>
                     <p>Наш сервисный центр рад предложить Вам профессиональный ремонт планшетов.</p>
                 </div>
             </div>
             <div class = "col-xs-12 col-sm-12 col-md-3 col-lg-3">
                 <div class="services_ttle">
-                    <img src="<?= $baseUrl ?>/images/services_img4.jpg" alt="" />
+                    <img src="<?= $baseUrl; ?>/images/services_img4.jpg" alt="" />
                     <a href="#">Ремонт ноутбуков</a>
                     <p>Наш сервис осуществляет ремонт ноутбуков известных производителей.</p>
                 </div>
@@ -208,7 +202,7 @@ $baseUrl = $asset->baseUrl;
 <div class="delivery">
     <h2>Курьерская доставка</h2>
     <h3>Вам необязательно выезжать к нам в сервис что бы отремонтироват</h3>
-    <img src="<?= $baseUrl ?>/images/delivery_img.jpg" alt="" />
+    <img src="<?= $baseUrl; ?>/images/delivery_img.jpg" alt="" />
     <a href="#">подробнее</a>
 </div>
 <div class="bl_ttle">
