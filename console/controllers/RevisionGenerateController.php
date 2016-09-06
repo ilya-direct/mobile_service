@@ -17,6 +17,7 @@ use common\models\ar\RevisionField;
 use common\models\ar\RevisionTable;
 use common\models\ar\RevisionValueType;
 use common\models\ar\User;
+use common\models\ar\Vendor;
 
 class RevisionGenerateController extends Controller
 {
@@ -58,6 +59,7 @@ class RevisionGenerateController extends Controller
             News::className(),
             Service::className(),
             User::className(),
+            Vendor::className(),
         ];
 
         foreach ($tables as $table) {

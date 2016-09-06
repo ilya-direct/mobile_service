@@ -56,6 +56,8 @@ class OrderProvider extends \yii\db\ActiveRecord
         'top_form' => 'Верхняя форма "Оформить заявку" модальная',
         'top_form_full' => 'Верхняя форма "Оформить заявку" на отдельной странице',
         'admin_panel' => 'Административная панель',
+        'footer_callback_form' => 'Нижняя форма "Заявка на звонок"',
+        'calculator' => 'Калькулятор услуг на главной странице',
     ];
 
     public static function get($providerAlias)

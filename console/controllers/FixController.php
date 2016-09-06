@@ -13,6 +13,7 @@ use common\models\ar\OrderPerson;
 use common\models\ar\OrderService;
 use common\models\ar\Service;
 use common\models\ar\User;
+use common\models\ar\Vendor;
 
 class FixController extends Controller
 {
@@ -28,6 +29,7 @@ class FixController extends Controller
             News::className(),
             Service::className(),
             User::className(),
+            Vendor::className(),
         ];
 
         foreach ($tables as $table) {

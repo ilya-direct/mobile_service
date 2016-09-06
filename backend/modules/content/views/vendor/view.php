@@ -3,16 +3,14 @@
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
-/**
- * @var $this yii\web\View
- * @var $model common\models\ar\Device
- */
+/* @var $this yii\web\View */
+/* @var $model common\models\ar\Vendor */
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Устройства', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Производители', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="device-view">
+<div class="vendor-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -21,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
-                'confirm' => 'Вы действительно хотите удалить устройство?',
+                'confirm' => 'Вы действительно хотите удалить производителя?',
                 'method' => 'post',
             ],
         ]) ?>
@@ -32,11 +30,11 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             'name',
-            'description:ntext',
-            'image',
-            'deviceCategory.name',
             'enabled:boolean',
-            'vendor.name',
+            'created_at',
+            'created_by',
+            'updated_at',
+            'updated_by',
         ],
     ]) ?>
 

@@ -117,4 +117,25 @@ class DeviceCategory extends Tree
             self::SCENARIO_DEFAULT => self::OP_ALL,
         ];
     }
+
+    /**
+     * Список корневых категорий, упорядоченных по имени
+     * @param array $condition
+     * @param string $attribute
+     * @return array
+     */
+    public static function getRootList()
+    {
+        $list =self::find()
+            ->select('name')
+            ->where([
+                'enabled' => true,
+                'depth' => 0,
+            ])
+            ->indexBy('id')
+            ->orderBy('name')
+            ->column();
+
+        return $list;
+    }
 }

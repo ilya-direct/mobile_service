@@ -81,6 +81,7 @@ JS
                 'client_lead',
                 'referer',
                 'ip',
+                'user_agent',
                 'created_at',
                 'created_by',
                 'updated_at',

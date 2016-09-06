@@ -27,6 +27,7 @@ use common\components\db\ActiveRecord;
  * @property string $client_lead
  * @property string $ip
  * @property boolean $deleted
+ * @property boolean $user_agent
  *
  * @property OrderPerson $orderPerson
  * @property OrderProvider $orderProvider
@@ -117,6 +118,7 @@ class Order extends ActiveRecord
             'created_by' => 'Кем создан(id)',
             'updated_at' => 'Время изменения',
             'updated_by' => 'Кем изменён(id)',
+            'user_agent' => 'User Agent'
         ];
     }
 
@@ -167,6 +169,7 @@ class Order extends ActiveRecord
         if ($insert) {
             $this->referer = empty(Yii::$app->session->get('referer')) ? null : Yii::$app->session->get('referer');
             $this->ip = Yii::$app->request->userIP;
+            $this->user_agent = Yii::$app->request->userAgent;
         }
 
         return parent::beforeSave($insert);

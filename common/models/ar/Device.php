@@ -15,9 +15,11 @@ use common\components\db\ActiveRecord;
  * @property string $image
  * @property integer $device_category_id
  * @property integer $enabled
+ * @property integer $vendor_id
  *
  * @property DeviceCategory $deviceCategory
  * @property DeviceAssign[] $deviceAssigns
+ * @property Vendor $vendor
  *
  * @method mixed revisionValue(string $attribute,string $dateTime)
  */
@@ -30,6 +32,7 @@ class Device extends ActiveRecord
                 'class' => RevisionBehavior::className(),
                 'attributes' => [
                     'enabled',
+                    'vendor_id',
                     'device_category_id',
                     'description',
                     'image',
@@ -55,7 +58,7 @@ class Device extends ActiveRecord
         return [
             [['name'], 'required'],
             [['description'], 'string'],
-            [['device_category_id', 'enabled'], 'integer'],
+            [['device_category_id', 'enabled', 'vendor_id'], 'integer'],
             [['name', 'image'], 'string', 'max' => 255],
             [['name'], 'unique'],
             [
@@ -65,8 +68,14 @@ class Device extends ActiveRecord
                 'targetAttribute' => ['device_category_id' => 'id'],
             ],
             ['enabled', 'filter', 'filter' => 'boolval'],
-            ['device_category_id', 'filter', 'filter' => 'intval'],
+            [['device_category_id', 'vendor_id'], 'filter', 'filter' => 'intval'],
             [['device_category_id', 'description', 'image'] , 'default', 'isEmpty' => function($var) { return empty($var); }],
+            [
+                'vendor_id',
+                'exist',
+                'targetClass' => Vendor::className(),
+                'targetAttribute' => ['vendor_id' => 'id']
+            ],
         ];
     }
 
@@ -81,6 +90,7 @@ class Device extends ActiveRecord
             'description' => 'Описание',
             'image' => 'Изображение',
             'enabled' => 'Активен',
+            'vendor_id' => 'Производитель'
         ];
     }
 
@@ -98,6 +108,14 @@ class Device extends ActiveRecord
     public function getDeviceAssigns()
     {
         return $this->hasMany(DeviceAssign::className(), ['device_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getVendor()
+    {
+        return $this->hasOne(Vendor::className(), ['id' => 'vendor_id']);
     }
 
 }

@@ -78,4 +78,22 @@ class ActiveRecord extends \yii\db\ActiveRecord
 
         return $value;
     }
+
+    /**
+     * Ассоциативный массив id => $attribute (по умолчанию name) с фильтром по условию $condition
+     * @param array $condition
+     * @param string $attribute
+     * @return array
+     */
+    public static function getList(array $condition = [], $attribute = 'name')
+    {
+        $list =self::find()
+            ->select($attribute)
+            ->where($condition)
+            ->indexBy('id')
+            ->orderBy([$attribute => SORT_ASC])
+            ->column();
+
+        return $list;
+    }
 }

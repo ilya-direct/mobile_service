@@ -19,6 +19,7 @@ namespace {
     /**
      * Class IDE_PHPDocWebApp
      *
+     * @property \Mobile_Detect $deviceDetect
      */
     class IDE_PHPDocWebApp extends \yii\web\Application {}
 
