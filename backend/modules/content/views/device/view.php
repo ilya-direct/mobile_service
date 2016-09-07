@@ -32,6 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             'name',
+            'alias',
             'description:ntext',
             'image',
             'deviceCategory.name',

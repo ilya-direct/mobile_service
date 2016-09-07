@@ -55,7 +55,7 @@ class DeviceCategory extends Tree
                 'rightAttribute' => 'rgt',
                 'depthAttribute' => 'depth',
             ],
-            [
+            'slug' => [
                 'class' => SluggableBehavior::className(),
                 'slugAttribute' => 'alias',
                 'attribute' => 'name',

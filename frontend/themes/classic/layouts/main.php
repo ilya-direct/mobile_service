@@ -392,9 +392,6 @@ $callbackModel = isset($this->params['footerCallbackForm'])
                             <a href="<?= Url::to(['site/guarantees']); ?>">Гарантии</a>
                         </li>
                         <li>
-                            <a href="<?= Url::to(['site/blog']); ?>">Наш блог</a>
-                        </li>
-                        <li>
                             <a href="<?= Url::to(['site/faq']); ?>">Вопросы и ответы</a>
                         </li>
                         <li>

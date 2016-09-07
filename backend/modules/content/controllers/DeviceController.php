@@ -2,13 +2,14 @@
 
 namespace backend\modules\content\controllers;
 
-use common\models\ar\DeviceCategory;
 use Yii;
-use common\models\ar\Device;
 use yii\data\ActiveDataProvider;
+use yii\filters\VerbFilter;
+use yii\helpers\FileHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
+use common\models\ar\Device;
 
 /**
  * DeviceController implements the CRUD actions for Device model.
@@ -74,6 +75,10 @@ class DeviceController extends Controller
         $model = new Device();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $image = UploadedFile::getInstance($model, 'image');
+            if ($image) {
+                $this->saveImage($image, $model);
+            }
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
@@ -93,6 +98,10 @@ class DeviceController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $image = UploadedFile::getInstance($model, 'image');
+            if ($image) {
+                $this->saveImage($image, $model);
+            }
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
@@ -128,5 +137,23 @@ class DeviceController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    /**
+     * Загрузка изображения устройству с удалением старых
+     * @param UploadedFile $image
+     * @param Device $model
+     */
+    protected function saveImage($image, $model)
+    {
+        $path = Yii::getAlias(Device::IMAGE_SAVE_PATH);
+        $files = FileHelper::findFiles($path, ['filter' => function ($path) use ($model) {
+            return (boolean)preg_match('/'. preg_quote($model->alias, '/') . '\.\w{3,4}$/u', $path);
+        }]);
+        foreach ($files as $file) {
+            unlink($file);
+        }
+        preg_match('/\w{3,4}$/u', $image->name, $extension);
+        $image->saveAs($path . '/' . $model->alias . '.' . (empty($extension) ? '' : $extension[0]));
     }
 }

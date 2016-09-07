@@ -12,7 +12,9 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'name')->textInput(['maxlength' => true]); ?>
+
+    <?= $form->field($model, 'alias')->textInput(['maxlength' => true])->label('Alias (необязательно)'); ?>
 
     <?= $form->field($model, 'enabled')->checkbox() ?>
 

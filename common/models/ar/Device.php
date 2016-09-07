@@ -3,6 +3,7 @@
 namespace common\models\ar;
 
 use Yii;
+use yii\behaviors\SluggableBehavior;
 use common\components\behaviors\RevisionBehavior;
 use common\components\db\ActiveRecord;
 
@@ -16,6 +17,7 @@ use common\components\db\ActiveRecord;
  * @property integer $device_category_id
  * @property integer $enabled
  * @property integer $vendor_id
+ * @property string $alias уникальное имя для URL
  *
  * @property DeviceCategory $deviceCategory
  * @property DeviceAssign[] $deviceAssigns
@@ -25,9 +27,20 @@ use common\components\db\ActiveRecord;
  */
 class Device extends ActiveRecord
 {
+    const IMAGE_WEB_PATH = '/images/devices';
+    const IMAGE_SAVE_PATH = '@frontend/web/images/devices';
+
+    public $image;
+
     public function behaviors()
     {
         return [
+            'slug' => [
+                'class' => SluggableBehavior::className(),
+                'slugAttribute' => 'alias',
+                'attribute' => 'name',
+                'ensureUnique' => true,
+            ],
             'revision' => [
                 'class' => RevisionBehavior::className(),
                 'attributes' => [
@@ -37,6 +50,7 @@ class Device extends ActiveRecord
                     'description',
                     'image',
                     'name',
+                    'alias',
                 ]
             ]
         ];
@@ -58,9 +72,10 @@ class Device extends ActiveRecord
         return [
             [['name'], 'required'],
             [['description'], 'string'],
-            [['device_category_id', 'enabled', 'vendor_id'], 'integer'],
-            [['name', 'image'], 'string', 'max' => 255],
-            [['name'], 'unique'],
+            [['device_category_id', 'vendor_id'], 'integer'],
+            ['enabled', 'boolean'],
+            [['name', 'alias'], 'string', 'max' => 255],
+            [['name', 'alias'], 'unique'],
             [
                 'device_category_id', 'exist',
                 'skipOnError' => true,
@@ -69,13 +84,14 @@ class Device extends ActiveRecord
             ],
             ['enabled', 'filter', 'filter' => 'boolval'],
             [['device_category_id', 'vendor_id'], 'filter', 'filter' => 'intval'],
-            [['device_category_id', 'description', 'image'] , 'default', 'isEmpty' => function($var) { return empty($var); }],
+            [['device_category_id', 'vendor_id', 'description', 'alias'] , 'default', 'isEmpty' => function($var) { return empty($var); }],
             [
                 'vendor_id',
                 'exist',
                 'targetClass' => Vendor::className(),
                 'targetAttribute' => ['vendor_id' => 'id']
             ],
+            ['image', 'image'],
         ];
     }
 

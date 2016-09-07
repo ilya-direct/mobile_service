@@ -2,8 +2,8 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use kartik\tree\TreeViewInput;
 use common\models\ar\Vendor;
+use kartik\tree\TreeViewInput;
 use rmrevin\yii\fontawesome\AssetBundle;
 
 /**
@@ -21,9 +21,11 @@ $this->registerAssetBundle(AssetBundle::className());
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
+    <?= $form->field($model, 'alias')->textInput(['maxlength' => true])->label('Alias (необязательно)'); ?>
+
     <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
 
-    <?= $form->field($model, 'image')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'image')->fileInput(); ?>
 
     <?= $form->field($model, 'vendor_id')->dropDownList(Vendor::getList(), ['prompt' => 'Выберете производителя']); ?>
 

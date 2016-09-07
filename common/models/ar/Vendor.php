@@ -6,10 +6,12 @@ use common\components\behaviors\RevisionBehavior;
 use common\components\db\ActiveRecord;
 use Yii;
 use yii\behaviors\BlameableBehavior;
+use yii\behaviors\SluggableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 
 /**
+ * Производители
  * This is the model class for table "{{%vendor}}".
  *
  * @property integer $id
@@ -19,6 +21,7 @@ use yii\db\Expression;
  * @property integer $created_by
  * @property string $updated_at
  * @property integer $updated_by
+ * @property integer $alias
  *
  * @property Device[] $devices
  * @property User $createdBy
@@ -36,11 +39,18 @@ class Vendor extends ActiveRecord
             'blameable' => [
                 'class' => BlameableBehavior::className(),
             ],
+            'slug' => [
+                'class' => SluggableBehavior::className(),
+                'slugAttribute' => 'alias',
+                'attribute' => 'name',
+                'ensureUnique' => true,
+            ],
             'revision' => [
                 'class' => RevisionBehavior::className(),
                 'attributes' => [
                     'enabled',
                     'name',
+                    'alias',
                 ]
             ],
         ];
@@ -62,9 +72,10 @@ class Vendor extends ActiveRecord
         return [
             [['name', 'enabled'], 'required'],
             [['enabled'], 'boolean'],
-            [['name'], 'string', 'max' => 100],
-            [['name'], 'unique'],
+            [['name', 'alias'], 'string', 'max' => 100],
+            [['name', 'alias'], 'unique'],
             ['enabled', 'filter', 'filter' => 'boolval'],
+            ['alias', 'default'],
         ];
     }
 
