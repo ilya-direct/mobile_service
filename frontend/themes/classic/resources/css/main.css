@@ -137,7 +137,7 @@ header {
     width: 100%;
     position: fixed;
     top: 0px;
-    z-index: 99999;
+    z-index: 1000;
     margin-top: 0;
 }
 
@@ -1118,39 +1118,7 @@ footer {
 }
 
 .bl_img {
-    margin-top: 70px;
-}
-
-.bl_tle h2 {
-    color: #1E1E1E;
-    font: 15px/1.1 robotoregular;
-    text-transform: uppercase;
     margin-top: 30px;
-}
-
-.bl_tle p {
-    color: #1E1E1E;
-    font: 13px/1.5 robotoregular;
-    margin-top: 20px;
-}
-
-.bl_tle a {
-    display: block;
-    width: 180px;
-    height: 33px;
-    margin: 0 auto;
-    margin-top: 45px;
-    background-color: #00C962;
-    color: #fff;
-    font: 13px/33px robotoregular;
-    border-radius: 5px;
-    text-align: center;
-    text-transform: uppercase;
-    text-decoration: none;
-}
-
-.bl_tle a:hover {
-    opacity: 0.7;
 }
 
 .table {
@@ -1184,6 +1152,7 @@ footer {
     color: #00C962;
     font: 13px/1.1 robotoregular;
     margin-left: 30px;
+    cursor: pointer;
 }
 
 .detailed:hover {
@@ -1195,34 +1164,15 @@ footer {
     font: bold 15px/1.1 robotoregular;
 }
 
-.price {
-    display: block;
-    width: 140px;
-    height: 25px;
-    margin: 0 auto;
-    margin-top: 15px;
-    background-color: #00C962;
-    color: #fff;
-    font: 13px/25px robotoregular;
-    border-radius: 5px;
-    text-align: center;
-    text-transform: uppercase;
-    text-decoration: none;
-}
-
-.price:hover {
-    opacity: 0.7;
-}
-
 .bg_green {
-    width: 100%;
+    /*width: 100%;*/
     background-color: #E3F9E8;
-    max-width: 393px;
-    display: block;
+    /*max-width: 393px;*/
+    /*display: block;*/
     color: #4FD17C;
     font: 13px/1.1 robotolight;
     border: 1px solid #C2EECD;
-    margin-top: 5px;
+    margin: 5px;
     padding: 5px 10px 5px 10px;
 }
 
@@ -1365,4 +1315,27 @@ footer {
 
 .form-control {
     border-radius: 0;
+}
+
+/* added by ilya-direct v2 */
+
+.breadcrumb li a {
+    background: url("../images/double_pagi.jpg") no-repeat right 6px;
+    display: inline-block;
+    vertical-align: top;
+    color: #c4c4c4;
+    font: 13px/1.1 robotolight;
+    padding-right: 10px;
+    text-decoration: none;
+    margin-top: 15px;
+}
+
+.breadcrumb .active {
+    display: inline-block;
+    vertical-align: top;
+    color: #c4c4c4;
+    font: 13px/1.1 robotolight;
+    padding-right: 10px;
+    text-decoration: none;
+    margin-top: 15px;
 }

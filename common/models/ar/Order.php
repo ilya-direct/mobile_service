@@ -28,6 +28,7 @@ use common\components\db\ActiveRecord;
  * @property string $ip
  * @property boolean $deleted
  * @property boolean $user_agent
+ * @property integer $device_provider_id  id устройства, со страницы которого был сделан заказ
  *
  * @property OrderPerson $orderPerson
  * @property OrderProvider $orderProvider
@@ -241,4 +242,13 @@ class Order extends ActiveRecord
     {
         return $this->hasOne(User::className(), ['id' => 'updated_by']);
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getDeviceProvider()
+    {
+        return $this->hasOne(Device::className(), ['id' => 'device_provider_id']);
+    }
+
 }

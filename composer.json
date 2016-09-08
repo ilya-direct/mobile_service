@@ -11,7 +11,8 @@
         "wbraganca/yii2-dynamicform": "dev-master",
         "2amigos/yii2-date-picker-widget": "^1.0",
         "linslin/yii2-curl": "~1.0.8",
-        "alexandernst/yii2-device-detect": "0.0.11"
+        "alexandernst/yii2-device-detect": "0.0.11",
+        "2amigos/yii2-date-time-picker-widget": "~1.0"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",

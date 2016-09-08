@@ -74,6 +74,7 @@ JS
                 'orderStatus.name',
                 'created_at',
                 'orderProvider.name',
+                'deviceProvider.name:raw:Устройство в заказе',
                 'preferable_date',
                 'time_from',
                 'time_to',
@@ -87,10 +88,14 @@ JS
                 'updated_at',
                 'updated_by',
                      ] as $property) {
-                $attributes[] = [
-                    'attribute' => $property,
-                    'visible' => !is_null(ArrayHelper::getValue($model, $property)),
-                ];
+                if (mb_strpos($property, ':') !== false) {
+                    $attributes[] = $property;
+                } else {
+                    $attributes[] = [
+                        'attribute' => $property,
+                        'visible' => !is_null(ArrayHelper::getValue($model, $property)),
+                    ];
+                }
             }
             ?>
             <?= DetailView::widget([

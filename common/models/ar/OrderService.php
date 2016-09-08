@@ -3,6 +3,7 @@
 namespace common\models\ar;
 
 use Yii;
+use yii\behaviors\AttributeBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use common\components\behaviors\RevisionBehavior;
@@ -25,17 +26,25 @@ class OrderService extends ActiveRecord
     public function behaviors()
     {
         return [
+            'attribute' => [
+                'class' => AttributeBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'deleted'
+                ],
+                'value' => false,
+            ],
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'value' => new Expression('NOW()'),
+                'updatedAtAttribute' => false,
+            ],
             'revision' => [
                 'class' => RevisionBehavior::className(),
                 'attributes' => [
                     'deleted',
                 ]
             ],
-            'timestamp' => [
-                'class' => TimestampBehavior::className(),
-                'value' => new Expression('NOW()'),
-                'updatedAtAttribute' => false,
-            ]
+
         ];
     }
 
@@ -57,7 +66,6 @@ class OrderService extends ActiveRecord
             [['order_id', 'device_assign_id'], 'integer'],
             [['device_assign_id'], 'exist', 'skipOnError' => true, 'targetClass' => DeviceAssign::className(), 'targetAttribute' => ['device_assign_id' => 'id']],
             [['order_id'], 'exist', 'skipOnError' => true, 'targetClass' => Order::className(), 'targetAttribute' => ['order_id' => 'id']],
-            ['deleted', 'default', 'value' => false],
         ];
     }
 

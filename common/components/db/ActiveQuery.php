@@ -20,4 +20,13 @@ class ActiveQuery extends \yii\db\ActiveQuery
     {
         return $this->andWhere([$this->tableName . '.' . '[[deleted]]'  => false]);
     }
+
+    /**
+     * Только активные записи
+     * @return $this
+     */
+    public function enabled()
+    {
+        return $this->andWhere([$this->tableName . '.' . '[[enabled]]'  => true]);
+    }
 }

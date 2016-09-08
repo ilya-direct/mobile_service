@@ -4199,7 +4199,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
             box-shadow: none;
   }
   .navbar-collapse.collapse {
-    /*display: block !important;   Кастомное удаление!!!!*/
+    /*display: block !important;   Custom*/
     height: auto !important;
     padding-bottom: 0;
     overflow: visible !important;
@@ -4690,21 +4690,23 @@ fieldset[disabled] .navbar-inverse .btn-link:hover,
 fieldset[disabled] .navbar-inverse .btn-link:focus {
     color: #444;
 }
-.breadcrumb {
+/* Custom */
+/*.breadcrumb {
     padding: 8px 15px;
     margin-bottom: 20px;
     list-style: none;
     background-color: #f5f5f5;
     border-radius: 4px;
-}
+}*/
 .breadcrumb > li {
     display: inline-block;
 }
-.breadcrumb > li + li:before {
+/* Custom */
+/*.breadcrumb > li + li:before {
     padding: 0 5px;
     color: #ccc;
     content: "/\00a0";
-}
+}*/
 .breadcrumb > .active {
     color: #777;
 }

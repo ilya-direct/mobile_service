@@ -9,6 +9,7 @@ $params = array_merge(
 return [
     'id' => 'app-frontend',
     'basePath' => dirname(__DIR__),
+    'homeUrl' => '/',
     'bootstrap' => ['log', 'deviceDetect'],
     'controllerNamespace' => 'frontend\controllers',
     'on beforeRequest' => function (yii\base\Event $event) {
@@ -54,6 +55,7 @@ return [
                 'about-us' => 'site/about-us',
                 'footer-form' => 'site/footer-callback-form',
                 'success' => 'site/success',
+                'remont/<alias:[-\w]+>' => 'site/device',
             ],
         ],
         'assetManager' => [
