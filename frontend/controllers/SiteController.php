@@ -24,6 +24,7 @@ use common\models\ar\Vendor;
 use frontend\models\DeviceOrderForm;
 use frontend\models\FooterCallbackForm;
 use frontend\models\NotFoundDeviceForm;
+use frontend\models\ContactUsForm;
 use frontend\models\PriceCalculatorForm;
 
 /**
@@ -114,8 +115,40 @@ class SiteController extends Controller
      */
     public function actionContacts()
     {
-        return $this->render('contacts', [
+        $model = new ContactUsForm();
 
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $transaction = Yii::$app->db->beginTransaction();
+            $flag = true;
+            try {
+                $orderPerson = new OrderPerson();
+                $orderPerson->first_name = $model->name;
+                $orderPerson->phone = '+' . preg_replace('/\D/', '', $model->phone);
+                if ($model->email) {
+                    $orderPerson->email = $model->email;
+                }
+                $orderPerson->save(false);
+
+                $order = new Order();
+                $order->order_person_id = $orderPerson->id;
+                $order->order_status_id = OrderStatus::get('new');
+                $order->order_provider_id = OrderProvider::get('contact_us_form');
+                $order->client_comment = $model->message ?: null;
+                $order->save(false);
+                $transaction->commit();
+            } catch (Exception $e) {
+                $flag = false;
+                $transaction->rollBack();
+                $model->addError('db', 'Ошибка базы данных! Пожалуйста попробуйте ещё раз или оформите заказ по телефону +7 (963) 656-83-77. Вас ждёт приятный бонус!');
+            }
+            if ($flag) {
+                Yii::$app->session->set('uid', $order->uid);
+                return $this->redirect(Url::to(['site/success']));
+            }
+        }
+
+        return $this->render('contacts', [
+            'model' => $model,
         ]);
     }
 
@@ -307,7 +340,7 @@ class SiteController extends Controller
                 $orderPerson = new OrderPerson();
                 $orderPerson->first_name = $model->name;
                 $orderPerson->phone = $model->phone;
-                $orderPerson->email = $model->email;
+                $orderPerson->email = $model->email ?: null;
                 $orderPerson->save(false);
                 $order = new Order();
                 $order->order_status_id = OrderStatus::get('new');
@@ -432,6 +465,43 @@ class SiteController extends Controller
         }
 
         return $errors;
+    }
+
+
+    public function actionVendor($vendorAlias, $categoryAlias = null)
+    {
+        $category = null;
+        if ($categoryAlias) {
+            /** @var DeviceCategory $category */
+            $category = DeviceCategory::findOne(['alias' => $categoryAlias, 'enabled' => true]);
+            if ($category) {
+                $this->view->params['breadcrumbs'][] = [
+                    'label' => $category->name,
+                    'url' => [ 'category/' . $category->alias],
+                ];
+            } else {
+                throw new NotFoundHttpException('Категория не найдена');
+            }
+        }
+
+        /** @var Vendor $vendor */
+        $vendor = Vendor::findOne(['alias' => $vendorAlias, 'enabled' => true]);
+        if (!$vendor) {
+            throw new NotFoundHttpException('Производитель не найден');
+        }
+
+        /** @var Device[] $devices */
+        $devices = Device::find()
+            ->where(['vendor_id' => $vendor->id])
+            ->andFilterWhere(['device_category_id' => $category ? $category->id : null])
+            ->enabled()
+            ->all();
+
+        return $this->render('vendor', [
+            'vendor' => $vendor,
+            'devices' => $devices,
+            'category' => $category,
+        ]);
     }
 
 }

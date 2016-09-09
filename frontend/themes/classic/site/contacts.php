@@ -1,31 +1,20 @@
 <?php
 
+use yii\bootstrap\ActiveForm;
 use yii\helpers\Url;
+use yii\helpers\Html;
+use yii\widgets\MaskedInput;
 use frontend\assets\AppAsset;
 
 /**
  * @var yii\web\View $this
+ * @var \frontend\models\ContactUsForm $model
  */
-
 $this->title = 'Контакты';
 $this->params['breadcrumbs'][] = $this->title;
 $bundle = AppAsset::register($this);
 $baseUrl = $bundle->baseUrl;
 ?>
-
-<div class="wr_container">
-    <div class="container">
-        <h2>Контакты</h2>
-        <ul>
-            <li>
-                <a href="<?= Url::to('/'); ?>">Главная</a>
-            </li>
-            <li style="margin-top: 15px;color: #c4c4c4;font: 13px/1.1 robotolight;">
-                Контакты
-            </li>
-        </ul>
-    </div>
-</div>
 <div class="associate">
     <h2>Свяжитесь с нами</h2>
     <ul>
@@ -52,35 +41,33 @@ $baseUrl = $bundle->baseUrl;
 <div class="wr_report">
     <div class="report">
         <h2>Оставьте нам сообщение</h2>
-        <form name="Myform" action="#" method="post">
-            <div class = "row">
-                <div class = "col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                    <div class="report_ipnut">
-                        <label>Ваше Имя</label>
-                        <input type="text" name="name" placeholder="" />
-                    </div>
-                </div>
-                <div class = "col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                    <div class="report_ipnut">
-                        <label>Ваш телефон</label>
-                        <input type="text" name="phone" placeholder="" />
-                    </div>
-                </div>
-                <div class = "col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                    <div class="report_ipnut">
-                        <label>E-mail</label>
-                        <input type="text" name="email" placeholder="" />
-                    </div>
-                </div>
-                <div class = "col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <div class="report_textarea">
-                        <label>Ваше сообщение</label>
-                        <textarea cols="5" rows="5"></textarea>
-                    </div>
-                </div>
+        <?php $form = ActiveForm::begin([
+            'id' => 'contact-us-form',
+            'action' => Url::current(),
+        ]); ?>
+        <div class="row">
+            <div class="col-xs-12" style="text-align: center">
+                <?= $form->field($model, 'db')->hiddenInput()->label(false); ?>
             </div>
-            <button>оформить заявку</button>
-        </form>
+        </div>
+        <div class="row">
+            <div class = "col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <?= $form->field($model, 'name')->textInput(['maxlength' => true]); ?>
+            </div>
+            <div class = "col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <?= $form->field($model, 'phone')->widget(MaskedInput::className(), [
+                    'mask' => '+7 (999) 999-99-99',
+                ]); ?>
+            </div>
+            <div class = "col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <?= $form->field($model, 'email')->textInput(['maxlength' => true]); ?>
+            </div>
+            <div class = "col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <?= $form->field($model, 'message')->textarea(['maxlength' => true]); ?>
+            </div>
+        </div>
+        <?= Html::submitButton('оформить заявку'); ?>
+        <?php $form->end(); ?>
     </div>
 </div>
 <div class="bl_ttle">

@@ -57,6 +57,8 @@ return [
                 'success' => 'site/success',
                 'remont/<alias:[-\w]+>' => 'site/device',
                 'category/<alias:[-\w]+>' => 'site/category',
+                'category/<categoryAlias:[-\w]+>/brand/<vendorAlias:[-\w]+>' => 'site/vendor',
+                'brand/<vendorAlias:[-\w]+>' => 'site/vendor',
             ],
         ],
         'assetManager' => [

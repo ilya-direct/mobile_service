@@ -174,7 +174,8 @@ $this->registerJsFile($baseUrl . '/js/device.js', ['depends' => \yii\web\JqueryA
                 </div>
                 <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
                     <?= $form->field($modalFormModel, 'phone', ['options' => ['style' => 'margin-top:30px']])->widget(MaskedInput::className(), [
-                        'mask' => '+7 (999) 999-99-99'
+                        'mask' => '+7 (999) 999-99-99',
+                        'options' => ['id' => 'mask-input-unique-id'],
                     ]); ?>
                 </div>
                 <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
