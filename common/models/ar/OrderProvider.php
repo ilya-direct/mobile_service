@@ -59,6 +59,7 @@ class OrderProvider extends \yii\db\ActiveRecord
         'footer_callback_form' => 'Нижняя форма "Заявка на звонок"',
         'calculator' => 'Калькулятор услуг на главной странице',
         'device_form' => 'Форма на странице отдельного устройства',
+        'not_found_device_form' => 'Форма "Не нашёл нужную модель"',
     ];
 
     public static function get($providerAlias)

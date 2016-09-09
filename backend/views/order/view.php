@@ -74,6 +74,7 @@ JS
                 'orderStatus.name',
                 'created_at',
                 'orderProvider.name',
+                'client_comment',
                 'deviceProvider.name:raw:Устройство в заказе',
                 'preferable_date',
                 'time_from',

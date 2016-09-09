@@ -4,6 +4,7 @@ namespace common\models\ar;
 
 use Yii;
 use yii\behaviors\SluggableBehavior;
+use yii\helpers\FileHelper;
 use common\components\behaviors\RevisionBehavior;
 use common\components\db\ActiveRecord;
 
@@ -22,6 +23,7 @@ use common\components\db\ActiveRecord;
  * @property DeviceCategory $deviceCategory
  * @property DeviceAssign[] $deviceAssigns
  * @property Vendor $vendor
+ * @property string|boolean $imageWebPath
  *
  * @method mixed revisionValue(string $attribute,string $dateTime)
  */
@@ -132,6 +134,24 @@ class Device extends ActiveRecord
     public function getVendor()
     {
         return $this->hasOne(Vendor::className(), ['id' => 'vendor_id']);
+    }
+
+    /**
+     * Относительный путь до изображения устройства. Или false если изображение не найдено
+     * Пример: /images/devices/nokia-7220.jpg
+     * @return bool|string
+     */
+    public function getImageWebPath()
+    {
+        $path = Yii::getAlias(Device::IMAGE_SAVE_PATH);
+        $alias = $this->alias;
+        $images = FileHelper::findFiles($path, ['filter' => function ($path) use ($alias) {
+
+            return (boolean)preg_match('/'. preg_quote($this->alias, '/') . '\.\w{3,4}$/u', $path);
+        }]);
+
+        return empty($images) ? false : Device::IMAGE_WEB_PATH . '/' . basename($images[0]);
+
     }
 
 }

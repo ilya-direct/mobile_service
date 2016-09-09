@@ -48,3 +48,39 @@ $(document).ready(function(){
         }
     });//scroll
 });
+
+// Функция скрола по хещ-тегу с offset из-за фиксированного меню
+$(function() {
+    $('a[href*="#"]:not([href="#"])').click(function() {
+        if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+            var target = $(this.hash);
+            target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+            if (target.length) {
+                var scroll = target.offset().top - 70;
+                scroll = ($(window).scrollTop() < 110) ? scroll - 35 : scroll;
+                $('html, body').animate({
+                    scrollTop: scroll
+                }, 1000);
+                return false;
+            }
+        }
+    });
+});
+
+// Функция отправки ActiveForm Ajax-запросом
+var activeFormAjax = function (event) {
+    event.preventDefault();
+    var form = $(this);
+    // Предотвращение double-click
+    if (form.data('requestRunning')) {
+        return false;
+    }
+    form.data('requestRunning', true);
+
+    $.post(form.attr('action'), form.serialize(), function(errors) {
+        form.yiiActiveForm('updateMessages', errors);
+        form.data('requestRunning', false);
+    });
+
+    return false;
+};

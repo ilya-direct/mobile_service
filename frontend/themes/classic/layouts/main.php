@@ -373,7 +373,8 @@ $callbackModel = isset($this->params['footerCallbackForm'])
         </div>
         <!-- Меню для мобильных устройств -->
 </nav>
-<?= $content ?>
+<?= $this->render('/site/_breadcrumb'); ?>
+<?= $content; ?>
 <div class="wr_bottom">
     <div class="bottom">
         <div class = "row">

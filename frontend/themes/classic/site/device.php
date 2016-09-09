@@ -26,14 +26,6 @@ $this->params['breadcrumbs'][] = ['label' => $model->name];
 $this->registerCssFile($baseUrl . '/css/device.css');
 $this->registerJsFile($baseUrl . '/js/device.js', ['depends' => \yii\web\JqueryAsset::className()]);
 ?>
-<div class="wr_container">
-    <div class="container">
-        <h2>Ремонт <?= Html::encode($model->name); ?></h2>
-        <?= Breadcrumbs::widget([
-            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-        ]); ?>
-    </div>
-</div>
 <div class="wr_sevis_ttle">
     <div class="sevis_ttle">
         <div class = "row">

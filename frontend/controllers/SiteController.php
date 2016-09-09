@@ -14,13 +14,16 @@ use yii\web\Response;
 use common\components\db\ActiveQuery;
 use common\models\ar\Device;
 use common\models\ar\DeviceAssign;
+use common\models\ar\DeviceCategory;
 use common\models\ar\Order;
 use common\models\ar\OrderPerson;
 use common\models\ar\OrderProvider;
 use common\models\ar\OrderService;
 use common\models\ar\OrderStatus;
+use common\models\ar\Vendor;
 use frontend\models\DeviceOrderForm;
 use frontend\models\FooterCallbackForm;
+use frontend\models\NotFoundDeviceForm;
 use frontend\models\PriceCalculatorForm;
 
 /**
@@ -325,6 +328,89 @@ class SiteController extends Controller
                     $orderService->order_id = $order->id;
                     $orderService->save(false);
                 }
+            } catch(Exception $e) {
+                $transaction->rollBack();
+                $flag = false;
+                $model->addError('db', 'Ошибка базы данных! Пожалуйста попробуйте ещё раз или оформите заказ по телефону +7 (963) 656-83-77. Вас ждёт приятный бонус!');
+            }
+
+            if ($flag) {
+                $transaction->commit();
+                Yii::$app->session->set('uid', $order->uid);
+
+                return $this->redirect(Url::to(['site/success']));
+            }
+
+        }
+
+        $errors = [];
+        foreach ($model->errors as $attribute => $attributeErrors) {
+            $errors[Html::getInputId($model, $attribute)] = $attributeErrors;
+        }
+
+        return $errors;
+    }
+
+
+    /**
+     * Страница с категориями
+     * @param $alias
+     * @return string
+     * @throws NotFoundHttpException
+     */
+    public function actionCategory($alias)
+    {
+        /** @var DeviceCategory $category */
+        $category = DeviceCategory::findOne(['alias' => $alias, 'enabled' => true]);
+
+        if ($category) {
+            /** @var Vendor[] $vendors */
+            $vendors = Vendor::find()
+                ->joinWith('devices')
+                ->where([
+                    Device::tableName() . '.device_category_id' => $category->id,
+                    Device::tableName() . '.enabled' => true,
+                    Vendor::tableName() . '.enabled' => true,
+                ])
+                ->orderBy(Vendor::tableName() . '.name')
+                ->all();
+            $deviceForm = new NotFoundDeviceForm();
+
+            return $this->render('category', [
+                'category' => $category,
+                'vendors' => $vendors,
+                'notFoundDeviceFormModel' => $deviceForm,
+            ]);
+        } else {
+            throw new NotFoundHttpException('Категория не найдена');
+        }
+    }
+
+    /**
+     * Отправка формы "Не нашли нужную модель"
+     * POST
+     */
+    public function actionNotFoundDevice()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $model = new NotFoundDeviceForm();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $transaction = Yii::$app->db->beginTransaction();
+            $flag = true;
+            try {
+                $orderPerson = new OrderPerson();
+                $orderPerson->first_name = $model->name;
+                $orderPerson->phone = '+' . preg_replace('/\D/' , '', $model->phone);
+                $orderPerson->save(false);
+                $order = new Order();
+                $order->order_status_id = OrderStatus::get('new');
+                $order->order_person_id = $orderPerson->id;
+                $order->order_provider_id = OrderProvider::get('not_found_device_form');
+                if (trim($model->device)) {
+                    $order->client_comment = 'Не нашёл модель: ' . trim($model->device);
+                }
+                $order->save(false);
             } catch(Exception $e) {
                 $transaction->rollBack();
                 $flag = false;

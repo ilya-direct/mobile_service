@@ -29,6 +29,7 @@ use common\components\db\ActiveRecord;
  * @property boolean $deleted
  * @property boolean $user_agent
  * @property integer $device_provider_id  id устройства, со страницы которого был сделан заказ
+ * @property string $client_comment комментарий клиента (заполняется только клиентом при оформлении заказа)
  *
  * @property OrderPerson $orderPerson
  * @property OrderProvider $orderProvider
@@ -119,7 +120,8 @@ class Order extends ActiveRecord
             'created_by' => 'Кем создан(id)',
             'updated_at' => 'Время изменения',
             'updated_by' => 'Кем изменён(id)',
-            'user_agent' => 'User Agent'
+            'user_agent' => 'User Agent',
+            'client_comment' => 'Комментарий клиента',
         ];
     }
 

@@ -56,6 +56,7 @@ return [
                 'footer-form' => 'site/footer-callback-form',
                 'success' => 'site/success',
                 'remont/<alias:[-\w]+>' => 'site/device',
+                'category/<alias:[-\w]+>' => 'site/category',
             ],
         ],
         'assetManager' => [

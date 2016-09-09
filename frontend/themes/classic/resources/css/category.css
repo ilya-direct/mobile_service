@@ -1,0 +1,88 @@
+/* Строка производителей  */
+.category-vendors-bar ul {
+    border-bottom: 1px solid #E4E4E4;
+    display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+    display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+    display: -ms-flexbox;      /* TWEENER - IE 10 */
+    display: -webkit-flex;     /* NEW - Chrome */
+    display: flex;             /* NEW, Spec - Opera 12.1, Firefox 20+ */
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.category-vendors-bar li:first-child {
+    display: block;
+    border-left: 1px solid #E4E4E4;
+    margin-left: 10px;
+}
+
+.category-vendors-bar li {
+    display: block;
+    border-right: 1px solid #E4E4E4;
+    width: 110px;
+    min-width: 100px;
+}
+
+.category-vendors-bar li a {
+    display: block;
+    color: #3D3D3D;
+    font: 20px/1.1 robotoregular;
+    text-decoration: none;
+    padding: 20px 5px;
+    text-align: center;
+}
+/* */
+
+.category-devices-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.category-vendor-devices {
+    margin-top: 55px;
+}
+
+.category-vendor-devices h2 {
+    color: #3D3D3D;
+    font: 25px/1.1 robotoregular;
+    text-align: left;
+    margin: 0 0 15px 15px;
+}
+
+.category-vendor-device {
+    background-color: #F8F8F8;
+    border: 1px solid #E4E4E4;
+    border-radius: 9px;
+    margin-top: 45px;
+    padding: 25px 0 25px 0;
+    text-align: center;
+}
+
+.category-vendor-device a {
+    width: 75%;
+    display: block;
+    color: #0B0B0B;
+    font: 15px/1.1 robotoregular;
+    text-decoration: none;
+    margin: 0 auto;
+}
+
+.category-vendor-device img {
+    width: 100%;
+}
+
+.category-vendor-devices .view-all {
+    display: block;
+    width: 180px;
+    height: 35px;
+    margin: 45px auto 0 auto;
+    background-color: #00C962;
+    color: #fff;
+    font: 13px/35px robotoregular;
+    border-radius: 5px;
+    text-align: center;
+    text-transform: uppercase;
+    text-decoration: none;
+}
