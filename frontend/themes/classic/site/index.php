@@ -67,7 +67,7 @@ $baseUrl = $asset->baseUrl;
                 <div class = "row">
                     <div class = "col-xs-12 col-sm-1 col-md-2 col-lg-2">
                         <div class="advantages_img">
-                            <img src="<?= $baseUrl; ?>/images/advantages_img1.jpg" alt="" />
+                            <img src="<?= $baseUrl; ?>/images/advantage-access.jpg" alt="" />
                         </div>
                     </div>
                     <div class = "col-xs-12 col-sm-10 col-md-10 col-lg-10">
@@ -84,7 +84,7 @@ $baseUrl = $asset->baseUrl;
                 <div class = "row">
                     <div class = "col-xs-12 col-sm-1 col-md-2 col-lg-2">
                         <div class="advantages_img">
-                            <img src="<?= $baseUrl; ?>/images/advantages_img2.jpg" alt="" />
+                            <img src="<?= $baseUrl; ?>/images/advantage-courier.jpg" alt="" />
                         </div>
                     </div>
                     <div class = "col-xs-12 col-sm-10 col-md-10 col-lg-10">
@@ -101,7 +101,7 @@ $baseUrl = $asset->baseUrl;
                 <div class = "row">
                     <div class = "col-xs-12 col-sm-1 col-md-2 col-lg-2">
                         <div class="advantages_img">
-                            <img src="<?= $baseUrl; ?>/images/advantages_img3.jpg" alt="" />
+                            <img src="<?= $baseUrl; ?>/images/advantage-wifi.jpg" alt="" />
                         </div>
                     </div>
                     <div class = "col-xs-12 col-sm-10 col-md-10 col-lg-10">
@@ -118,7 +118,7 @@ $baseUrl = $asset->baseUrl;
                 <div class = "row">
                     <div class = "col-xs-12 col-sm-1 col-md-2 col-lg-2">
                         <div class="advantages_img">
-                            <img src="<?= $baseUrl; ?>/images/advantages_img4.jpg" alt="" />
+                            <img src="<?= $baseUrl; ?>/images/advantage-speed.jpg" alt="" />
                         </div>
                     </div>
                     <div class = "col-xs-12 col-sm-10 col-md-10 col-lg-10">

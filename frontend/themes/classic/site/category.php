@@ -13,7 +13,6 @@ $bundle = AppAsset::register($this);
 $baseUrl = $bundle->baseUrl;
 $this->params['breadcrumbs'][] = ['label' => $category->name];
 $this->registerCssFile($baseUrl . '/css/category.css');
-$this->registerJsFile($baseUrl . '/js/category.js', ['depends' => AppAsset::className()]);
 $this->title = 'Категория ' . Html::encode($category->name);
 ?>
 <div class="category-vendors-bar">

@@ -125,7 +125,7 @@ header {
     display: block;
     color: #19181e;
     font: 13px/1.1 robotolight;
-    margin-top: 10px;
+    margin-top: 0;
 }
 
 .wr_main_menu {
@@ -174,26 +174,6 @@ header {
     border-radius: 5px;
     text-decoration: none;
     margin-left: 5px;
-}
-
-.icons_1 {
-    background: url("../images/iconsimg_1.png") no-repeat left center;
-    padding-left: 40px;
-}
-
-.icons_2 {
-    background: url("../images/iconsimg_2.png") no-repeat left center;
-    padding-left: 25px;
-}
-
-.icons_3 {
-    background: url("../images/iconsimg_3.png") no-repeat left center;
-    padding-left: 35px;
-}
-
-.icons_4 {
-    background: url("../images/iconsimg_4.png") no-repeat left center;
-    padding-left: 35px;
 }
 
 .submenu {
@@ -309,9 +289,9 @@ header {
     background: url(../images/discounts.png) no-repeat;
 }
 
-.dropdown {
+/*.dropdown {
     background: #2f3338;
-}
+}*/
 
 .dropmenu li a {
     display: block;
@@ -1280,39 +1260,15 @@ footer {
 
 /* added by ilya-direct */
 
-.navbar-default {
-    margin-bottom: 0;
-    border: 0;
-}
-
-@media (min-width: 768px) {
-    .navbar-toggle {
-        display: block;
-        float: right;
-    }
-
-    .navbar-header {
-        float: right;
-    }
-
-    .navbar-nav > li {
-        float: none;
-    }
-}
-
-@media (max-width: 991px) {
-    .navbar-nav .open .dropdown-menu {
-        position: static;
-        float: none;
-        width: auto;
-        margin-top: 0;
-        background-color: transparent;
-        border: 0;
-        -webkit-box-shadow: none;
-        box-shadow: none;
-    }
-}
 
 .form-control {
     border-radius: 0;
+}
+
+header {
+    margin-bottom: 10px;
+}
+
+header h3 {
+    margin-top: 0;
 }
