@@ -59,6 +59,7 @@ return [
                 'category/<alias:[-\w]+>' => 'site/category',
                 'category/<categoryAlias:[-\w]+>/brand/<vendorAlias:[-\w]+>' => 'site/vendor',
                 'brand/<vendorAlias:[-\w]+>' => 'site/vendor',
+                'discounts' => 'site/discounts',
             ],
         ],
         'assetManager' => [

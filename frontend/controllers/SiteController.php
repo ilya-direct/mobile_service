@@ -504,4 +504,10 @@ class SiteController extends Controller
         ]);
     }
 
+    public function actionDiscounts()
+    {
+
+        return $this->render('discounts');
+    }
+
 }
