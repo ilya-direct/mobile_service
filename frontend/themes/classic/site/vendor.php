@@ -15,7 +15,7 @@ $baseUrl = $bundle->baseUrl;
 $this->params['breadcrumbs'][] = ['label' => $vendor->name];
 /* TODO: Перенести стили */
 $this->registerCssFile($baseUrl . '/css/category.css', ['depends' => AppAsset::className()]);
-$this->title = 'Бренд ' . Html::encode($vendor->name);
+$this->title = Html::encode($vendor->name);
 
 ?>
 <div class="category-devices-container">

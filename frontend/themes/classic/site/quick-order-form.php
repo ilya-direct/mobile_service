@@ -18,10 +18,10 @@ use yii\widgets\MaskedInput;
 <?= $form->field($orderPerson, 'phone')->widget(MaskedInput::className(),
     ['mask' => '+7 (999) 999-99-99'])->label('Телефон *'); ?>
 <?= $form->field($orderPerson, 'email')->textInput(); ?>
-<?= $form->field($order, 'comment')->textarea(); ?>
+<?= $form->field($order, 'client_comment')->textarea(['maxlength' => true])->label('Комментарий'); ?>
 <?php if (!empty($full)): ?>
     <?= Html::hiddenInput('fullForm', true); ?>
 <?php endif; ?>
-<?= Html::submitButton('Отправить', ['class' => 'btn btn-primary']); ?>
+<?= Html::submitButton('Отправить', ['class' => 'btn btn-success', 'style' => 'background:#00c962']); ?>
 <?php $form->end(); ?>
 

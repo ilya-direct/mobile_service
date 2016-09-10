@@ -79,6 +79,7 @@ class Order extends ActiveRecord
     }
 
     /**
+     * TODO: Убрать из валидации client_comment, так как он не редактируется в карточке заказа
      * @inheritdoc
      */
     public function rules()
@@ -89,12 +90,12 @@ class Order extends ActiveRecord
             [['created_at', 'preferable_date', 'time_from', 'time_to'], 'safe'],
             [['order_status_id'], 'integer'],
             [['uid'], 'string', 'max' => 10],
-            [['client_lead', 'comment', 'referer'], 'string', 'max' => 255],
+            [['client_lead', 'comment', 'referer', 'client_comment'], 'string', 'max' => 255],
             [['order_status_id'], 'exist', 'skipOnError' => true, 'targetClass' => OrderStatus::className(), 'targetAttribute' => ['order_status_id' => 'id']],
             ['preferable_date', 'date', 'format' => 'dd.mm.yyyy'],
             [['time_from', 'time_to'], 'date', 'format' => 'H:i', 'message' => 'XX:XX'],
             ['time_to', 'compare', 'compareAttribute' => 'time_from', 'operator' => '>=', 'message' => '< время с'],
-            [['preferable_date', 'time_from', 'time_to', 'client_lead', 'comment'], 'default'],
+            [['preferable_date', 'time_from', 'time_to', 'client_lead', 'comment', 'client_comment'], 'default'],
             ['order_status_id', 'filter', 'filter' => 'intval'],
         ];
     }

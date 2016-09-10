@@ -399,12 +399,13 @@ class SiteController extends Controller
         if ($category) {
             /** @var Vendor[] $vendors */
             $vendors = Vendor::find()
-                ->joinWith('devices')
-                ->where([
-                    Device::tableName() . '.device_category_id' => $category->id,
-                    Device::tableName() . '.enabled' => true,
-                    Vendor::tableName() . '.enabled' => true,
-                ])
+                ->joinWith(['devices' => function(ActiveQuery $q) use ($category) {
+                    $q->where([
+                        Device::tableName() . '.device_category_id' => $category->id,
+                        Device::tableName() . '.enabled' => true,
+                    ]);
+                }])
+                ->enabled()
                 ->orderBy(Vendor::tableName() . '.name')
                 ->all();
             $deviceForm = new NotFoundDeviceForm();

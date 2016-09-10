@@ -27,8 +27,14 @@ $this->registerCss(<<<CSS
 .breadcrumb-container {
     border-bottom: 1px solid #E4E4E4;
     padding-top: 10px;
-    padding-bottom: 20px;
+    padding-bottom: 5px;
 }
+
+.breadcrumb-container h2 {
+    margin-top: 30px;
+    margin-bottom: 0;
+}
+
 
 .breadcrumb li a {
     background: url("{$baseUrl}/images/double_pagi.jpg") no-repeat right 6px;
@@ -41,6 +47,12 @@ $this->registerCss(<<<CSS
     margin-top: 15px;
 }
 
+.breadcrumb {
+    padding: 0;
+    margin-bottom: 10px;
+    background-color: #fff;
+}
+
 .breadcrumb .active {
     display: inline-block;
     vertical-align: top;
@@ -50,6 +62,12 @@ $this->registerCss(<<<CSS
     text-decoration: none;
     margin-top: 15px;
 }
+
+.breadcrumb > li + li:before {
+    padding: 0;
+    content: "";
+}
+
 
 CSS
 );

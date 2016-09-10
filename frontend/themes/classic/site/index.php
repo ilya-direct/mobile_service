@@ -1,6 +1,7 @@
 <?php
 
 use yii\bootstrap\ActiveForm;
+use yii\helpers\Url;
 use common\models\ar\DeviceCategory;
 use common\models\ar\Vendor;
 
@@ -138,29 +139,29 @@ $baseUrl = $asset->baseUrl;
             <div class = "col-xs-12 col-sm-12 col-md-3 col-lg-3">
                 <div class="services_ttle">
                     <img src="<?= $baseUrl; ?>/images/services_img1.jpg" alt="" />
-                    <a href="#">Ремонт Apple</a>
-                    <p>Если Вам понадобился профессиональный ремонт Apple, обращайтесь к нам.</p>
+                    <a href="<?= Url::to(['site/device', 'alias' => 'computer']); ?>">Ремонт компьютеров</a>
+                    <p>Если Вам понадобился профессиональный ремонт компьютеров, обращайтесь к нам.</p>
+                </div>
+            </div>
+            <div class = "col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                <div class="services_ttle">
+                    <img src="<?= $baseUrl; ?>/images/services_img4.jpg" alt="" />
+                    <a href="<?= Url::to(['site/category', 'alias' => 'noutbuki']); ?>">Ремонт ноутбуков</a>
+                    <p>Наш сервис осуществляет ремонт ноутбуков известных производителей.</p>
                 </div>
             </div>
             <div class = "col-xs-12 col-sm-12 col-md-3 col-lg-3">
                 <div class="services_ttle">
                     <img src="<?= $baseUrl; ?>/images/services_img2.jpg" alt="" />
-                    <a href="#">Ремонт телефонов</a>
+                    <a href="<?= Url::to(['site/category', 'alias' => 'telefony']); ?>">Ремонт телефонов</a>
                     <p>Так же наш сервисный центр предлагает услугу по ремонту смартфонов.</p>
                 </div>
             </div>
             <div class = "col-xs-12 col-sm-12 col-md-3 col-lg-3">
                 <div class="services_ttle">
                     <img src="<?= $baseUrl; ?>/images/services_img3.jpg" alt="" />
-                    <a href="#">Ремонт планшетов</a>
+                    <a href="<?= Url::to(['site/category', 'alias' => 'plansety']); ?>">Ремонт планшетов</a>
                     <p>Наш сервисный центр рад предложить Вам профессиональный ремонт планшетов.</p>
-                </div>
-            </div>
-            <div class = "col-xs-12 col-sm-12 col-md-3 col-lg-3">
-                <div class="services_ttle">
-                    <img src="<?= $baseUrl; ?>/images/services_img4.jpg" alt="" />
-                    <a href="#">Ремонт ноутбуков</a>
-                    <p>Наш сервис осуществляет ремонт ноутбуков известных производителей.</p>
                 </div>
             </div>
         </div>

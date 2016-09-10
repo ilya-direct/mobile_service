@@ -46,10 +46,12 @@ $this->title = 'Категория ' . Html::encode($category->name);
                 </div>
             <?php endforeach; ?>
         </div>
-        <a href="<?= Url::to(['site/vendor',
-            'categoryAlias' => $category->alias,
-            'vendorAlias' => $vendor->alias,
-        ]); ?>" class="view-all">Смотреть все</a>
+        <?php if (count($vendor->devices) > 3): ?>
+            <a href="<?= Url::to(['site/vendor',
+                'categoryAlias' => $category->alias,
+                'vendorAlias' => $vendor->alias,
+            ]); ?>" class="view-all">Смотреть все</a>
+        <?php endif; ?>
     </div>
     <?php endforeach; ?>
 </div>

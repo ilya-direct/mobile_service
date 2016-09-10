@@ -66,7 +66,7 @@ $baseUrl = $bundle->baseUrl;
                 <?= $form->field($model, 'message')->textarea(['maxlength' => true]); ?>
             </div>
         </div>
-        <?= Html::submitButton('оформить заявку'); ?>
+        <?= Html::submitButton('отправить'); ?>
         <?php $form->end(); ?>
     </div>
 </div>
