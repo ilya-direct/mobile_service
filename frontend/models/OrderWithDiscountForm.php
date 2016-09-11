@@ -35,7 +35,7 @@ class OrderWithDiscountForm extends Model
         return [
             'name' => 'Имя *',
             'phone' => 'Телефон *',
-            'time_from' => 'Когда вам перезвонить?',
+            'time' => 'Когда вам перезвонить?',
         ];
     }
 
