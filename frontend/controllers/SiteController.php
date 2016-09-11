@@ -25,6 +25,7 @@ use frontend\models\DeviceOrderForm;
 use frontend\models\FooterCallbackForm;
 use frontend\models\NotFoundDeviceForm;
 use frontend\models\ContactUsForm;
+use frontend\models\OrderWithDiscountForm;
 use frontend\models\PriceCalculatorForm;
 
 /**
@@ -274,6 +275,46 @@ class SiteController extends Controller
      */
     public function actionDevice($alias)
     {
+        // Форма заказа со скидкой
+        $orderWithDiscount = new OrderWithDiscountForm();
+
+        if ($orderWithDiscount->load(Yii::$app->request->post()) && $orderWithDiscount->validate()) {
+            $transaction = Yii::$app->db->beginTransaction();
+            $time = strtotime($orderWithDiscount->time);
+            $device = Device::findOne(['id' => $orderWithDiscount->device_id, 'enabled' => true]);
+            $flag = true;
+            try {
+                $orderPerson = new OrderPerson();
+                $orderPerson->first_name = $orderWithDiscount->name;
+                $orderPerson->phone = '+' . preg_replace('/\D/', '', $orderWithDiscount->phone);
+                $orderPerson->save(false);
+
+                $order = new Order();
+                $order->order_status_id = OrderStatus::get('new');
+                $order->order_person_id = $orderPerson->id;
+                $order->order_provider_id = OrderProvider::get('order_with_discount');
+                if ($device) {
+                    $order->device_provider_id = $device->id;
+                }
+
+                if ($time) {
+                    $order->preferable_date = date('Y-m-d', $time);
+                    $order->time_from = date('H:i:s', $time);
+                }
+                $order->save(false);
+            } catch(Exception $e) {
+                $flag = false;
+                $orderWithDiscount->addError('db', 'Ошибка базы данных! Пожалуйста попробуйте ещё раз или оформите заказ по телефону +7 (963) 656-83-77. Вас ждёт приятный бонус!');
+                $transaction->rollBack();
+            }
+            if ($flag) {
+                $transaction->commit();
+                Yii::$app->session->set('uid', $order->uid);
+
+                return $this->redirect(Url::to(['site/success']));
+            }
+
+        }
         $query = Device::find()
             ->where([
                 Device::tableName() . '.alias' => $alias,
@@ -308,6 +349,7 @@ class SiteController extends Controller
 
             return $this->render('device', [
                 'model' => $model,
+                'orderWithDiscount' => $orderWithDiscount,
             ]);
         } else {
             throw new NotFoundHttpException();
@@ -473,6 +515,13 @@ class SiteController extends Controller
     }
 
 
+    /**
+     * Страница с конкретным производителем
+     * @param $vendorAlias
+     * @param null $categoryAlias
+     * @return string
+     * @throws NotFoundHttpException
+     */
     public function actionVendor($vendorAlias, $categoryAlias = null)
     {
         $category = null;
@@ -509,6 +558,11 @@ class SiteController extends Controller
         ]);
     }
 
+    /**
+     * Страница со скидками
+     *
+     * @return string
+     */
     public function actionDiscounts()
     {
 

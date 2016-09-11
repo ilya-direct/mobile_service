@@ -12,6 +12,7 @@ use dosamigos\datetimepicker\DateTimePicker;
 /**
  * @var \yii\web\View $this
  * @var \common\models\ar\Device $model
+ * @var \frontend\models\OrderWithDiscountForm $orderWithDiscount Форма заказа со скидкой
  *
  */
 $modalFormModel = new DeviceOrderForm();
@@ -191,21 +192,20 @@ $this->registerJsFile($baseUrl . '/js/device.js', ['depends' => \yii\web\JqueryA
     <div class="report">
         <img src="<?= $baseUrl; ?>/images/repor_pos.png" alt="" class="repor_img"/>
         <h2>Оформите заявку на ремонт со скидкой 5%</h2>
-        <?php $form = ActiveForm::begin(['id' => 'device-order-discount-form', 'action' => '/site/device-order/']); ?>
-            <?= $form->field($modalFormModel, 'db')->hiddenInput()->label(false); ?>
-            <?= Html::activeHiddenInput($modalFormModel, 'device_id', ['value' => $model->id]); ?>
+        <?php $form = ActiveForm::begin(['id' => 'device-order-discount-form']); ?>
+            <?= $form->field($orderWithDiscount, 'db', ['options' => ['style' => 'text-align:center']])->hiddenInput()->label(false); ?>
+            <?= Html::activeHiddenInput($orderWithDiscount, 'device_id', ['value' => $model->id]); ?>
             <div class="row">
                 <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4" >
-                    <?= $form->field($modalFormModel, 'name', ['options' => ['style' => 'margin-top:30px']])->textInput(['maxlength' => true]); ?>
+                    <?= $form->field($orderWithDiscount, 'name', ['options' => ['style' => 'margin-top:30px']])->textInput(['maxlength' => true]); ?>
                 </div>
                 <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                    <?= $form->field($modalFormModel, 'phone', ['options' => ['style' => 'margin-top:30px']])->widget(MaskedInput::className(), [
+                    <?= $form->field($orderWithDiscount, 'phone', ['options' => ['style' => 'margin-top:30px']])->widget(MaskedInput::className(), [
                         'mask' => '+7 (999) 999-99-99',
-                        'options' => ['id' => 'mask-input-unique-id'],
                     ]); ?>
                 </div>
                 <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                    <?= $form->field($modalFormModel, 'time_from', ['options' => ['style' => 'margin-top:30px']])->widget(DateTimePicker::className(), [
+                    <?= $form->field($orderWithDiscount, 'time', ['options' => ['style' => 'margin-top:30px']])->widget(DateTimePicker::className(), [
                         'language' => 'ru',
                         'size' => 'ms',
                         'template' => '{input}',
@@ -245,7 +245,7 @@ $this->registerJsFile($baseUrl . '/js/device.js', ['depends' => \yii\web\JqueryA
     <p>Стоит так же отметить, что мы используем только качественные комплектующие, установка которых, гарантирует длительную работу отремонтированного устройства в нашем сервисе. Мы дорожим каждым клиентом, доверяйте свою технику профессионалам и она прослужит Вам еще очень долго!</p>
 </div>
 
-<!-- Order Service Modal -->
+<!-- Модальная форма заказа -->
 <div id="order-service" class="modal fade" role="dialog">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">

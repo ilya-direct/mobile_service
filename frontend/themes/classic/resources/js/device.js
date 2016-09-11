@@ -33,7 +33,7 @@ $('#order-service').on('hidden.bs.modal', function (event) {
 
 
 // Отправка ActiveForm Ajax-запросом
-$('#device-order-form, #device-order-discount-form').on('beforeSubmit', function (event) {
+$('#device-order-form').on('beforeSubmit', function (event) {
     event.preventDefault();
     var form = $(this);
     // Предотвращение double-click
