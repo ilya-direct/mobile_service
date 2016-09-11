@@ -287,8 +287,12 @@ class SiteController extends Controller
                     $q->enabled();
                     $q->joinWith(['service' => function (ActiveQuery $q) {
                         $q->enabled();
-                }]);
-            }]);
+                    }]);
+                },
+                'deviceCategory' => function (\yii\db\ActiveQuery $q) {
+                    $q->andWhere(['enabled' => true]);
+                }
+            ]);
         $sql = $query->createCommand()->rawSql;
         /** @var Device $model */
         $model= $query->one();

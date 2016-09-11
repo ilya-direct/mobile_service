@@ -30,6 +30,7 @@ $callbackModel = isset($this->params['footerCallbackForm'])
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <?= Html::csrfMetaTags(); ?>
     <title><?= Html::encode($this->title); ?></title>
+    <link rel="icon" href="<?= $baseUrl; ?>/favicon.png" type="image/png">
     <link rel="stylesheet" href="<?= $baseUrl; ?>/css/reset-min.css">
     <?php $this->head(); ?>
 </head>
@@ -90,20 +91,23 @@ $callbackModel = isset($this->params['footerCallbackForm'])
                     <div class="border"></div>
                     <h2>О НАС</h2>
                     <ul>
-                        <li>
-                            <a href="<?= Url::to(['site/working-order']); ?>">Как мы работаем?</a>
-                        </li>
+                        <!--<li>
+                            <a href="<?/*= Url::to(['site/working-order']); */?>">Как мы работаем?</a>
+                        </li>-->
                         <li>
                             <a href="<?= Url::to(['site/courier']); ?>">Выезд мастера и курьера</a>
                         </li>
                         <li>
                             <a href="<?= Url::to(['site/guarantees']); ?>">Гарантии</a>
                         </li>
-                        <li>
-                            <a href="<?= Url::to(['site/faq']); ?>">Вопросы и ответы</a>
-                        </li>
+                        <!--<li>
+                            <a href="<?/*= Url::to(['site/faq']); */?>">Вопросы и ответы</a>
+                        </li>-->
                         <li>
                             <a href="<?= Url::to(['site/feedback']); ?>">Отзывы</a>
+                        </li>
+                        <li>
+                            <a href="<?= Url::to(['site/about-us']); ?>">О нас</a>
                         </li>
                     </ul>
                 </div>

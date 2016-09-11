@@ -44,6 +44,7 @@ HTML;
     'nodeActions' => [
         Module::NODE_REMOVE => Url::to(['remove']),
     ],
+    'nodeView' =>  '@backend/modules/content/views/device-category/_form',
     'showIDAttribute' => false,
     'mainTemplate' => $mainTemplate,
     'iconEditSettings' => [

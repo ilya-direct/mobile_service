@@ -5,6 +5,8 @@
 
 namespace {
 
+    use yii\web\UrlManager;
+
     exit("This file should not be included, only analyzed by your IDE");
 
 
@@ -19,6 +21,8 @@ namespace {
     /**
      * Class IDE_PHPDocWebApp
      *
+     *
+     * @property UrlManager $urlManagerFrontend
      * @property \Mobile_Detect $deviceDetect
      */
     class IDE_PHPDocWebApp extends \yii\web\Application {}

@@ -45,7 +45,9 @@ class OrderController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Order::find()->notDeleted(),
+            'query' => Order::find()
+                ->orderBy(['id' => SORT_ASC])
+                ->notDeleted(),
         ]);
 
         return $this->render('index', [

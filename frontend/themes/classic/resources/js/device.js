@@ -9,7 +9,7 @@ $('#order-service').on('show.bs.modal', function (event) {
     var device = form.find('input[name*=device_id]')[0];
     if (device_id) {
         device.value = device_id;
-        $(description).append('<p> Ремонт: <strong>' + button.data('device-name') + '</strong></p>');
+        $(description).append('<p> Устройтво: <strong>' + button.data('device-name') + '</strong></p>');
     } else {
         device.value = 0;
     }

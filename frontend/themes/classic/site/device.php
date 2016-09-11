@@ -15,12 +15,38 @@ use dosamigos\datetimepicker\DateTimePicker;
  *
  */
 $modalFormModel = new DeviceOrderForm();
-$this->title = 'Ремонт ' .  $model->name;
+
+// TODO: СКЛОНЕНИЕ РУССКИХ СЛОВ, УБРАТЬ ХАРДКОД!
+$name = $model->name;
+if ($name == 'Компьютер') {
+    $name = 'Компьютеров';
+} else if ($name == 'Ноутбук') {
+    $name = 'Ноутбуков';
+}
+// Конец
+$this->title = 'Ремонт ' .  $name;
 $bundle = AppAsset::register($this);
 $baseUrl = $bundle->baseUrl;
 
+if ($model->deviceCategory) {
+    $this->params['breadcrumbs'][] = [
+        'label' => $model->deviceCategory->name,
+        'url' => [
+            'site/category',
+            'alias' => $model->deviceCategory->alias,
+        ]
+    ];
+}
+
 if ($model->vendor) {
-    $this->params['breadcrumbs'][] = ['label' => $model->vendor->name, 'url' => ['brand/' . $model->vendor->alias]];
+    $vendorBreadcrumb = ['label' => $model->vendor->name, 'url' => [
+        'site/vendor',
+        'vendorAlias' => $model->vendor->alias,
+    ]];
+    if ($model->deviceCategory) {
+        $vendorBreadcrumb['url']['categoryAlias'] = $model->deviceCategory->alias;
+    }
+    $this->params['breadcrumbs'][] = $vendorBreadcrumb;
 }
 $this->params['breadcrumbs'][] = ['label' => $model->name];
 $this->registerCssFile($baseUrl . '/css/device.css');

@@ -23,7 +23,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             'id',
             'name',
-            'description:ntext',
             'deviceCategory.name',
             'vendor.name',
              'enabled',

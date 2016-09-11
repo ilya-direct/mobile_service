@@ -34,7 +34,10 @@ class ActiveRecord extends \yii\db\ActiveRecord
         $model = static::findOne($condition);
 
         if (!$model) {
-            throw new Exception('Can\'t find by condition', $condition);
+            throw new Exception(
+                'Не найдена модель в тбл. ' . static::getTableSchema()->name
+                . ' по условию ' .  print_r($condition, true)
+            );
         }
 
         return $model;

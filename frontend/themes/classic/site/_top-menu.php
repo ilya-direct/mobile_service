@@ -33,7 +33,7 @@ $baseUrl = AppAsset::register($this)->baseUrl;
                     </a>
                 </li>
                 <li>
-                    <a href="<?= Url::to(['site/category', 'alias' => 'noutbuki']); ?>">
+                    <a href="<?= Url::to(['site/device', 'alias' => 'noutbuk']); ?>">
                         <img src="<?= $baseUrl; ?>/icons/notebook_icon.png">
                         Ноутбуки
                     </a>

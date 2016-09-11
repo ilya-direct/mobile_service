@@ -27,6 +27,11 @@ $this->registerAssetBundle(AssetBundle::className());
 
     <?= $form->field($model, 'image')->fileInput(); ?>
 
+    <?php if ($model->getImageWebPath()): ?>
+        <p>Текущее изображение:</p>
+        <img src="<?= Yii::$app->urlManagerFrontend->hostInfo . $model->getImageWebPath(); ?>" style="height:300px">
+    <?php endif; ?>
+
     <?= $form->field($model, 'vendor_id')->dropDownList(Vendor::getList(), ['prompt' => 'Выберете производителя']); ?>
 
     <?= $form->field($model, 'device_category_id', ['template' => "{input}\n{hint}\n{error}"])

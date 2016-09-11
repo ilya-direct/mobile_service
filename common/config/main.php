@@ -38,7 +38,9 @@ return [
             'dateFormat' => 'dd.MM.yyyy',
             'datetimeFormat' => 'dd.MM.yyyy H:i:s',
             'timeFormat' => 'H:i:s',
-        ]
+        ],
+
+        'urlManagerFrontend' => require(dirname(dirname(__DIR__)) . '/frontend/config/url-manager.php'),
 
     ],
 ];

@@ -32,13 +32,14 @@ class PriceListImportForm extends Model
     public function save()
     {
         $handle = fopen($this->file->tempName, 'r');
-        fgetcsv($handle, null, ';', '"'); // header
+        fgetcsv($handle, null); // header
         $updatedPrices = [];
         $oldDeviceName = '';
         $transaction = Yii::$app->db->beginTransaction();
         $rowNumber = 1;
+        $importedDeviceAssignIds = []; // Id загруженных связок услуг по устройствам
         try {
-            while (($row = fgetcsv($handle, null, ';', '"')) !== false) {
+            while (($row = fgetcsv($handle, null)) !== false) {
                 ++$rowNumber;
                 $deviceName = (string)$row[0] ?: $oldDeviceName;
                 $serviceName = (string)$row[1];
@@ -53,6 +54,7 @@ class PriceListImportForm extends Model
                     'device_id' => $deviceModel->id,
                     'service_id' => $serviceModel->id
                 ]);
+                $importedDeviceAssignIds[] = $deviceAssignModel->id;
                 $deviceAssignModel->price_old = is_int($priceOld) ? $priceOld:
                     ($deviceAssignModel->price_old ?: (($deviceAssignModel->price > $price) ? $deviceAssignModel->price : null));
                 $deviceAssignModel->price = (integer)$price;
@@ -68,10 +70,21 @@ class PriceListImportForm extends Model
                 $deviceAssignModel->save(false);
                 $oldDeviceName = $deviceModel->name;
             }
+
+            // Все цены, которые не были загруженными сделать неактивными
+            /** @var DeviceAssign[] $deviceAssigns */
+            $deviceAssigns = DeviceAssign::find()
+                ->where(['not', ['id' => $importedDeviceAssignIds]])
+                ->all();
+            foreach ($deviceAssigns as $deviceAssign) {
+                $deviceAssign->enabled = false;
+                $deviceAssign->save(false);
+            }
+
             $transaction->commit();
         } catch(Exception $e) {
             $transaction->rollBack();
-            $error = 'Файл ' . $this->file->name . '. Строка #' . $rowNumber . '. Неизвестное устройство или услуга';
+            $error = 'Файл ' . $this->file->name . '. Строка #' . $rowNumber . '. ' . $e->getMessage();
             return [
                 'success' => false,
                 'error' => $error,
