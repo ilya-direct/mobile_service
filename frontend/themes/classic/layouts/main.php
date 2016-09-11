@@ -97,15 +97,15 @@ $callbackModel = isset($this->params['footerCallbackForm'])
                         <li>
                             <a href="<?= Url::to(['site/courier']); ?>">Выезд мастера и курьера</a>
                         </li>
-                        <li>
-                            <a href="<?= Url::to(['site/guarantees']); ?>">Гарантии</a>
-                        </li>
+                        <!--<li>
+                            <a href="<?/*= Url::to(['site/guarantees']); */?>">Гарантии</a>
+                        </li>-->
                         <!--<li>
                             <a href="<?/*= Url::to(['site/faq']); */?>">Вопросы и ответы</a>
                         </li>-->
-                        <li>
-                            <a href="<?= Url::to(['site/feedback']); ?>">Отзывы</a>
-                        </li>
+                        <!--<li>
+                            <a href="<?/*= Url::to(['site/feedback']); */?>">Отзывы</a>
+                        </li>-->
                         <li>
                             <a href="<?= Url::to(['site/about-us']); ?>">О нас</a>
                         </li>
