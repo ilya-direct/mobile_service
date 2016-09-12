@@ -51,13 +51,13 @@ $baseUrl = $asset->baseUrl;
     </div>
     <ul class="bxslider">
         <li>
-            <img src="<?= $baseUrl; ?>/images/slider_img1.jpg" alt="" />
+            <img src="<?= $baseUrl; ?>/images/slider_img1.jpg" alt="Ремонт Apple" />
         </li>
         <li>
-            <img src="<?= $baseUrl; ?>/images/slider_img2.jpg" alt="" />
+            <img src="<?= $baseUrl; ?>/images/slider_img2.jpg" alt="Ремонт Смартфонов" />
         </li>
         <li>
-            <img src="<?= $baseUrl; ?>/images/slider_img3.jpg" alt="" />
+            <img src="<?= $baseUrl; ?>/images/slider_img3.jpg" alt="Ремонт Планшетов" />
         </li>
     </ul>
 </div>
