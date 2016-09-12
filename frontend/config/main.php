@@ -15,8 +15,15 @@ return [
     'on beforeRequest' => function (yii\base\Event $event) {
         $request = Yii::$app->request;
         if (is_null(Yii::$app->session->get('referer'))) {
-            $referer = Yii::$app->request->referrer ?: '';
+            $referer = $request->referrer ?: '';
             Yii::$app->session->set('referer', $referer);
+            (new common\models\ar\FirstVisit([
+                'session_id' => Yii::$app->session->id,
+                'referer' => $request->referrer,
+                'requested_url' => $request->url,
+                'user_agent' => $request->userAgent,
+                'time' => new \yii\db\Expression('NOW()'),
+            ]))->save(false);
         }
         $pathInfo = $request->pathInfo;
         if (!empty($pathInfo) && mb_substr($pathInfo, -1) !== '/') {

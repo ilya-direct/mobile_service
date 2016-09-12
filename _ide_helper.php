@@ -23,6 +23,7 @@ namespace {
      *
      *
      * @property UrlManager $urlManagerFrontend
+     * @property UrlManager $urlManagerBackend
      * @property \Mobile_Detect $deviceDetect
      */
     class IDE_PHPDocWebApp extends \yii\web\Application {}

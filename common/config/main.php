@@ -41,6 +41,7 @@ return [
         ],
 
         'urlManagerFrontend' => require(dirname(dirname(__DIR__)) . '/frontend/config/url-manager.php'),
+        'urlManagerBackend' => require(dirname(dirname(__DIR__)) . '/backend/config/url-manager.php'),
 
     ],
 ];

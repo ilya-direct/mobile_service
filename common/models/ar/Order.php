@@ -30,6 +30,7 @@ use common\components\db\ActiveRecord;
  * @property boolean $user_agent
  * @property integer $device_provider_id  id устройства, со страницы которого был сделан заказ
  * @property string $client_comment комментарий клиента (заполняется только клиентом при оформлении заказа)
+ * @property string $session_id id сессии заказавшего
  *
  * @property OrderPerson $orderPerson
  * @property OrderProvider $orderProvider
@@ -182,6 +183,7 @@ class Order extends ActiveRecord
         if ($insert) {
             $this->referer = empty(Yii::$app->session->get('referer')) ? null : Yii::$app->session->get('referer');
             $this->ip = Yii::$app->request->userIP;
+            $this->session_id = Yii::$app->session->id;
             $this->user_agent = Yii::$app->request->userAgent;
         }
 
@@ -195,6 +197,17 @@ class Order extends ActiveRecord
         if ($insert && !$this->uid) {
             $this->setUid();
             $this->save(false);
+
+            // Отправка письма о новом заказе, если заказ с фронта
+            if ($this->order_provider_id !== OrderProvider::get('admin_panel')) {
+                Yii::$app->mailer->compose(['html' => 'new-order'], [
+                    'link' => Yii::$app->urlManagerBackend->createAbsoluteUrl(['order/view', 'id' => $this->id]),
+                    'uid' => $this->uid,
+                ])->setFrom(Yii::$app->params['companyEmail'])
+                    ->setTo(Yii::$app->params['adminEmail'])
+                    ->setSubject('Новый заказ ' . $this->uid)
+                    ->send();
+            }
         }
     }
 
