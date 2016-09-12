@@ -1,5 +1,5 @@
 <div class="reviews">
-    <h2>Случайные отзывы о нас</h2>
+    <h2>Отзывы о нас</h2>
     <div class="slider_rew">
         <ul class="bxslider2">
             <li>

@@ -4,8 +4,9 @@ namespace common\models\ar;
 
 use Yii;
 use yii\base\Exception;
-use common\components\behaviors\RevisionBehavior;
 use linslin\yii2\curl\Curl;
+use common\components\behaviors\RevisionBehavior;
+use common\components\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%order_person}}".
@@ -22,7 +23,7 @@ use linslin\yii2\curl\Curl;
  *
  * @property Order[] $orders
  */
-class OrderPerson extends \yii\db\ActiveRecord
+class OrderPerson extends ActiveRecord
 {
 
     public function behaviors()

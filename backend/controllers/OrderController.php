@@ -109,7 +109,7 @@ class OrderController extends Controller
         $order = Order::findOneOrFail($id);
 
         /** @var OrderPerson $orderPerson */
-        $orderPerson = OrderPerson::findOne([$order->order_person_id]);
+        $orderPerson = OrderPerson::findOneOrFail([$order->order_person_id]);
 
         return $this->proceed($order, $orderPerson, false);
     }

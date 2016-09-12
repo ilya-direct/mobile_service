@@ -93,7 +93,18 @@ class Order extends ActiveRecord
             [['client_lead', 'comment', 'referer', 'client_comment'], 'string', 'max' => 255],
             [['order_status_id'], 'exist', 'skipOnError' => true, 'targetClass' => OrderStatus::className(), 'targetAttribute' => ['order_status_id' => 'id']],
             ['preferable_date', 'date', 'format' => 'dd.mm.yyyy'],
-            [['time_from', 'time_to'], 'date', 'format' => 'H:i', 'message' => 'XX:XX'],
+            [['time_from', 'time_to'], function ($attribute, $params) {
+                if (!preg_match('/^\d{1,2}:\d{1,2}:\d{1,2}|\d{1,2}:\d{1,2}$/', $this->$attribute)) {
+                    $this->addError($attribute, 'Формат XX:XX');
+                    return;
+                }
+                $time = strtotime($this->$attribute);
+                if (!$time) {
+                    $this->addError($attribute, 'Неправильно указано время');
+                } else {
+                    $this->$attribute = date('H:i:s', $time);
+                }
+            }],
             ['time_to', 'compare', 'compareAttribute' => 'time_from', 'operator' => '>=', 'message' => '< время с'],
             [['preferable_date', 'time_from', 'time_to', 'client_lead', 'comment', 'client_comment'], 'default'],
             ['order_status_id', 'filter', 'filter' => 'intval'],
@@ -166,8 +177,6 @@ class Order extends ActiveRecord
 
     public function beforeSave($insert)
     {
-        $this->time_from = $this->time_from ? date('H:i:s', strtotime($this->time_from)) : null;
-        $this->time_to = $this->time_to ? date('H:i:s', strtotime($this->time_to)) : null;
         $this->preferable_date = $this->preferable_date ? date('Y-m-d', strtotime($this->preferable_date)) : null;
 
         if ($insert) {
@@ -193,12 +202,6 @@ class Order extends ActiveRecord
     {
         if (!empty($this->preferable_date)) {
             $this->preferable_date = Yii::$app->formatter->asDate($this->preferable_date);
-        }
-        if (!empty($this->time_from)) {
-            $this->time_from = substr($this->time_from, 0, 5);
-        }
-        if (!empty($this->time_to)) {
-            $this->time_to = substr($this->time_to, 0, 5);
         }
     }
 
