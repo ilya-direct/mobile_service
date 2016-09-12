@@ -569,4 +569,15 @@ class SiteController extends Controller
         return $this->render('discounts');
     }
 
+    /**
+     * Выезд мастера и курьера
+     *
+     * @return string
+     */
+    public function actionCourier()
+    {
+
+        return $this->render('courier');
+    }
+
 }

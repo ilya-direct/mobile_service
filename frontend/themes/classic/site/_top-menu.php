@@ -53,7 +53,7 @@ $baseUrl = AppAsset::register($this)->baseUrl;
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><a class="discounts" href="<?= Url::to(['site/discounts']); ?>">Скидки</a></li>
-                <li><a href="#">О нас</a></li>
+                <li><a href="<?= Url::to(['site/about-us']); ?>">О нас</a></li>
                 <li><a href="<?= Url::to(['site/contacts']); ?>">Контакты</a></li>
             </ul>
         </div>

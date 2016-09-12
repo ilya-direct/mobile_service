@@ -43,8 +43,9 @@ $callbackModel = isset($this->params['footerCallbackForm'])
             <div class="logo">
                 <a href="<?= Url::to(['site/index']); ?>">
                     <h1>BMSTU <span>Сервис</span></h1>
-                    <p>ремонт портативной техники</p>
                 </a>
+                    <p>ремонт портативной техники</p>
+                    <p class="top-phone-small"><a href="tel:+79636568377">+7 (963) 656-83-77</a></p>
             </div>
         </div>
         <div class = "col-xs-12 col-sm-6 col-md-4 col-lg-5">
@@ -155,16 +156,16 @@ $callbackModel = isset($this->params['footerCallbackForm'])
         <div class="ft_column_right">
             <ul>
                 <li>
-                    <a href="#" class="socicon-vkontakte"></a>
+                    <a class="socicon-vkontakte"></a>
                 </li>
                 <li>
-                    <a href="#" class="socicon-facebook"></a>
+                    <a class="socicon-facebook"></a>
                 </li>
                 <li>
-                    <a href="#" class="socicon-youtube"></a>
+                    <a class="socicon-youtube"></a>
                 </li>
                 <li>
-                    <a href="#" class="socicon-instagram"></a>
+                    <a class="socicon-instagram"></a>
                 </li>
             </ul>
         </div>
