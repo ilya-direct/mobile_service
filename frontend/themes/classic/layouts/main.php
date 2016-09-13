@@ -31,7 +31,6 @@ $callbackModel = isset($this->params['footerCallbackForm'])
     <?= Html::csrfMetaTags(); ?>
     <title><?= Html::encode($this->title); ?></title>
     <link rel="icon" href="<?= $baseUrl; ?>/favicon.png" type="image/png">
-    <link rel="stylesheet" href="<?= $baseUrl; ?>/css/reset-min.css">
     <?php $this->head(); ?>
 </head>
 <body>

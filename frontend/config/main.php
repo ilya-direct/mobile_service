@@ -69,16 +69,6 @@ return [
                 'discounts' => 'site/discounts',
             ],
         ],
-        'assetManager' => [
-            'bundles' => [
-                yii\bootstrap\BootstrapAsset::className() => [
-                    'sourcePath' => '@app/themes/classic/resources',
-                    'css' => [
-                        'css/bootstrap.css',
-                    ]
-                ],
-            ],
-        ],
     ],
     'params' => $params,
 ];

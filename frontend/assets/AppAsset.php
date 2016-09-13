@@ -18,7 +18,6 @@ class AppAsset extends AssetBundle
     public $sourcePath = '@app/themes/classic/resources';
 
     public $css = [
-//        'css/reset-min.css',
         'css/main.css',
         'css/jquery.bxslider.css',
         'css/icons.css',
@@ -27,7 +26,6 @@ class AppAsset extends AssetBundle
         'js/respond.js',
         'js/jquery.bxslider.min.js',
         'js/jquery.maskedinput-1.4.1.js',
-        'js/jquery.dropdown.min.js',
         'js/main.js',
     ];
     public $depends = [
