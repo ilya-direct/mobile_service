@@ -56,27 +56,45 @@ $this->registerJsFile($baseUrl . '/js/device.js', ['depends' => \yii\web\JqueryA
 <div class="wr_sevis_ttle">
     <div class="sevis_ttle">
         <div class = "row">
-            <?php if ($model->image): ?>
-                <div class = "col-xs-12 col-sm-3 col-md-2 col-lg-2">
-                    <img class="device-image" src="<?= $model->image; ?>" alt="<?= Html::encode($model->name); ?>" />
+            <?php if (empty($model->description)): ?>
+                <div class = "col-xs-12">
+                    <div class = "col-xs-12">
+                        <?php if ($model->image): ?>
+                                <img class="device-image" style="max-width: 150px" src="<?= $model->image; ?>" alt="<?= Html::encode($model->name); ?>" />
+                        <?php endif; ?>
+                        <a
+                            data-toggle="modal"
+                            data-target="#order-service"
+                            data-device-id="<?= $model->id; ?>"
+                            data-device-name="<?= $model->name; ?>"
+                            class="device-order-button">
+                            Заказать ремонт
+                        </a>
+                    </div>
+                </div>
+            <?php else: ?>
+                <?php if ($model->image): ?>
+                    <div class = "col-xs-12 col-sm-3 col-md-2 col-lg-2">
+                        <img class="device-image" src="<?= $model->image; ?>" alt="<?= Html::encode($model->name); ?>" />
+                    </div>
+                <?php endif; ?>
+                <div class = "col-xs-12 col-sm-9 col-md-10 col-lg-10">
+                    <div class="device-description"><?= HtmlPurifier::process($model->description); ?></div>
+                    <a
+                        data-toggle="modal"
+                        data-target="#order-service"
+                        data-device-id="<?= $model->id; ?>"
+                        data-device-name="<?= $model->name; ?>"
+                        class="device-order-button">Заказать ремонт</a>
                 </div>
             <?php endif; ?>
-            <div class = "col-xs-12 col-sm-9 col-md-10 col-lg-10">
-                <div class="device-description"><?= HtmlPurifier::process($model->description); ?></div>
-                <a
-                    data-toggle="modal"
-                    data-target="#order-service"
-                    data-device-id="<?= $model->id; ?>"
-                    data-device-name="<?= $model->name; ?>"
-                    class="device-order-button">Заказать ремонт</a>
-            </div>
         </div>
     </div>
 </div>
 <?= $this->render('_advantages-section'); ?>
 <?php if (!empty($model->deviceAssigns)): ?>
     <div class="table">
-        <table>
+        <table id="device-table">
             <tr class="tr_one">
                 <td>
                     <h3>Наименование услуги</h3>

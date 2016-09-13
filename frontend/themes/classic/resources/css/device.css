@@ -63,6 +63,10 @@
     color: white;
 }
 
+#device-table td {
+    padding: 10px;
+}
+
 @media screen and (max-width: 767px) {
     .device-image {
         width: 50%;

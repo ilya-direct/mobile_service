@@ -451,6 +451,7 @@ class SiteController extends Controller
                         Device::tableName() . '.device_category_id' => $category->id,
                         Device::tableName() . '.enabled' => true,
                     ]);
+                    $q->orderBy([Device::tableName() . '.name' => SORT_DESC]);
                 }])
                 ->enabled()
                 ->orderBy(Vendor::tableName() . '.name')
@@ -550,6 +551,7 @@ class SiteController extends Controller
             ->where(['vendor_id' => $vendor->id])
             ->andFilterWhere(['device_category_id' => $category ? $category->id : null])
             ->enabled()
+            ->orderBy([Device::tableName() . '.name' => SORT_DESC])
             ->all();
 
         return $this->render('vendor', [
