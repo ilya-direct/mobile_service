@@ -366,26 +366,6 @@ header {
     opacity: 0.7;
 }
 
-.advantages {
-    max-width: 1140px;
-    margin: 0 auto;
-}
-
-.advantages_bl {
-    margin-toP: 45px;
-}
-
-.advantages_ttle h3 {
-    color: #131313;
-    font: 16px/1.1 robotoregular;
-}
-
-.advantages_ttle p {
-    color: #64686D;
-    font: 13px/1.4 robotoregular;
-    margin-toP: 12px;
-}
-
 .wr_services {
     background-color: #fbfbfb;
     margin-toP: 35px;
@@ -1214,14 +1194,6 @@ footer {
 }
 
 @media screen and (max-width: 768px) {
-    .advantages_ttle, .advantages_img {
-        text-align: center;
-    }
-
-    .advantages_img {
-        margin-bottom: 10px;
-    }
-
     .associate li {
         display: block;
     }
