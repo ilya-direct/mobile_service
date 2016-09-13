@@ -569,6 +569,8 @@ header {
 }
 
 .about ul {
+    padding-left: 0;
+    list-style: none;
     margin-top: 25px;
 }
 
@@ -587,6 +589,8 @@ header {
 }
 
 .contacts ul {
+    padding-left: 0;
+    list-style: none;
     margin-top: 20px;
 }
 

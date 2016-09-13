@@ -51,23 +51,10 @@ return [
             ],
         ],
 
-        'urlManager' => [
-            'enablePrettyUrl' => true,
-            'showScriptName' => false,
-            'suffix' => '/',
-            'rules' => [
-                '/' => 'site/index',
-                'quick-order' => 'site/quick-order', // верхняя форма заказа
-                'contacts' => 'site/contacts',
-                'about-us' => 'site/about-us',
-                'footer-form' => 'site/footer-callback-form',
-                'success' => 'site/success',
-                'remont/<alias:[-\w]+>' => 'site/device',
-                'category/<alias:[-\w]+>' => 'site/category',
-                'category/<categoryAlias:[-\w]+>/brand/<vendorAlias:[-\w]+>' => 'site/vendor',
-                'brand/<vendorAlias:[-\w]+>' => 'site/vendor',
-                'discounts' => 'site/discounts',
-            ],
+        'urlManager' => require('url-manager.php'),
+
+        'formatter' => [
+            'class' => common\components\app\Formatter::className(),
         ],
     ],
     'params' => $params,

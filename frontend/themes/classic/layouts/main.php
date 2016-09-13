@@ -4,6 +4,7 @@ use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\MaskedInput;
+use common\components\app\Formatter;
 use common\models\ar\Order;
 use common\models\ar\OrderPerson;
 use common\widgets\Alert;
@@ -44,7 +45,11 @@ $callbackModel = isset($this->params['footerCallbackForm'])
                     <h1>BMSTU <span>Сервис</span></h1>
                 </a>
                     <p>ремонт портативной техники</p>
-                    <p class="top-phone-small"><a href="tel:+79636568377">+7 (963) 656-83-77</a></p>
+                    <p class="top-phone-small">
+                        <a href="tel:<?= Yii::$app->formatter->asPhone(Yii::$app->params['phone'], Formatter::PHONE_FORMAT_PLAIN); ?>">
+                            <?= Yii::$app->formatter->asPhone(Yii::$app->params['phone']); ?>
+                        </a>
+                    </p>
             </div>
         </div>
         <div class = "col-xs-12 col-sm-6 col-md-4 col-lg-5">
@@ -73,7 +78,7 @@ $callbackModel = isset($this->params['footerCallbackForm'])
             <div class="hd_ttle">
                 <p>ст. Бауманская</p>
                 <div></div>
-                <h3>+7 (963) 656-83-77</h3>
+                <h3><?= Yii::$app->formatter->asPhone(Yii::$app->params['phone']); ?></h3>
                 <div></div>
                 <span> пн-пт: 8:00 - 20:00  cб,вс: 8:00 -17:00</span>
             </div>
@@ -118,10 +123,14 @@ $callbackModel = isset($this->params['footerCallbackForm'])
                     <h2>Контакты</h2>
                     <ul>
                         <li>
-                            <p class="phone">+7 (963) 656 83 77</p>
+                            <p class="phone">
+                                <a href="tel:<?= Yii::$app->formatter->asPhone(Yii::$app->params['phone'], Formatter::PHONE_FORMAT_PLAIN); ?>">
+                                    <?= Yii::$app->formatter->asPhone(Yii::$app->params['phone']); ?>
+                                </a>
+                            </p>
                         </li>
                         <li>
-                            <p class="email">ilya-direct@ya.ru</p>
+                            <p class="email"><?= Html::mailto(Yii::$app->params['email']); ?></p>
                         </li>
                         <li>
                             <p class="adress">г. Москва, ул. Фридриха Энгельса, д. 22</p>

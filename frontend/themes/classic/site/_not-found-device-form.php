@@ -14,7 +14,7 @@ $model = isset($model) ? $model : new NotFoundDeviceForm;
 <div class="device-not-found-container">
     <div class="device-not-found-form">
         <h2>Не нашли нужную модель?</h2>
-        <h3>Позвоните по тел. <span>+7 (963) 656 83 77</span> или <span>заполните форму</span> и мы свяжемся с вами</h3>
+        <h3>Позвоните по тел. <span><?= Yii::$app->formatter->asPhone(Yii::$app->params['phone']); ?></span> или <span>заполните форму</span> и мы свяжемся с вами</h3>
         <?php $form = ActiveForm::begin([
             'id' => 'not-found-device-form',
             'action' => ['site/not-found-device'],

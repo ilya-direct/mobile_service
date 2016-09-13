@@ -22,10 +22,14 @@ $baseUrl = $bundle->baseUrl;
             <p class="work2">пн-пт: 10:00 - 20:00 сб-вс: 10:00 - 18:00</p>
         </li>
         <li>
-            <p class="phone2">+7 (963) 656 83 77</p>
+            <p class="phone2">
+                <a href="tel:<?= Yii::$app->formatter->asPhone(Yii::$app->params['phone'], \common\components\app\Formatter::PHONE_FORMAT_PLAIN); ?>">
+                    <?= Yii::$app->formatter->asPhone(Yii::$app->params['phone']); ?>
+                </a>
+            </p>
         </li>
         <li>
-            <p class="email2">ilya-direct@ya.ru</p>
+            <p class="email2"><?= Html::mailto(Yii::$app->params['email']); ?></p>
         </li>
         <li>
             <p class="adress2">г.Москва ул. Фридриха Энгельса, д. 21</p>
