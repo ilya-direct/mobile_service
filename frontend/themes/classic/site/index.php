@@ -66,30 +66,38 @@ $baseUrl = $asset->baseUrl;
     <div class="services">
         <div class = "row">
             <div class = "col-xs-12 col-sm-12 col-md-3 col-lg-3">
-                <div class="services_ttle">
-                    <img src="<?= $baseUrl; ?>/images/computer_icon.jpg" alt="" />
-                    <a href="<?= Url::to(['site/device', 'alias' => 'computer']); ?>">Ремонт компьютеров</a>
+                <div class="services_title">
+                    <a href="<?= Url::to(['site/device', 'alias' => 'computer']); ?>">
+                        <img src="<?= $baseUrl; ?>/images/computer_icon.jpg" alt="" />
+                        <p>Ремонт компьютеров</p>
+                    </a>
                     <p>Если Вам понадобился профессиональный ремонт компьютеров, обращайтесь к нам.</p>
                 </div>
             </div>
             <div class = "col-xs-12 col-sm-12 col-md-3 col-lg-3">
-                <div class="services_ttle">
-                    <img src="<?= $baseUrl; ?>/images/services_img4.jpg" alt="" />
-                    <a href="<?= Url::to(['site/device', 'alias' => 'noutbuk']); ?>">Ремонт ноутбуков</a>
+                <div class="services_title">
+                    <a href="<?= Url::to(['site/device', 'alias' => 'noutbuk']); ?>">
+                        <img src="<?= $baseUrl; ?>/images/services_img4.jpg" alt="" />
+                        <p>Ремонт ноутбуков</p>
+                    </a>
                     <p>Наш сервис осуществляет ремонт ноутбуков известных производителей.</p>
                 </div>
             </div>
             <div class = "col-xs-12 col-sm-12 col-md-3 col-lg-3">
-                <div class="services_ttle">
-                    <img src="<?= $baseUrl; ?>/images/services_img2.jpg" alt="" />
-                    <a href="<?= Url::to(['site/category', 'alias' => 'telefony']); ?>">Ремонт телефонов</a>
+                <div class="services_title">
+                    <a href="<?= Url::to(['site/category', 'alias' => 'telefony']); ?>">
+                        <img src="<?= $baseUrl; ?>/images/services_img2.jpg" alt="" />
+                        <p>Ремонт телефонов</p>
+                    </a>
                     <p>Так же наш сервисный центр предлагает услугу по ремонту смартфонов.</p>
                 </div>
             </div>
             <div class = "col-xs-12 col-sm-12 col-md-3 col-lg-3">
-                <div class="services_ttle">
-                    <img src="<?= $baseUrl; ?>/images/services_img3.jpg" alt="" />
-                    <a href="<?= Url::to(['site/category', 'alias' => 'plansety']); ?>">Ремонт планшетов</a>
+                <div class="services_title">
+                    <a href="<?= Url::to(['site/category', 'alias' => 'plansety']); ?>">
+                        <img src="<?= $baseUrl; ?>/images/services_img3.jpg" alt="" />
+                        <p>Ремонт планшетов</p>
+                    </a>
                     <p>Наш сервисный центр рад предложить Вам профессиональный ремонт планшетов.</p>
                 </div>
             </div>
