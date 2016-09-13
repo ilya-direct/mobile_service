@@ -1,5 +1,6 @@
 <?php
 
+use yii\helpers\Url;
 use frontend\assets\AppAsset;
 
 /**
@@ -11,5 +12,5 @@ $baseUrl = AppAsset::register($this)->baseUrl;
     <h2>Курьерская доставка</h2>
     <h3>Вам необязательно выезжать к нам в сервис, чтобы отремонтировать...</h3>
     <img src="<?= $baseUrl; ?>/images/delivery_img.jpg" alt="" />
-    <a href="#">подробнее</a>
+    <a href="<?= Url::to(['site/courier']); ?>">подробнее</a>
 </div>

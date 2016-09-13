@@ -21,6 +21,7 @@ use common\models\ar\OrderProvider;
 use common\models\ar\OrderService;
 use common\models\ar\OrderStatus;
 use common\models\ar\Vendor;
+use frontend\models\CourierOrderForm;
 use frontend\models\DeviceOrderForm;
 use frontend\models\FooterCallbackForm;
 use frontend\models\NotFoundDeviceForm;
@@ -576,8 +577,38 @@ class SiteController extends Controller
      */
     public function actionCourier()
     {
+        $model = new CourierOrderForm();
 
-        return $this->render('courier');
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $transaction = Yii::$app->db->beginTransaction();
+            $flag = true;
+            try {
+                $orderPerson = new OrderPerson();
+                $orderPerson->first_name = $model->name;
+                $orderPerson->phone = '+' . preg_replace('/\D/', '', $model->phone);
+                $orderPerson->save(false);
+
+                $order = new Order();
+                $order->order_status_id = OrderStatus::get('new');
+                $order->order_person_id = $orderPerson->id;
+                $order->order_provider_id = OrderProvider::get('courier_form');
+                $order->save(false);
+            } catch(Exception $e) {
+                $flag = false;
+                $model->addError('db', 'Ошибка базы данных! Пожалуйста попробуйте ещё раз или оформите заказ по телефону +7 (963) 656-83-77. Вас ждёт приятный бонус!');
+                $transaction->rollBack();
+            }
+            if ($flag) {
+                $transaction->commit();
+                Yii::$app->session->set('uid', $order->uid);
+
+                return $this->redirect(Url::to(['site/success']));
+            }
+        }
+
+        return $this->render('courier', [
+            'model' => $model,
+        ]);
     }
 
 }

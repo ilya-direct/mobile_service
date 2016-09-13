@@ -11,10 +11,12 @@ class m160909_091403_add_column_client_comment extends Migration
         $this->insert('{{%order_provider}}', ['name' => 'Форма "Не нашёл нужную модель"']);
         $this->insert('{{%order_provider}}', ['name' => 'Форма "Оставьте нам сообщение"']);
         $this->insert('{{%order_provider}}', ['name' => 'Форма "Заявка на ремонт со скидкой"']);
+        $this->insert('{{%order_provider}}', ['name' => 'Форма заказа мастера на дом']);
     }
 
     public function safeDown()
     {
+        $this->delete('{{%order_provider}}', ['name' => 'Форма заказа мастера на дом']);
         $this->delete('{{%order_provider}}', ['name' => 'Форма "Заявка на ремонт со скидкой"']);
         $this->delete('{{%order_provider}}', ['name' => 'Форма "Оставьте нам сообщение"']);
         $this->delete('{{%order_provider}}', ['name' => 'Форма "Не нашёл нужную модель"']);

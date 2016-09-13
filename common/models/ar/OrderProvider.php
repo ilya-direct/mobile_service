@@ -62,6 +62,7 @@ class OrderProvider extends \yii\db\ActiveRecord
         'not_found_device_form' => 'Форма "Не нашёл нужную модель"',
         'contact_us_form' => 'Форма "Оставьте нам сообщение"',
         'order_with_discount' => 'Форма "Заявка на ремонт со скидкой"',
+        'courier_form' => 'Форма заказа мастера на дом',
     ];
 
     public static function get($providerAlias)
