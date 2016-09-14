@@ -54,10 +54,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     <h4 class="list-group-item-heading">Сотрудники компании</h4>
                     <p class="list-group-item-text">Редактирование профилей сотрудников</p>
                 </a>
-                <a href="<?= Url::to(['/settings/customer']) ?>" class="list-group-item">
-                    <h4 class="list-group-item-heading">Клиенты</h4>
-                    <p class="list-group-item-text">Список всех клиентов с возможностью добавления новых</p>
-                </a>
             </div>
         </div>
     </div>

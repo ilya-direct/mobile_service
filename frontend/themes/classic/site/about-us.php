@@ -11,10 +11,7 @@ $this->title = 'О нас';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="container-fluid">
-    <div class="site-about">
-        <h1><?= Html::encode($this->title) ?></h1>
-    </div>
-    <img src="<?= $baseUrl; ?>/images/about-us.png" style="float: right">
+    <img src="<?= $baseUrl; ?>/images/about-us.png" style="float: right; margin-top: 15px;">
     <div class="about-us">
         <p>
             Компания <strong>BMSTU</strong> предоставляет услуги по ремонту стационарных компьютеров и портативных устройств
@@ -75,6 +72,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerCss(<<<CSS
 .about-us {
+    margin-top: 15px;
     font-family: robotoregular;
 }
 .about-us ul {
