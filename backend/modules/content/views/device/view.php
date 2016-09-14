@@ -35,13 +35,12 @@ $this->params['breadcrumbs'][] = $this->title;
             'alias',
             [
                 'label' => 'Изображение',
-                'format' => 'raw',
+                'format' => 'html',
                 'value' => $model->getImageWebPath()
-                    ? '<img src="' . Yii::$app->urlManagerFrontend->hostInfo . $model->getImageWebPath() . '" style="height:300px">'
+                    ? Html::img(Yii::$app->urlManagerFrontend->hostInfo . $model->getImageWebPath(), ['style' => 'height:300px'])
                     : ' - ',
             ],
-            'description:ntext',
-            'image',
+            'description:html',
             'deviceCategory.name',
             'enabled:boolean',
             'vendor.name',

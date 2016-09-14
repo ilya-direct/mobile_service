@@ -145,6 +145,9 @@ class Device extends ActiveRecord
     {
         $path = Yii::getAlias(Device::IMAGE_SAVE_PATH);
         $alias = $this->alias;
+        if (!$alias) {
+            return false;
+        }
         $images = FileHelper::findFiles($path, ['filter' => function ($path) use ($alias) {
 
             return (boolean)preg_match('/'. preg_quote($this->alias, '/') . '\.\w{3,4}$/u', $path);

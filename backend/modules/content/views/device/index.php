@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'name',
             'deviceCategory.name',
             'vendor.name',
-             'enabled',
+            'enabled:boolean',
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

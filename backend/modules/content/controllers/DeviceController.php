@@ -39,6 +39,28 @@ class DeviceController extends Controller
     {
         $dataProvider = new ActiveDataProvider([
             'query' => Device::find()->joinWith('deviceCategory'),
+            'pagination' => [
+                'pageSizeLimit' => [1, 100000],
+                'pageSize' => 100,
+            ],
+            'sort' => [
+                'attributes' => [
+                    'name' => [
+                        'asc' => [
+                            'enabled' => SORT_DESC,
+                            'name' => SORT_ASC,
+                        ],
+                        'desc' => [
+                            'enabled' => SORT_DESC,
+                            'name' => SORT_DESC,
+                        ],
+                        'default' => SORT_ASC,
+                    ],
+                ],
+                'defaultOrder' => [
+                    'name' => SORT_ASC,
+                ],
+            ],
         ]);
 
         return $this->render('index', [
