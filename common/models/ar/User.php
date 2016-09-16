@@ -172,7 +172,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentity($id)
     {
-        return static::findOne(['id' => $id, 'enabled' => 1]);
+        return static::findOne(['id' => $id, 'enabled' => true, 'deleted' => false]);
     }
 
     /**
@@ -191,7 +191,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findByUsername($email)
     {
-        return static::findOne(['email' => $email, 'enabled' => 1]);
+        return static::findOne(['email' => $email, 'enabled' => true, 'deleted' => false]);
     }
 
     /**
@@ -209,6 +209,7 @@ class User extends ActiveRecord implements IdentityInterface
         return static::findOne([
             'password_reset_token' => $token,
             'enabled' => 1,
+            'deleted' => false,
         ]);
     }
     /**
@@ -303,7 +304,7 @@ class User extends ActiveRecord implements IdentityInterface
             $this->deleted = true;
             return $this->update(false, ['deleted']);
         }
-        Yii::$app->db->beginTransaction();
+
         return parent::delete();
     }
 }

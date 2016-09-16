@@ -26,12 +26,19 @@ class ActiveRecord extends \yii\db\ActiveRecord
 
     /**
      * @param $condition
+     * @param $query использовать ли find()->where()
      * @return null|static
      * @throws Exception
      */
-    public static function findOneOrFail($condition)
+    public static function findOneOrFail($condition, $query = false)
     {
-        $model = static::findOne($condition);
+        if ($query) {
+            $q = static::find();
+            $q->where($condition);
+            $model = $q->one();;
+        } else {
+            $model = static::findOne($condition);
+        }
 
         if (!$model) {
             throw new Exception(

@@ -6,6 +6,7 @@ use Yii;
 use yii\behaviors\SluggableBehavior;
 use yii\helpers\FileHelper;
 use common\components\behaviors\RevisionBehavior;
+use common\components\validators\UniqueInsensitiveValidator;
 use common\components\db\ActiveRecord;
 
 /**
@@ -77,7 +78,8 @@ class Device extends ActiveRecord
             [['device_category_id', 'vendor_id'], 'integer'],
             ['enabled', 'boolean'],
             [['name', 'alias'], 'string', 'max' => 255],
-            [['name', 'alias'], 'unique'],
+            ['name', UniqueInsensitiveValidator::className()],
+            ['alias', 'unique'],
             [
                 'device_category_id', 'exist',
                 'skipOnError' => true,

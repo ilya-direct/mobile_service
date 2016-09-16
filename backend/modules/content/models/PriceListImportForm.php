@@ -41,14 +41,25 @@ class PriceListImportForm extends Model
         try {
             while (($row = fgetcsv($handle, null)) !== false) {
                 ++$rowNumber;
-                $deviceName = (string)$row[0] ?: $oldDeviceName;
-                $serviceName = (string)$row[1];
+                $deviceName = trim((string)$row[0] ?: $oldDeviceName);
+                $serviceName = trim((string)$row[1]);
+                if (empty($deviceName) || empty($serviceName)) {
+                    throw new Exception('Должны быть заданы имя устройства и название услуги');
+                }
                 $price = (int)$row[2];
                 $priceOld = (trim($row[3]) == '0' || $row[3]) ? (integer) $row[3] : null;
                 /** @var Service $serviceModel */
-                $serviceModel = Service::findOneOrFail(['name' => $serviceName]);
+                $serviceModel = Service::find()->where(['ilike', 'name', $serviceName, false])->one();
+                if (!$serviceModel) {
+                    $serviceModel = new Service([
+                        'name' => $serviceName,
+                        'position' => 0,
+                    ]);
+                }
+                $serviceModel->enabled = true;
+                $serviceModel->save(false);
                 /** @var Device $deviceModel */
-                $deviceModel = Device::findOneOrFail(['name' => $deviceName]);
+                $deviceModel = Device::findOneOrFail(['ilike', 'name', $deviceName, false], true);
                 /** @var DeviceAssign $deviceAssignModel */
                 $deviceAssignModel = DeviceAssign::findOrNew([
                     'device_id' => $deviceModel->id,

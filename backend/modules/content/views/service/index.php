@@ -19,6 +19,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'columns' => [
+            [
+                'class' => yii\grid\SerialColumn::className(),
+            ],
             'id',
             'name',
             'small_description:ntext',

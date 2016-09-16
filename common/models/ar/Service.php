@@ -5,6 +5,7 @@ namespace common\models\ar;
 use Yii;
 use common\components\behaviors\RevisionBehavior;
 use common\components\db\ActiveRecord;
+use common\components\validators\UniqueInsensitiveValidator;
 
 /**
  * This is the model class for table "{{%service}}".
@@ -58,7 +59,7 @@ class Service extends ActiveRecord
             [['service_category_id', 'position'], 'integer'],
             [['enabled'], 'boolean'],
             [['name'], 'string', 'max' => 255],
-            [['name'], 'unique'],
+            ['name', UniqueInsensitiveValidator::className()],
             [['service_category_id'], 'exist', 'skipOnError' => true, 'targetClass' => ServiceCategory::className(), 'targetAttribute' => ['service_category_id' => 'id']],
             ['enabled', 'filter', 'filter' => 'boolval'],
             ['position', 'filter', 'filter' => 'intval'],
