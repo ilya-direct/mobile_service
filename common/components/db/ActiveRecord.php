@@ -26,7 +26,7 @@ class ActiveRecord extends \yii\db\ActiveRecord
 
     /**
      * @param $condition
-     * @param $query использовать ли find()->where()
+     * @param boolean $query использовать ли find()->where()
      * @return null|static
      * @throws Exception
      */

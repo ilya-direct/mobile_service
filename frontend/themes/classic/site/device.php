@@ -138,7 +138,11 @@ $this->registerJsFile($baseUrl . '/js/device.js', ['depends' => \yii\web\JqueryA
 <div class="wr_report wr_report4">
     <div class="report">
         <img src="<?= $baseUrl; ?>/images/repor_pos.png" alt="" class="repor_img"/>
-        <h2>Оформите заявку на ремонт со скидкой 5%</h2>
+        <?php if (empty($model->deviceAssigns)) : ?>
+            <h2>Оформите заявку на ремонт со скидкой 5%</h2>
+        <?php else: ?>
+            <h2>Не нашли нужную услугу? Оформите заявку со скидкой 5%</h2>
+        <?php endif; ?>
         <?php $form = ActiveForm::begin(['id' => 'device-order-discount-form']); ?>
             <?= $form->field($orderWithDiscount, 'db', ['options' => ['style' => 'text-align:center']])->hiddenInput()->label(false); ?>
             <?= Html::activeHiddenInput($orderWithDiscount, 'device_id', ['value' => $model->id]); ?>

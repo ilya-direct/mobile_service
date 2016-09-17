@@ -3,6 +3,7 @@
 namespace backend\modules\content\controllers;
 
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use common\models\ar\Device;
@@ -40,8 +41,38 @@ class PriceListController extends Controller
                 Yii::$app->session->setFlash('error', $result['error']);
             }
         }
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => DeviceAssign::find()->joinWith(['device', 'service']),
+            'pagination' => [
+                'pageSizeLimit' => [1, 100000],
+                'pageSize' => 100,
+            ],
+            'sort' => [
+                'attributes' => [
+                    'device' => [
+                        'asc' => [
+                            DeviceAssign::tableName() . '.enabled' => SORT_DESC,
+                            Device::tableName() . '.name' => SORT_ASC,
+                            Service::tableName() . '.name' => SORT_ASC,
+                        ],
+                        'desc' => [
+                            DeviceAssign::tableName() . '.enabled' => SORT_DESC,
+                            Device::tableName() . '.name' => SORT_DESC,
+                            Service::tableName() . '.name' => SORT_ASC,
+                        ],
+                        'default' => SORT_ASC,
+                    ],
+                ],
+                'defaultOrder' => [
+                    'device' => SORT_ASC,
+                ],
+            ],
+        ]);
+
         return $this->render('index', [
             'model' => $model,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -74,5 +105,19 @@ class PriceListController extends Controller
         fclose($h);
 
         return $this->redirect($fileName);
+    }
+
+    /**
+     * Deletes an existing DeviceAssign model.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionDelete($id)
+    {
+        /** @var DeviceAssign $model */
+        $model = DeviceAssign::findOneOrFail($id);
+        $model->delete();
+
+        return $this->redirect(['index']);
     }
 }

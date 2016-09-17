@@ -3,9 +3,11 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
-
-/* @var $this yii\web\View */
-/* @var $model \backend\modules\content\models\PriceListImportForm */
+/**
+ * @var \yii\web\View $this
+ * @var \yii\data\ActiveDataProvider $dataProvider
+ * @var \backend\modules\content\models\PriceListImportForm $model
+ */
 
 $this->title = 'Прайслисты';
 $this->params['breadcrumbs'][] = $this->title;
@@ -24,4 +26,20 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= Html::submitButton('Загрузить цены', ['class'=> 'btn btn-success']); ?>
 
     <?php ActiveForm::end(); ?>
+
+    <?= \yii\grid\GridView::widget([
+        'dataProvider' => $dataProvider,
+        'columns' => [
+            'id',
+            'device.name:text:Устройство',
+            'service.name:text:Услуга',
+            'enabled:boolean',
+            'price',
+            'price_old',
+            [
+                'class' => yii\grid\ActionColumn::className(),
+                'template' => '{delete}',
+            ],
+        ],
+    ]); ?>
 </div>

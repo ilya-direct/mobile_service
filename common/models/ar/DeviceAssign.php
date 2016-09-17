@@ -68,9 +68,9 @@ class DeviceAssign extends ActiveRecord
             'id' => 'ID',
             'device_id' => 'Device ID',
             'service_id' => 'Service ID',
-            'price' => 'Price',
-            'price_old' => 'Price Old',
-            'enabled' => 'Enabled',
+            'price' => 'Цена',
+            'price_old' => 'Старая цена',
+            'enabled' => 'Активна',
         ];
     }
 
