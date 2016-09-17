@@ -122,7 +122,7 @@ class SiteController extends Controller
                 'user' => $user,
                 'link' => 'site/reset-password',
             ])
-            ->setFrom(Yii::$app->params['companyEmail'])
+            ->setFrom(Yii::$app->params['appEmail'])
             ->setTo($user->email)
             ->setSubject('Восстановление пароля для ' . Yii::$app->name)
             ->send();

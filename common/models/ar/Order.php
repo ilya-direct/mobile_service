@@ -203,7 +203,7 @@ class Order extends ActiveRecord
                 Yii::$app->mailer->compose(['html' => 'new-order'], [
                     'link' => Yii::$app->urlManagerBackend->createAbsoluteUrl(['order/view', 'id' => $this->id]),
                     'uid' => $this->uid,
-                ])->setFrom(Yii::$app->params['companyEmail'])
+                ])->setFrom([Yii::$app->params['appEmail'] => Yii::$app->params['companyName']])
                     ->setTo(Yii::$app->params['adminEmail'])
                     ->setSubject('Новый заказ ' . $this->uid)
                     ->send();
