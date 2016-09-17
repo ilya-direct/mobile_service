@@ -3,7 +3,8 @@
 use yii\helpers\Html;
 
 /**
- * @var host string кастомный хост для url
+ * @var string $host кастомный хост для url
+ * @var string $link ссылка перехода
  * @var yii\web\View $this
  * @var $user \common\models\ar\User
  */

@@ -116,13 +116,11 @@ class SiteController extends Controller
      */
     public function sendResetPasswordMail($user)
     {
-        return Yii::$app->mailer->compose([
-            'html' => 'passwordResetToken-html',
-            'text' => 'passwordResetToken-text'], [
+        return Yii::$app->mailer->compose(['html' => 'passwordResetToken-html'], [
                 'user' => $user,
                 'link' => 'site/reset-password',
             ])
-            ->setFrom(Yii::$app->params['appEmail'])
+            ->setFrom([Yii::$app->params['appEmail'] => Yii::$app->params['companyName']])
             ->setTo($user->email)
             ->setSubject('Восстановление пароля для ' . Yii::$app->name)
             ->send();
