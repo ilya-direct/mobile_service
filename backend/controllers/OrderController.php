@@ -4,7 +4,6 @@ namespace backend\controllers;
 
 use Yii;
 use yii\base\DynamicModel;
-use yii\data\ActiveDataProvider;
 use yii\filters\VerbFilter;
 use yii\db\Exception;
 use yii\web\Controller;
@@ -16,6 +15,7 @@ use common\models\ar\Order;
 use common\models\ar\OrderPerson;
 use common\models\ar\OrderProvider;
 use common\models\ar\OrderService;
+use backend\models\OrderSearchForm;
 use linslin\yii2\curl\Curl;
 
 /**
@@ -44,14 +44,12 @@ class OrderController extends Controller
      */
     public function actionIndex()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Order::find()
-                ->orderBy(['id' => SORT_ASC])
-                ->notDeleted(),
-        ]);
+        $searchModel = new OrderSearchForm();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
             'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
         ]);
     }
 
