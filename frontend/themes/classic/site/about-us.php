@@ -10,7 +10,7 @@ $baseUrl = AppAsset::register($this)->baseUrl;
 $this->title = 'О нас';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="container-fluid">
+<div class="container">
     <img src="<?= $baseUrl; ?>/images/about-us.png" style="float: right; margin-top: 15px;">
     <div class="about-us">
         <p>
@@ -79,6 +79,7 @@ $this->registerCss(<<<CSS
     padding-left: 20px;
 }
 .about-us ul li {
+    display: list-item;
     list-style-type: square;
     color: #00c962;
 }

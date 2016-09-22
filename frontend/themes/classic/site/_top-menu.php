@@ -85,8 +85,9 @@ $this->registerCss(<<<CSS
     border: 0;
 }
 
-#menu .container-fluid {
-    padding-left: 0;
+#menu #sub-menu {
+    max-width: 1350px;
+    margin: 0 auto;
 }
 
 #menu .nav > li {
