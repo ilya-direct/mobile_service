@@ -32,13 +32,8 @@ class ActiveRecord extends \yii\db\ActiveRecord
      */
     public static function findOneOrFail($condition, $query = false)
     {
-        if ($query) {
-            $q = static::find();
-            $q->where($condition);
-            $model = $q->one();;
-        } else {
-            $model = static::findOne($condition);
-        }
+
+        $model = $query ? static::find()->where($condition)->one() : static::findOne($condition);
 
         if (!$model) {
             throw new Exception(
@@ -74,19 +69,17 @@ class ActiveRecord extends \yii\db\ActiveRecord
      */
     public static function findOrCreateReturnScalar($condition, $attribute = 'id')
     {
-        $value = static::find()
+        $model = static::find()
             ->select($attribute)
             ->where($condition)
-            ->scalar();
+            ->one(); // scalar нельзя, так как значение может быть false
 
-        if ($value === false) {
+        if ($model === null) {
             $model = new static($condition);
             $model->save(false);
-            $value = $model->{$attribute};
-
         }
 
-        return $value;
+        return $model->{$attribute};
     }
 
     /**

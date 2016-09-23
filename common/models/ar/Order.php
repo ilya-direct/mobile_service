@@ -199,7 +199,7 @@ class Order extends ActiveRecord
             $this->save(false);
 
             // Отправка письма о новом заказе, если заказ с фронта
-            if ($this->order_provider_id !== OrderProvider::get('admin_panel')) {
+            if ($this->order_provider_id !== OrderProvider::getId(OrderProvider::PROVIDER_ADMIN_PANEL)) {
                 Yii::$app->mailer->compose(['html' => 'new-order'], [
                     'link' => Yii::$app->urlManagerBackend->createAbsoluteUrl(['order/view', 'id' => $this->id]),
                     'uid' => $this->uid,

@@ -158,7 +158,7 @@ class OrderController extends Controller
                     $orderPerson->save(false);
                     if ($isNew) {
                         $order->order_person_id = $orderPerson->id;
-                        $order->order_provider_id = OrderProvider::get('admin_panel');
+                        $order->order_provider_id = OrderProvider::getId(OrderProvider::PROVIDER_ADMIN_PANEL);
                     }
                     $order->save(false);
                     if (!$isNew) {

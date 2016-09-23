@@ -3,7 +3,8 @@
 namespace common\models\ar;
 
 use Yii;
-use yii\db\Exception;
+use yii\base\Exception;
+use common\components\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%order_status}}".
@@ -13,25 +14,17 @@ use yii\db\Exception;
  *
  * @property Order[] $orders
  */
-class OrderStatus extends \yii\db\ActiveRecord
+class OrderStatus extends ActiveRecord
 {
+    const STATUS_NEW = 'new';
+    const STATUS_CONFIRMED = 'confirmed';
+
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
         return '{{%order_status}}';
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function rules()
-    {
-        return [
-            [['name'], 'required'],
-            [['name'], 'string', 'max' => 30],
-        ];
     }
 
     /**
@@ -53,32 +46,23 @@ class OrderStatus extends \yii\db\ActiveRecord
         return $this->hasMany(Order::className(), ['order_status_id' => 'id']);
     }
 
-
-    private static $statuses = [
-        'new' => 'Новый',
-    ];
-
-    public static function get($statusAlias)
+    public static function getStatuses()
     {
-        $status = self::$statuses[$statusAlias];
-        $status_id = self::find()
-            ->select('id')
-            ->where(['name' => $status])
-            ->scalar();
-        if (!$status_id) {
-            throw new Exception('Undefined order status');
+        return [
+            self::STATUS_NEW => 'Новый',
+            self::STATUS_CONFIRMED => 'Подтверждён',
+        ];
+    }
+
+    public static function getId($status)
+    {
+        $statuses = self::getStatuses();
+
+        if (isset($statuses[$status])) {
+            return self::findOrCreateReturnScalar(['name' => $statuses[$status]]);
+        } else {
+            throw new Exception('Undefined OderStatus: ' . $status);
         }
-        return $status_id;
     }
 
-    public static function getList()
-    {
-        $list =self::find()
-            ->select('name')
-            ->indexBy('id')
-            ->orderBy('id')
-            ->column();
-
-        return $list;
-    }
 }
