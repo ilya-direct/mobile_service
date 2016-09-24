@@ -168,12 +168,21 @@ class OrderController extends Controller
                             ['not', ['device_assign_id' => $validator['ids']]]
                         ]);
                     }
+                    $usedIds = []; // id у OrderService
                     foreach ($validator['ids'] as $id) {
-                        OrderService::findOrNew([
+                        $orderService = OrderService::find()->where([
                             'order_id' => $order->id,
                             'device_assign_id' => $id,
                             'deleted' => false,
-                        ])->save(false);
+                        ])->andWhere(['not', ['id' => $usedIds]])->one();
+                        if (!$orderService) {
+                            $orderService = new OrderService([
+                                'order_id' => $order->id,
+                                'device_assign_id' => $id,
+                            ]);
+                            $orderService->save(false);
+                        }
+                        $usedIds[] = $orderService->id;
                     }
                 } catch (Exception $e) {
                     $transaction->rollBack();

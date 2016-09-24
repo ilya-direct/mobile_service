@@ -7,6 +7,7 @@ use yii\behaviors\AttributeBehavior;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
+use yii\db\Transaction;
 use common\components\behaviors\RevisionBehavior;
 use common\components\db\ActiveRecord;
 
@@ -39,6 +40,9 @@ use common\components\db\ActiveRecord;
  */
 class Order extends ActiveRecord
 {
+    /** @var  Transaction */
+    private $transaction; // Для выполнения межмодельных транзакций
+
     public function behaviors()
     {
         return [
@@ -222,7 +226,8 @@ class Order extends ActiveRecord
     {
         parent::afterDelete();
         OrderPerson::findOne($this->order_person_id)->delete(false);
-        Yii::$app->db->transaction->commit();
+        OrderService::deleteAll(['order_id' => $this->id], false);
+        $this->transaction->commit();
     }
 
     public function delete($soft = true)
@@ -231,7 +236,7 @@ class Order extends ActiveRecord
             $this->deleted = true;
             return $this->update(false, ['deleted']);
         }
-        Yii::$app->db->beginTransaction();
+        $this->transaction = Yii::$app->db->beginTransaction();
         return parent::delete();
     }
 

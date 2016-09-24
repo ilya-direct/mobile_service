@@ -307,4 +307,21 @@ class User extends ActiveRecord implements IdentityInterface
 
         return parent::delete();
     }
+
+    /*
+     * Sends reset password message
+     * @param User $user
+     * @return boolean
+     */
+    public function sendResetPasswordMail()
+    {
+        return Yii::$app->mailer->compose(['html' => 'passwordResetToken-html'], [
+            'user' => $this,
+            'link' => 'site/reset-password',
+        ])
+            ->setFrom([Yii::$app->params['appEmail'] => Yii::$app->params['companyName']])
+            ->setTo($this->email)
+            ->setSubject('Восстановление пароля для ' . Yii::$app->name)
+            ->send();
+    }
 }

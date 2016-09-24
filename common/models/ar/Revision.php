@@ -3,12 +3,12 @@
 namespace common\models\ar;
 
 use Yii;
-use yii\behaviors\BlameableBehavior;
+use yii\behaviors\AttributeBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use yii\db\Query;
 use common\components\db\ActiveRecord;
-use common\models\ar\User;
+use common\helpers\SystemHelper;
 
 /**
  * This is the model class for table "revision".
@@ -33,6 +33,8 @@ class Revision extends \yii\db\ActiveRecord
     const OPERATION_INSERT = true;
     const OPERATION_UPDATE = false;
 
+    private static $consoleUserId;
+
     public function behaviors()
     {
         return [
@@ -42,10 +44,21 @@ class Revision extends \yii\db\ActiveRecord
                 'value' => new Expression('NOW()'),
             ],
             'blamable' => [
-                'class' => BlameableBehavior::className(),
+                'class' => AttributeBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => ['user_id'],
                 ],
+                'value' => function() {
+                    // Если изменения в БД происходят через консольный скрипт, то пользователь console
+                    if (SystemHelper::isConsole()) {
+                        $value = self::getConsoleUserId();
+                    } else {
+                        $user = Yii::$app->user;
+                        $value = $user && !$user->isGuest ? $user->id : null;
+                    }
+
+                    return $value;
+                }
             ],
         ];
     }
@@ -169,5 +182,17 @@ class Revision extends \yii\db\ActiveRecord
         }
 
         return $value;
+    }
+
+    private static function getConsoleUserId()
+    {
+        if (!self::$consoleUserId) {
+            self::$consoleUserId = User::find()
+                ->select('id')
+                ->where(['email' => 'console@console.ru'])
+                ->scalar();
+        }
+
+        return self::$consoleUserId;
     }
 }

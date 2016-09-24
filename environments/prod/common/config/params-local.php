@@ -6,4 +6,5 @@ return [
     'phone' => '0123456789',
     'email' => 'xxx',
     'companyName' => 'xxx',
+    'dbBackUpFolder' => 'xxx',
 ];

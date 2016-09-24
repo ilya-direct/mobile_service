@@ -97,13 +97,13 @@ class OrderService extends ActiveRecord
         return $this->hasOne(Order::className(), ['id' => 'order_id']);
     }
 
-    public static function deleteAll($condition = '', $params = [])
+    public static function deleteAll($condition = '', $soft = true)
     {
         $tr = Yii::$app->db->beginTransaction();
         /** @var self $models */
         $models = self::find()->where($condition)->all();
         foreach ($models as $model) {
-            $model->delete();
+            $model->delete($soft);
         }
         $tr->commit();
 

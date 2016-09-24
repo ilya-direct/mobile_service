@@ -106,7 +106,6 @@ class DeviceAssign extends ActiveRecord
                 }
             }
         }
-        $deviceAssignIds = array_unique($deviceAssignIds);
 
         $success = empty($errors);
 

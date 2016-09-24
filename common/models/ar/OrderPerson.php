@@ -130,8 +130,8 @@ class OrderPerson extends ActiveRecord
                     $address = $meta['text'];
                     $this->$attribute = $address;
                     list($longitude, $latitude) = explode(' ', $yandexGeoObject['Point']['pos']);
-                    $this->address_longitude = $longitude;
-                    $this->address_latitude = $latitude;
+                    $this->address_longitude = (float)$longitude;
+                    $this->address_latitude = (float)$latitude;
 
                     return null;
                 } else {

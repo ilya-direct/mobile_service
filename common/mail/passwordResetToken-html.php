@@ -3,20 +3,12 @@
 use yii\helpers\Html;
 
 /**
- * @var string $host кастомный хост для url
  * @var string $link ссылка перехода
  * @var yii\web\View $this
  * @var $user \common\models\ar\User
  */
 
-if(!empty($host)){
-    $oldHost=Yii::$app->urlManager->hostInfo;
-    Yii::$app->urlManager->hostInfo=$host;
-    $resetLink = Yii::$app->urlManager->createAbsoluteUrl([$link, 'token' => $user->password_reset_token]);
-    Yii::$app->urlManager->hostInfo=$oldHost;
-}else {
-    $resetLink = Yii::$app->urlManager->createAbsoluteUrl([$link, 'token' => $user->password_reset_token]);
-}
+$resetLink = Yii::$app->urlManagerBackend->createAbsoluteUrl([$link, 'token' => $user->password_reset_token]);
 ?>
 <div class="password-reset">
     <p>Здравствуйте <?= Html::encode($user->first_name) ?>,</p>
