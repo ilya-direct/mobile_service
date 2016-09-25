@@ -17,6 +17,12 @@ return [
             require __DIR__ . '/db/db-local.php'
         ),
 
+        'session' => [
+            'class' => yii\web\Session::className(),
+            'timeout' => 5 * 365 * 24 * 60 * 60,
+            'useCookies' => true,
+        ],
+
         'log' => [
             'traceLevel' => YII_DEBUG ? 0 : 0,
             'targets' => [

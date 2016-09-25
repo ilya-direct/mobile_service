@@ -315,6 +315,8 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function sendResetPasswordMail()
     {
+        $this->generatePasswordResetToken();
+        $this->update(false, ['password_reset_token']);
         return Yii::$app->mailer->compose(['html' => 'passwordResetToken-html'], [
             'user' => $this,
             'link' => 'site/reset-password',

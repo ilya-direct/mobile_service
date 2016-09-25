@@ -34,7 +34,7 @@ return [
     'components' => [
         'user' => [
             'identityClass' => common\models\ar\User::className(),
-            'enableAutoLogin' => true,
+            'enableAutoLogin' => false,
             'authTimeout' => 10*60, // 10 минут
         ],
 

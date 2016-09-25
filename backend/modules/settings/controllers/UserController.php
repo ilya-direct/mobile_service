@@ -67,20 +67,18 @@ class UserController extends Controller
         $model = new User();
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $model->generatePasswordResetToken();
             $model->generateAuthKey();
             $model->setPassword(Yii::$app->security->generateRandomString());
-            $model->generatePasswordResetToken();
             $model->save(false);
-            if (Yii::$app->createControllerByID('site')->sendResetPasswordMail($model)) {
-                Yii::$app->session->setFlash('success', 'На email ' . $model->email . ' выслана инструкция по созданию пароля');
-            }
+            $model->sendResetPasswordMail();
+            Yii::$app->session->setFlash('success', 'На email ' . $model->email . ' выслана инструкция по созданию пароля');
+
             return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
         }
+
+        return $this->render('create', [
+            'model' => $model,
+        ]);
     }
 
     /**
@@ -95,23 +93,18 @@ class UserController extends Controller
 
         $post = Yii::$app->request->post();
 
-        if ($model->load($post) && $model->validate()) {
-            $model->updated_at = DateTime::createFromFormat(DateTime::W3C, time());
+        if ($model->load($post) && $model->save()) {
             if(!empty($post['recover-password'])){
-                $model->generatePasswordResetToken();
-                $model->save(false);
-                if (Yii::$app->createControllerByID('site')->sendResetPasswordMail($model)) {
-                    Yii::$app->session
-                        ->setFlash('success', 'На email ' . $model->email . ' выслана инструкция по изменению пароля');
-                }
+                $model->sendResetPasswordMail();
+                Yii::$app->session->setFlash('success', 'На email ' . $model->email . ' выслана инструкция по изменению пароля');
             }
-            $model->save(false);
+
             return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
         }
+
+        return $this->render('update', [
+            'model' => $model,
+        ]);
     }
 
     /**

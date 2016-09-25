@@ -99,6 +99,7 @@ class SiteController extends Controller
     public function actionResetPassword($token)
     {
         $resetForm = new ResetPasswordForm($token);
+        Yii::$app->user->logout();
         if ($resetForm->load(Yii::$app->request->post()) && $resetForm->validate()) {
             $resetForm->resetPassword()
                 ? Yii::$app->session->setFlash('success', 'Пароль успешно изменён!')
