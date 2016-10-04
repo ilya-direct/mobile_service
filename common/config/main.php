@@ -34,6 +34,7 @@ return [
                         'yii\db\Connection::open',
                         'yii\db\Command::execute',
                         'yii\db\Command::query',
+                        'yii\swiftmailer\Mailer::sendMessage',
                     ]
                 ],
             ],
