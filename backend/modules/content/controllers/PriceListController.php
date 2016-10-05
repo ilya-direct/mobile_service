@@ -9,6 +9,7 @@ use yii\web\Controller;
 use common\models\ar\Device;
 use common\models\ar\DeviceAssign;
 use common\models\ar\Service;
+use common\models\ar\User;
 use backend\modules\content\models\PriceListImportForm;
 
 
@@ -26,19 +27,37 @@ class PriceListController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [
+                'class' => \yii\filters\AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['index'],
+                        'roles' => [User::ROLE_LOGIN_ONLY],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['delete', 'export'],
+                        'roles' => [User::ROLE_OPERATOR],
+                    ],
+                ],
+
+            ],
         ];
     }
 
     public function actionIndex()
     {
-        $model = new PriceListImportForm();
-        if (Yii::$app->request->isPost && $model->validate()) {
-            $result = $model->save();
-            if ($result['success']) {
-                $flashView = $this->renderPartial('flash-box', ['flashArray' => $result['updatedItems']]);
-                Yii::$app->session->setFlash('success', $flashView);
-            } else {
-                Yii::$app->session->setFlash('error', $result['error']);
+        if (Yii::$app->user->can(User::ROLE_OPERATOR)) {
+            $model = new PriceListImportForm();
+            if (Yii::$app->request->isPost && $model->validate()) {
+                $result = $model->save();
+                if ($result['success']) {
+                    $flashView = $this->renderPartial('flash-box', ['flashArray' => $result['updatedItems']]);
+                    Yii::$app->session->setFlash('success', $flashView);
+                } else {
+                    Yii::$app->session->setFlash('error', $result['error']);
+                }
             }
         }
 
@@ -71,7 +90,7 @@ class PriceListController extends Controller
         ]);
 
         return $this->render('index', [
-            'model' => $model,
+            'model' => isset($model) ? $model : null,
             'dataProvider' => $dataProvider,
         ]);
     }

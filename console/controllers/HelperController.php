@@ -64,4 +64,28 @@ class HelperController extends Controller
             Console::output('User ' . $user->id . ' restored. Reset password link was sended to his email.');
         }
     }
+
+    /**
+     * Изменение роли пользователя через консоль
+     * @param $email email пользователя
+     * @param $role новая роль
+     * @return null
+     */
+    public function actionChangeRole($email, $role) {
+        if (!in_array($role, User::getRoles())) {
+            Console::output('Role ' . $role . ' undefined');
+            return null;
+        }
+
+        /** @var User $user */
+        $user = User::findOne(['email' => $email]);
+        $oldRole = $user->role;
+        if ($oldRole == $role) {
+            Console::output('Nothing changed, user is already in this role');
+        } else {
+            $user->role = $role;
+            $user->save(false);
+            Console::output('Role changed from ' . $oldRole . ' to ' . $role);
+        }
+    }
 }

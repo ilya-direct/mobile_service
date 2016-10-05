@@ -6,7 +6,7 @@ use yii\widgets\ActiveForm;
 /**
  * @var \yii\web\View $this
  * @var \yii\data\ActiveDataProvider $dataProvider
- * @var \backend\modules\content\models\PriceListImportForm $model
+ * @var \backend\modules\content\models\PriceListImportForm|null $model
  */
 
 $this->title = 'Прайслисты';
@@ -19,13 +19,15 @@ $this->params['breadcrumbs'][] = $this->title;
         'class' => 'btn btn-primary',
         'style' => 'position:relative;bottom:5px;left:20px',
     ]); ?>
-    <?php $form = ActiveForm::begin(['options' => ['style' => 'margin-top:10px']]); ?>
+    <?php if ($model): ?>
+        <?php $form = ActiveForm::begin(['options' => ['style' => 'margin-top:10px']]); ?>
 
-    <?= $form->field($model, 'file')->fileInput()->label(false); ?>
+        <?= $form->field($model, 'file')->fileInput()->label(false); ?>
 
-    <?= Html::submitButton('Загрузить цены', ['class'=> 'btn btn-success']); ?>
+        <?= Html::submitButton('Загрузить цены', ['class' => 'btn btn-success']); ?>
 
-    <?php ActiveForm::end(); ?>
+        <?php ActiveForm::end(); ?>
+    <?php endif; ?>
 
     <?= \yii\grid\GridView::widget([
         'dataProvider' => $dataProvider,

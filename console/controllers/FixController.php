@@ -3,6 +3,7 @@
 namespace console\controllers;
 
 use Yii;
+use yii\base\ErrorException;
 use yii\console\Controller;
 use yii\db\Expression;
 use common\models\ar\Device;
@@ -74,11 +75,21 @@ class FixController extends Controller
     /**
      * Создаёт начальную ревизию всех полей, которые не были проинициализированны
      *
-     * @throws \yii\db\Exception
+     * @param string $table конкретная таблица
+     * @param string $field конкретное поле
+     * @throws ErrorException
      */
-    public function actionRevision()
+    public function actionRevision($table = null, $field = null)
     {
-        foreach ($this->tables as $table) {
+        $tables = $this->tables;
+        if ($table) {
+            if (in_array($table, $tables)) {
+                $tables = [$table];
+            } else {
+                throw new ErrorException('Undefined table class name : ' . $table);
+            }
+        }
+        foreach ($tables as $table) {
 
             $models = $table::find()->all();
             foreach ($models as $model) {
@@ -87,7 +98,9 @@ class FixController extends Controller
                 }
                 $revisionTableId = RevisionTable::findOrCreateReturnScalar(['name' => $table::getTableSchema()->name]);
                 $attributes = $model->behaviors['revision']->attributes;
-
+                if ($field) {
+                    $attributes = array_intersect($attributes, [$field]);
+                }
                 $revisionTableName = Revision::tableName();
                 $versionedFields = Revision::find()
                     ->select( RevisionField::tableName() . '.name')

@@ -29,6 +29,7 @@ use common\components\db\ActiveRecord;
  * @property string $created_at
  * @property string $updated_at
  * @property boolean $deleted
+ * @property string $role роль пользователя
  *
  * @property News[] $newsCreator
  * @property News[] $newsUpdater
@@ -39,6 +40,11 @@ use common\components\db\ActiveRecord;
  */
 class User extends ActiveRecord implements IdentityInterface
 {
+    const ROLE_LOGIN_ONLY = 'login_only';
+    const ROLE_WORKER = 'worker';
+    const ROLE_OPERATOR = 'operator';
+    const ROLE_ADMIN = 'admin';
+
     public function behaviors()
     {
         return [
@@ -66,6 +72,7 @@ class User extends ActiveRecord implements IdentityInterface
                     'phone',
                     'enabled',
                     'deleted',
+                    'role',
                 ]
             ],
         ];
@@ -85,7 +92,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['email', 'first_name','phone', 'enabled'], 'required'],
+            [['email', 'first_name','phone', 'enabled', 'role'], 'required'],
             [['address_latitude', 'address_longitude'], 'number'],
             [['enabled'], 'boolean'],
             [['email'], 'string', 'max' => 100],
@@ -102,6 +109,7 @@ class User extends ActiveRecord implements IdentityInterface
                 return $newValue;
             }],
             ['enabled', 'filter', 'filter' => 'boolval'],
+            ['role', 'in', 'range' => self::getRoles()],
         ];
     }
 
@@ -124,6 +132,7 @@ class User extends ActiveRecord implements IdentityInterface
             'enabled' => 'Активен',
             'created_at' => 'Время создания',
             'updated_at' => 'Время последнего обновления',
+            'role' => 'Роль',
         ];
     }
 
@@ -325,5 +334,32 @@ class User extends ActiveRecord implements IdentityInterface
             ->setTo($this->email)
             ->setSubject('Восстановление пароля для ' . Yii::$app->name)
             ->send();
+    }
+
+    public static function getRolesList()
+    {
+        return [
+            self::ROLE_ADMIN => 'Администратор',
+            self::ROLE_WORKER => 'Мастер',
+            self::ROLE_OPERATOR => 'Оператор',
+            self::ROLE_LOGIN_ONLY => 'Базовый пользователь',
+        ];
+    }
+
+
+    public static function getRoles()
+    {
+        return array_keys(self::getRolesList());
+    }
+
+    /**
+     * Название роли
+     * @return mixed
+     */
+    public function getRoleLabel()
+    {
+        $rolesList = self::getRolesList();
+
+        return $rolesList[$this->role];
     }
 }

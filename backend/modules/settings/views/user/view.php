@@ -35,6 +35,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'first_name',
             'email:email',
             'phone',
+            [
+                'attribute' => 'role',
+                'value' => $model->getRoleLabel(),
+            ],
             'enabled:boolean',
             'created_at',
             'updated_at',

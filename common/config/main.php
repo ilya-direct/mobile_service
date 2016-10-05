@@ -40,6 +40,12 @@ return [
             ],
         ],
 
+        'authManager' => [
+            'class' => common\components\app\PhpManager::className(),
+            'itemFile' => '@common/rbac/items.php',
+            'ruleFile' => '@common/rbac/rules.php',
+        ],
+
         'formatter' => [
             'class' => 'yii\i18n\Formatter',
             'dateFormat' => 'dd.MM.yyyy',

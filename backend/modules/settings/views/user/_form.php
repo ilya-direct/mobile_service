@@ -25,6 +25,8 @@ use yii\widgets\MaskedInput;
         'mask' => '+7 (999) 999 99 99',
     ]) ?>
 
+    <?= $form->field($model, 'role')->dropDownList($model->getRolesList(), ['prompt' => '...']); ?>
+
     <?= $form->field($model, 'enabled')->checkbox(); ?>
 
     <?php if(!$model->isNewRecord): ?>
