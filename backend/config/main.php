@@ -33,9 +33,10 @@ return [
     ],
     'components' => [
         'user' => [
+            'class' => common\components\app\User::className(),
             'identityClass' => common\models\ar\User::className(),
-            'enableAutoLogin' => false,
-            'authTimeout' => 10*60, // 10 минут
+            'enableAutoLogin' => true,
+            'authTimeout' => 60*60, // 1 час
         ],
 
         'errorHandler' => [
@@ -65,7 +66,7 @@ return [
             ],
         ],
         'denyCallback' => function () {
-            return Yii::$app->response->redirect(['site/login']);
+            return Yii::$app->user->loginRequired();
         },
     ],
 

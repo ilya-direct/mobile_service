@@ -21,6 +21,7 @@ return [
             'class' => yii\web\Session::className(),
             'timeout' => 5 * 365 * 24 * 60 * 60,
             'useCookies' => true,
+            'name' => 'mobile-service',
         ],
 
         'log' => [
@@ -35,6 +36,7 @@ return [
                         'yii\db\Command::execute',
                         'yii\db\Command::query',
                         'yii\swiftmailer\Mailer::sendMessage',
+                        'yii\web\HttpException:403',
                     ]
                 ],
             ],

@@ -57,7 +57,6 @@ class HelperController extends Controller
             $user->deleted = false;
             $user->enabled = true;
             $user->setPassword(Yii::$app->security->generateRandomString());
-            $user->generatePasswordResetToken();
             $user->generateAuthKey();
             $user->save(false);
             $user->sendResetPasswordMail();
@@ -67,8 +66,8 @@ class HelperController extends Controller
 
     /**
      * Изменение роли пользователя через консоль
-     * @param $email email пользователя
-     * @param $role новая роль
+     * @param string $email email пользователя
+     * @param string $role новая роль
      * @return null
      */
     public function actionChangeRole($email, $role) {
@@ -87,5 +86,21 @@ class HelperController extends Controller
             $user->save(false);
             Console::output('Role changed from ' . $oldRole . ' to ' . $role);
         }
+    }
+
+    /**
+     * Log out user from all sessions
+     * @param string $email email пользователя
+     * @return null
+     */
+    public function actionLogOut($email) {
+        /** @var User|null $user */
+        $user = User::findByUsername($email);
+        if (!$user) {
+            Console::output('User not found');
+        }
+        $user->generateAuthKey();
+        $user->update(false);
+        Console::output('User was logged out from all sessions');
     }
 }
