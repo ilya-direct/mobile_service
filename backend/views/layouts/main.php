@@ -35,12 +35,11 @@ $baseUrl = AppAsset::register($this)->baseUrl;
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
-    $menuItems = [
-        ['label' => 'Главная', 'url' => ['/site/index']],
-    ];
+    $menuItems = [];
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Войти', 'url' => ['/site/login']];
     } else {
+        $menuItems[] = ['label' => mb_strtoupper(Yii::$app->user->identity->getRoleLabel())];
         $menuItems[] = '<li>'
             . Html::beginForm(['/site/logout'], 'post')
             . Html::submitButton(

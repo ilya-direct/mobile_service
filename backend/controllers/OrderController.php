@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use Yii;
 use yii\base\DynamicModel;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\db\Exception;
 use yii\web\Controller;
@@ -33,8 +34,23 @@ class OrderController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
+                    'delete-test-orders' => ['POST']
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['operator'],
+                        'actions' => [
+                            'create',
+                            'index',
+                            'deleteTestOrders',
+                        ]
+                    ]
+                ]
+            ]
         ];
     }
 
@@ -264,4 +280,26 @@ class OrderController extends Controller
         ];
     }
 
+    /**
+     * Удаление тестовых заказов
+     */
+    public function actionDeleteTestOrders()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        /** @var Order[] $orders */
+        $orders = Order::find()
+            ->joinWith('orderPerson')
+            ->where(['ilike', OrderPerson::tableName() . '.first_name', '%тест', false])
+            ->orWhere(['ilike', OrderPerson::tableName() . '.first_name', '%тестовый', false])
+            ->all();
+
+        $i = 0;
+        foreach ($orders as $order) {
+            ++$i;
+            $order->delete(false);
+        }
+
+        return ['msg' => 'Было удалено ' . $i  . ' тестовых заказов'];
+
+    }
 }
