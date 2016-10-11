@@ -25,6 +25,8 @@ use common\components\db\ActiveRecord;
  */
 class OrderPerson extends ActiveRecord
 {
+    const SCENARIO_WORKER = 'worker';
+    const SCENARIO_OPERATOR = 'operator';
 
     public function behaviors()
     {
@@ -51,6 +53,14 @@ class OrderPerson extends ActiveRecord
     public static function tableName()
     {
         return '{{%order_person}}';
+    }
+
+    public function scenarios()
+    {
+        $scenarios[self::SCENARIO_WORKER] = [];
+        $scenarios[self::SCENARIO_OPERATOR] = parent::scenarios()[self::SCENARIO_DEFAULT];
+
+        return $scenarios;
     }
 
     /**

@@ -4,6 +4,9 @@ namespace console\controllers;
 use Yii;
 use yii\console\Controller;
 use common\models\ar\User;
+use common\rbac\rules\OrderOperatorRule;
+use common\rbac\rules\OrderWorkerRule;
+use common\rbac\rules\OrderAdminRule;
 
 /**
  * Инициализация ролей, разрешений, правил
@@ -39,5 +42,36 @@ class RbacController extends Controller
         $authManager->addChild($admin, $worker);
         $authManager->addChild($admin, $operator);
 
+        // Order access
+        $rule = new OrderAdminRule();
+        $rule->name  = 'OrderAdminRule';
+        $authManager->add($rule);
+        $orderAccess = $authManager->createPermission('orderAccess');
+        $orderAccess->ruleName = $rule->name;
+        $orderAccess->description = 'Проверка доступа к заказу для всех ролей';
+        $authManager->add($orderAccess);
+
+        $rule = new OrderOperatorRule();
+        $rule->name  = 'OrderOperatorRule';
+        $authManager->add($rule);
+        $orderAccessOperator = $authManager->createPermission('orderAccessOperator');
+        $orderAccessOperator->ruleName = $rule->name;
+        $orderAccessOperator->description= 'Проверка доступа оператора к заказу';
+        $authManager->add($orderAccessOperator);
+
+        $rule = new OrderWorkerRule();
+        $rule->name  = 'OrderWorkerRule';
+        $authManager->add($rule);
+        $orderAccessWorker = $authManager->createPermission('orderAccessWorker');
+        $orderAccessWorker->ruleName = $rule->name;
+        $orderAccessWorker->description= 'Проверка доступа мастера к заказу';
+        $authManager->add($orderAccessWorker);
+
+
+        $authManager->addChild($admin, $orderAccess);
+        $authManager->addChild($operator, $orderAccessOperator);
+        $authManager->addChild($worker, $orderAccessWorker);
+        $authManager->addChild($orderAccessOperator, $orderAccess);
+        $authManager->addChild($orderAccessWorker, $orderAccess);
     }
 }

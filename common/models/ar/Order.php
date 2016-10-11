@@ -8,8 +8,10 @@ use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
 use yii\db\Transaction;
+use yii\web\IdentityInterface;
 use common\components\behaviors\RevisionBehavior;
 use common\components\db\ActiveRecord;
+use common\components\db\ActiveQuery;
 
 /**
  * This is the model class for table "{{%order}}".
@@ -32,6 +34,8 @@ use common\components\db\ActiveRecord;
  * @property integer $device_provider_id  id устройства, со страницы которого был сделан заказ
  * @property string $client_comment комментарий клиента (заполняется только клиентом при оформлении заказа)
  * @property string $session_id id сессии заказавшего
+ * @property integer $operator_id id оператора
+ * @property integer $worker_id id мастера
  *
  * @property OrderPerson $orderPerson
  * @property OrderProvider $orderProvider
@@ -40,6 +44,9 @@ use common\components\db\ActiveRecord;
  */
 class Order extends ActiveRecord
 {
+    const SCENARIO_WORKER = 'worker';
+    const SCENARIO_OPERATOR = 'operator';
+
     /** @var  Transaction */
     private $transaction; // Для выполнения межмодельных транзакций
 
@@ -70,9 +77,19 @@ class Order extends ActiveRecord
                     'preferable_date',
                     'time_from',
                     'time_to',
+                    'operator_id',
+                    'worker_id',
                 ]
             ],
         ];
+    }
+
+    public function scenarios()
+    {
+        $scenarios[self::SCENARIO_WORKER] = ['order_status_id', 'client_lead', 'comment'];
+        $scenarios[self::SCENARIO_OPERATOR] = ['order_status_id', 'client_lead', 'comment', 'worker_id', 'preferable_date', 'time_from', 'time_to', 'client_lead'];
+
+        return $scenarios;
     }
 
     /**
@@ -91,12 +108,16 @@ class Order extends ActiveRecord
     {
         return [
             [['order_status_id'], 'required'],
-            ['uid', 'unique'],
             [['created_at', 'preferable_date', 'time_from', 'time_to'], 'safe'],
             [['order_status_id'], 'integer'],
-            [['uid'], 'string', 'max' => 10],
             [['client_lead', 'comment', 'referer', 'client_comment'], 'string', 'max' => 255],
-            [['order_status_id'], 'exist', 'skipOnError' => true, 'targetClass' => OrderStatus::className(), 'targetAttribute' => ['order_status_id' => 'id']],
+            [['order_status_id'], function ($attribute, $params) {
+                $oldStatus = $this->oldAttributes ? $this->oldAttributes[$attribute] : null;
+                $statusIds = array_keys(OrderStatus::availableStatuses($oldStatus, Yii::$app->user->identity->role));
+                if (!in_array($this->$attribute, $statusIds)) {
+                    $this->addError($attribute, 'Неверный статус');
+                }
+            }],
             ['preferable_date', 'date', 'format' => 'dd.mm.yyyy'],
             [['time_from', 'time_to'], function ($attribute, $params) {
                 if (!preg_match('/^\d{1,2}:\d{1,2}:\d{1,2}|\d{1,2}:\d{1,2}$/', $this->$attribute)) {
@@ -113,6 +134,14 @@ class Order extends ActiveRecord
             ['time_to', 'compare', 'compareAttribute' => 'time_from', 'operator' => '>=', 'message' => '< время с'],
             [['preferable_date', 'time_from', 'time_to', 'client_lead', 'comment', 'client_comment'], 'default'],
             ['order_status_id', 'filter', 'filter' => 'intval'],
+            ['worker_id', 'in', 'range' => array_keys(User::getWorkersList())],
+            ['worker_id', 'required', 'when' => function(/** @var self $model */$model) {
+                return OrderStatus::getAlias($model->order_status_id) == OrderStatus::STATUS_DELEGATED;
+            },  'enableClientValidation' => false],
+            ['worker_id', 'filter', 'filter' => function ($value) {
+                $workerNeeded = OrderStatus::getAlias($this->order_status_id) == OrderStatus::STATUS_DELEGATED;
+                return $workerNeeded ? $value : null;
+            }],
         ];
     }
     /**
@@ -139,6 +168,7 @@ class Order extends ActiveRecord
             'updated_by' => 'Кем изменён(id)',
             'user_agent' => 'User Agent',
             'client_comment' => 'Комментарий клиента',
+            'worker_id' => 'Мастер по заказу',
         ];
     }
 
@@ -273,6 +303,28 @@ class Order extends ActiveRecord
     public function getDeviceProvider()
     {
         return $this->hasOne(Device::className(), ['id' => 'device_provider_id']);
+    }
+
+    /**
+     * Поиск только собственных заказов
+     *
+     * @param $user IdentityInterface|User
+     * @return ActiveQuery
+     */
+    public static function findOwnOrders($user)
+    {
+        $query = parent::find();
+
+        switch ($user->role) {
+            case User::ROLE_WORKER:
+                $query->andWhere(['worker_id' => $user->id]);
+                break;
+            case User::ROLE_OPERATOR:
+                $query->andWhere(['or', ['operator_id' => $user->id], ['operator_id' => null]]);
+                break;
+        }
+
+        return $query;
     }
 
 }

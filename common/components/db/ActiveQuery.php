@@ -8,7 +8,7 @@ class ActiveQuery extends \yii\db\ActiveQuery
 {
 
     /**
-     * @var Имя таблицы у ActiveRecord
+     * @var string Имя таблицы у ActiveRecord
      */
     public $tableName;
 

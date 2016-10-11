@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\widgets\MaskedInput;
 use common\models\ar\OrderStatus;
+use common\models\ar\User;
 use dosamigos\datepicker\DatePicker;
 
 /**
@@ -32,7 +33,10 @@ use dosamigos\datepicker\DatePicker;
         </div>
         <div class="col-lg-6 well" style="margin-left: 10px;margin-right: 10px;">
             <h4>Данные заказа</h4>
-            <?= $form->field($order, 'order_status_id')->dropDownList(OrderStatus::getList(), ['prompt' => '...']); ?>
+            <?= $form->field($order, 'order_status_id')->dropDownList(OrderStatus::availableStatuses($order->oldAttributes ? $order->oldAttributes['order_status_id'] : null, Yii::$app->user->identity->role), ['prompt' => '...']); ?>
+            <?php if (Yii::$app->user->can(User::ROLE_OPERATOR)): ?>
+                <?= $form->field($order, 'worker_id')->dropDownList(User::getWorkersList(), ['prompt' => '...'])->hint('Поле присваивается только при статусе "Назначен мастер"'); ?>
+            <?php endif; ?>
             <div class="row">
                 <div class="col-lg-6">
                     <?= $form->field($order, 'preferable_date')->widget(DatePicker::className(), [

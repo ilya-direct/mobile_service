@@ -2,7 +2,7 @@
 
 namespace backend\models;
 
-
+use Yii;
 use common\models\ar\Order;
 use common\models\ar\OrderPerson;
 use yii\data\ActiveDataProvider;
@@ -11,6 +11,11 @@ class OrderSearchForm extends Order
 {
     public $name;
     public $phone;
+
+    public function scenarios()
+    {
+        return [self::SCENARIO_DEFAULT => ['id', 'uid', 'name', 'phone', 'order_status_id']];
+    }
 
     public function rules()
     {
@@ -22,10 +27,9 @@ class OrderSearchForm extends Order
 
     public function search($params)
     {
-        $query = Order::find()
+        $query = Order::findOwnOrders(Yii::$app->user->identity)
             ->innerJoinWith(['orderPerson', 'orderStatus'])
             ->notDeleted();
-
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [

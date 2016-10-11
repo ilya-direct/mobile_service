@@ -362,4 +362,22 @@ class User extends ActiveRecord implements IdentityInterface
 
         return $rolesList[$this->role];
     }
+
+    /**
+     * Список доступных мастеров
+     * @return array
+     */
+    public static function getWorkersList()
+    {
+        $workers = User::find()
+            ->select(['name' => new Expression('CONCAT(last_name, \' \', first_name)')])
+            ->where(['role' => User::ROLE_WORKER])
+            ->enabled()
+            ->notDeleted()
+            ->indexBy('id')
+            ->column();
+
+        return $workers;
+
+    }
 }

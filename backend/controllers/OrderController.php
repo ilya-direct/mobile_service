@@ -8,6 +8,7 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\db\Exception;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use common\components\db\ActiveQuery;
@@ -16,6 +17,7 @@ use common\models\ar\Order;
 use common\models\ar\OrderPerson;
 use common\models\ar\OrderProvider;
 use common\models\ar\OrderService;
+use common\models\ar\User;
 use backend\models\OrderSearchForm;
 use linslin\yii2\curl\Curl;
 
@@ -42,14 +44,22 @@ class OrderController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'roles' => ['operator'],
+                        'roles' => [User::ROLE_OPERATOR, User::ROLE_WORKER],
+                        'actions' => [
+                            'index',
+                            'update',
+                            'view',
+                        ],
+                    ],
+                    [
+                        'allow' => true,
+                        'roles' => [User::ROLE_OPERATOR],
                         'actions' => [
                             'create',
-                            'index',
                             'deleteTestOrders',
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ]
         ];
     }
@@ -93,9 +103,14 @@ class OrderController extends Controller
             throw new NotFoundHttpException('Страница не существует');
         }
 
-        return $this->render('view', [
-            'model' => $model,
-        ]);
+        if (Yii::$app->user->can('orderAccess', ['order' => $model, 'action' => 'view'])) {
+
+            return $this->render('view', [
+                'model' => $model,
+            ]);
+        } else {
+            throw new ForbiddenHttpException('Вам не разрешено просматривать данный заказ');
+        }
     }
 
     /**
@@ -105,17 +120,18 @@ class OrderController extends Controller
      */
     public function actionCreate()
     {
-        $order = new Order();
+        $order = new Order(['scenario' => Order::SCENARIO_OPERATOR]);
         $orderPerson = new OrderPerson();
 
         return $this->proceed($order, $orderPerson, true);
     }
 
     /**
-     * Updates an existing Order model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
+     * @param $id
+     * @return string|Response
+     * @throws Exception
+     * @throws ForbiddenHttpException
+     * @throws \yii\base\Exception
      */
     public function actionUpdate($id)
     {
@@ -125,7 +141,19 @@ class OrderController extends Controller
         /** @var OrderPerson $orderPerson */
         $orderPerson = OrderPerson::findOneOrFail([$order->order_person_id]);
 
-        return $this->proceed($order, $orderPerson, false);
+        if (Yii::$app->user->can('orderAccess', ['order' => $order, 'action' => 'update'])) {
+            if (Yii::$app->user->can(User::ROLE_OPERATOR)) {
+                $order->scenario = Order::SCENARIO_OPERATOR;
+                $orderPerson->scenario = OrderPerson::SCENARIO_OPERATOR;
+            } elseif (Yii::$app->user->can(User::ROLE_WORKER)) {
+                $order->scenario = Order::SCENARIO_WORKER;
+                $orderPerson->scenario = OrderPerson::SCENARIO_WORKER;
+            }
+
+            return $this->proceed($order, $orderPerson, false);
+        } else {
+            throw new ForbiddenHttpException('Вам не разрешено редактировать данный заказ');
+        }
     }
 
     /**
@@ -176,6 +204,14 @@ class OrderController extends Controller
                         $order->order_person_id = $orderPerson->id;
                         $order->order_provider_id = OrderProvider::getId(OrderProvider::PROVIDER_ADMIN_PANEL);
                     }
+                    if (!$order->operator_id) {
+                        if (Yii::$app->user->can(User::ROLE_OPERATOR)) {
+                            $order->operator_id = Yii::$app->user->id;
+                        } else {
+                            throw new \yii\base\Exception('Оператор заказа неопределён');
+                        }
+                    }
+
                     $order->save(false);
                     if (!$isNew) {
                         OrderService::deleteAll([
@@ -296,7 +332,7 @@ class OrderController extends Controller
         $i = 0;
         foreach ($orders as $order) {
             ++$i;
-            $order->delete(false);
+            $order->delete();
         }
 
         return ['msg' => 'Было удалено ' . $i  . ' тестовых заказов'];
