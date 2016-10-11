@@ -16,16 +16,16 @@ use common\components\db\ActiveRecord;
  */
 class OrderStatus extends ActiveRecord
 {
-    const STATUS_NULL = 'null';
-    const STATUS_NEW = 'new';
-    const STATUS_ANNULLED = 'annulled';
-    const STATUS_CONFIRMED = 'confirmed';
-    const STATUS_DELEGATED = 'delegated'; // назначен мастер
-    const STATUS_AMENDING = 'amending';
-    const STATUS_WRONG = 'wrong';
-    const STATUS_COMPLETED = 'completed';
-    const STATUS_PAID = 'paid';
-    const STATUS_NOT_PAID = 'not_paid';
+    const STATUS_NULL = 0;
+    const STATUS_NEW = 20;
+    const STATUS_ANNULLED = 21;
+    const STATUS_CONFIRMED = 22;
+    const STATUS_DELEGATED = 23; // назначен мастер
+    const STATUS_AMENDING = 24;
+    const STATUS_WRONG = 25;
+    const STATUS_COMPLETED = 26;
+    const STATUS_PAID = 27;
+    const STATUS_NOT_PAID = 28;
 
     /**
      * @inheritdoc
@@ -54,39 +54,10 @@ class OrderStatus extends ActiveRecord
         return $this->hasMany(Order::className(), ['order_status_id' => 'id']);
     }
 
-    public static function getId($status)
-    {
-        $statuses = self::statusLabels();
-
-        if (isset($statuses[$status])) {
-            return self::findOrCreateReturnScalar(['name' => $statuses[$status]]);
-        } else {
-            throw new Exception('Undefined OderStatus: ' . $status);
-        }
-    }
-
-    public static function getName($id)
-    {
-        $status = self::findOne($id);
-
-        if ($status) {
-            return $status->name;
-        } else {
-            throw new Exception('Undefined OderStatusId: ' . $id);
-        }
-    }
-
-    public static function getAlias($id)
-    {
-        $status = self::findOne($id);
-
-        if ($status) {
-            return array_search($status->name, self::statusLabels());
-        } else {
-            throw new Exception('Undefined OderStatusId: ' . $id);
-        }
-    }
-
+    /**
+     * Таблица переходов статусов для каждой роли
+     * @return array
+     */
     private static function statusTransitions()
     {
         return [
@@ -115,6 +86,7 @@ class OrderStatus extends ActiveRecord
                 ],
                 self::STATUS_DELEGATED => [
                     self::STATUS_DELEGATED,
+                    self::STATUS_CONFIRMED,
                     self::STATUS_ANNULLED,
                     self::STATUS_COMPLETED,
                 ],
@@ -127,9 +99,6 @@ class OrderStatus extends ActiveRecord
                     self::STATUS_NOT_PAID,
                     self::STATUS_PAID,
                 ],
-                /*self::STATUS_PAID => [
-                    self::STATUS_PAID,
-                ],*/
                 self::STATUS_ANNULLED => [
                     self::STATUS_ANNULLED,
                 ],
@@ -176,7 +145,7 @@ class OrderStatus extends ActiveRecord
      * @param null|string $role
      * @return array
      */
-    private static function statusLabels($role = null)
+    public static function statusLabels($role = null)
     {
         $labels = [
             self::STATUS_NEW => 'Новый',
@@ -191,40 +160,41 @@ class OrderStatus extends ActiveRecord
         ];
 
         if ($role === User::ROLE_WORKER) {
-            $labels[self::STATUS_DELEGATED] = 'Новый *';
-            $labels[self::STATUS_CONFIRMED] = 'Отказ от заказа';
+            $labels = [
+                self::STATUS_ANNULLED => 'Анулирован',
+                self::STATUS_COMPLETED => 'Выполнен',
+                self::STATUS_PAID => 'Оплачен',
+                self::STATUS_NOT_PAID => 'Не оплачен',
+                self::STATUS_DELEGATED => 'Новый для мастера',
+                self::STATUS_CONFIRMED => 'Отказ от заказа',
+            ];
         }
 
         return $labels;
     }
 
 
-    public static function availableStatuses($statusId, $role) {
-        $defaultStatusLabels = self::statusLabels();
-        if ($statusId) {
-            $statusName = self::getName($statusId);
-            $statusAlias = array_search($statusName, $defaultStatusLabels);
-        } else {
-            $statusAlias = self::STATUS_NULL;
+    /**
+     * Возможные переходы статусов для данной роли и текущего статуса [id => name]
+     * @param $statusId
+     * @param $role
+     * @return array
+     */
+    public static function availableStatuses($statusId, $role)
+    {
+        if (is_null($statusId)) {
+            $statusId = self::STATUS_NULL;
         }
 
-        $availableTransitions = isset(self::statusTransitions()[$role][$statusAlias])
-            ? self::statusTransitions()[$role][$statusAlias]
+        $availableTransitions = isset(self::statusTransitions()[$role][$statusId])
+            ? self::statusTransitions()[$role][$statusId]
             : [];
 
         $statusLabels = self::statusLabels($role);
-        $statusIds = self::getList();
 
         $return = [];
-        foreach ($availableTransitions as $st) {
-            $id = array_search($defaultStatusLabels[$st], $statusIds);
-
-            if (!$id) {
-                $newStatus = new self(['name' => $defaultStatusLabels[$st]]);
-                $newStatus->save(false);
-                $id = $newStatus->id;
-            }
-            $return[$id] = $statusLabels[$st];
+        foreach ($availableTransitions as $availableStatusId) {
+            $return[$availableStatusId] = $statusLabels[$availableStatusId];
         }
 
         return $return;

@@ -5,6 +5,7 @@ namespace console\controllers;
 use Yii;
 use yii\base\ErrorException;
 use yii\console\Controller;
+use yii\helpers\Console;
 use yii\db\Expression;
 use common\models\ar\Device;
 use common\models\ar\DeviceAssign;
@@ -12,7 +13,9 @@ use common\models\ar\DeviceCategory;
 use common\models\ar\News;
 use common\models\ar\Order;
 use common\models\ar\OrderPerson;
+use common\models\ar\OrderProvider;
 use common\models\ar\OrderService;
+use common\models\ar\OrderStatus;
 use common\models\ar\Revision;
 use common\models\ar\RevisionField;
 use common\models\ar\RevisionTable;
@@ -132,6 +135,46 @@ class FixController extends Controller
                 }
             }
         }
+    }
+
+    /**
+     * Заполнение названий источников заказов в БД
+     */
+    public function actionFillOrderProviders()
+    {
+        $providers = OrderProvider::providerLabels();
+
+        foreach ($providers as $providerId => $name) {
+            /** @var OrderProvider $orderProvider */
+            $orderProvider = OrderProvider::findOrNew(['name' => $name]);
+            $orderProvider->id = $providerId;
+            if ($orderProvider->dirtyAttributes) {
+                Console::output('Provider ' . $orderProvider->name . ' has changed');
+            }
+            $orderProvider->save(false);
+
+        }
+        Console::output('Providers have filled');
+    }
+
+    /**
+     * Заполнение статусов заказов в БД
+     */
+    public function actionFillOrderStatuses()
+    {
+        $statuses = OrderStatus::statusLabels();
+
+        foreach ($statuses as $statusId => $name) {
+            /** @var OrderStatus $orderStatus */
+            $orderStatus = OrderStatus::findOrNew(['name' => $name]);
+            $orderStatus->id = $statusId;
+            if ($orderStatus->dirtyAttributes) {
+                Console::output('Status ' . $orderStatus->name . ' has changed');
+            }
+            $orderStatus->save(false);
+
+        }
+        Console::output('Statuses have filled');
     }
     
 }

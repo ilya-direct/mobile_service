@@ -75,8 +75,8 @@ class SiteController extends Controller
                 $orderPerson->save(false);
                 $order = new Order();
                 $order->order_person_id = $orderPerson->id;
-                $order->order_status_id = OrderStatus::getId(OrderStatus::STATUS_NEW);
-                $order->order_provider_id = OrderProvider::getId(OrderProvider::PROVIDER_CALCULATOR);
+                $order->order_status_id = OrderStatus::STATUS_NEW;
+                $order->order_provider_id = OrderProvider::PROVIDER_CALCULATOR;
                 $order->save(false);
                 $transaction->commit();
             } catch (Exception $e) {
@@ -122,8 +122,8 @@ class SiteController extends Controller
 
                 $order = new Order();
                 $order->order_person_id = $orderPerson->id;
-                $order->order_status_id = OrderStatus::getId(OrderStatus::STATUS_NEW);
-                $order->order_provider_id = OrderProvider::getId(OrderProvider::PROVIDER_CONTACT_US_FORM);
+                $order->order_status_id = OrderStatus::STATUS_NEW;
+                $order->order_provider_id = OrderProvider::PROVIDER_CONTACT_US_FORM;
                 $order->client_comment = $model->message ?: null;
                 $order->save(false);
                 $transaction->commit();
@@ -159,7 +159,7 @@ class SiteController extends Controller
         $orderPerson = new OrderPerson();
         $request = Yii::$app->request;
         if ($orderPerson->load($request->post()) && $order->load($request->post())) {
-            $order->order_status_id = OrderStatus::getId(OrderStatus::STATUS_NEW);
+            $order->order_status_id = OrderStatus::STATUS_NEW;
             $isValid = $orderPerson->validate();
             $isValid = $order->validate() && $isValid;
             if ($isValid) {
@@ -169,8 +169,8 @@ class SiteController extends Controller
                     $orderPerson->save(false);
                     $order->order_person_id = $orderPerson->id;
                     $order->order_provider_id = $request->post('fullForm', false)
-                        ? OrderProvider::getId(OrderProvider::PROVIDER_TOP_FORM_FULL)
-                        : OrderProvider::getId(OrderProvider::PROVIDER_TOP_FORM);
+                        ? OrderProvider::PROVIDER_TOP_FORM_FULL
+                        : OrderProvider::PROVIDER_TOP_FORM;
                     $order->save(false);
                     $transaction->commit();
                 } catch (Exception $e) {
@@ -225,9 +225,9 @@ class SiteController extends Controller
                 $orderPerson->save(false);
 
                 $order = new Order();
-                $order->order_status_id = OrderStatus::getId(OrderStatus::STATUS_NEW);
                 $order->order_person_id = $orderPerson->id;
-                $order->order_provider_id = OrderProvider::getId(OrderProvider::PROVIDER_FOOTER_CALLBACK_FORM);
+                $order->order_status_id = OrderStatus::STATUS_NEW;
+                $order->order_provider_id = OrderProvider::PROVIDER_FOOTER_CALLBACK_FORM;
                 $order->save(false);
             } catch(Exception $e) {
                 $transaction->rollBack();
@@ -279,9 +279,9 @@ class SiteController extends Controller
                 $orderPerson->save(false);
 
                 $order = new Order();
-                $order->order_status_id = OrderStatus::getId(OrderStatus::STATUS_NEW);
                 $order->order_person_id = $orderPerson->id;
-                $order->order_provider_id = OrderProvider::getId(OrderProvider::PROVIDER_ORDER_WITH_DISCOUNT);
+                $order->order_provider_id = OrderProvider::PROVIDER_ORDER_WITH_DISCOUNT;
+                $order->order_status_id = OrderStatus::STATUS_NEW;
                 if ($device) {
                     $order->device_provider_id = $device->id;
                 }
@@ -378,9 +378,9 @@ class SiteController extends Controller
                 $orderPerson->email = $model->email ?: null;
                 $orderPerson->save(false);
                 $order = new Order();
-                $order->order_status_id = OrderStatus::getId(OrderStatus::STATUS_NEW);
                 $order->order_person_id = $orderPerson->id;
-                $order->order_provider_id = OrderProvider::getId(OrderProvider::PROVIDER_DEVICE_FORM);
+                $order->order_status_id = OrderStatus::STATUS_NEW;
+                $order->order_provider_id = OrderProvider::PROVIDER_DEVICE_FORM;
                 if ($device) {
                     $order->device_provider_id = $device->id;
                 }
@@ -474,9 +474,9 @@ class SiteController extends Controller
                 $orderPerson->phone = '+' . preg_replace('/\D/' , '', $model->phone);
                 $orderPerson->save(false);
                 $order = new Order();
-                $order->order_status_id = OrderStatus::getId(OrderStatus::STATUS_NEW);
                 $order->order_person_id = $orderPerson->id;
-                $order->order_provider_id = OrderProvider::getId(OrderProvider::PROVIDER_NOT_FOUND_DEVICE_FORM);
+                $order->order_status_id = OrderStatus::STATUS_NEW;
+                $order->order_provider_id = OrderProvider::PROVIDER_NOT_FOUND_DEVICE_FORM;
                 if (trim($model->device)) {
                     $order->client_comment = 'Не нашёл модель: ' . trim($model->device);
                 }
@@ -579,9 +579,9 @@ class SiteController extends Controller
                 $orderPerson->save(false);
 
                 $order = new Order();
-                $order->order_status_id = OrderStatus::getId(OrderStatus::STATUS_NEW);
                 $order->order_person_id = $orderPerson->id;
-                $order->order_provider_id = OrderProvider::getId(OrderProvider::PROVIDER_COURIER_FORM);
+                $order->order_status_id = OrderStatus::STATUS_NEW;
+                $order->order_provider_id = OrderProvider::PROVIDER_COURIER_FORM;
                 $order->save(false);
             } catch(Exception $e) {
                 $flag = false;

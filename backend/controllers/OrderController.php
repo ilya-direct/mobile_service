@@ -82,6 +82,7 @@ class OrderController extends Controller
     /**
      * @param $id
      * @return string
+     * @throws ForbiddenHttpException
      * @throws NotFoundHttpException
      */
     public function actionView($id)
@@ -121,7 +122,7 @@ class OrderController extends Controller
     public function actionCreate()
     {
         $order = new Order(['scenario' => Order::SCENARIO_OPERATOR]);
-        $orderPerson = new OrderPerson();
+        $orderPerson = new OrderPerson(['scenario' => OrderPerson::SCENARIO_OPERATOR]);
 
         return $this->proceed($order, $orderPerson, true);
     }
@@ -202,7 +203,7 @@ class OrderController extends Controller
                     $orderPerson->save(false);
                     if ($isNew) {
                         $order->order_person_id = $orderPerson->id;
-                        $order->order_provider_id = OrderProvider::getId(OrderProvider::PROVIDER_ADMIN_PANEL);
+                        $order->order_provider_id = OrderProvider::PROVIDER_ADMIN_PANEL;
                     }
                     if (!$order->operator_id) {
                         if (Yii::$app->user->can(User::ROLE_OPERATOR)) {

@@ -120,11 +120,17 @@ class Order extends ActiveRecord
             }],
             ['preferable_date', 'date', 'format' => 'dd.mm.yyyy'],
             [['time_from', 'time_to'], function ($attribute, $params) {
-                if (!preg_match('/^\d{1,2}:\d{1,2}:\d{1,2}|\d{1,2}:\d{1,2}$/', $this->$attribute)) {
+                $value = $this->$attribute;
+                if (!preg_match('/^\d{1,2}:\d{1,2}:\d{1,2}|\d{1,2}:\d{1,2}|\d{1,2}$/', $value)) {
                     $this->addError($attribute, 'Формат XX:XX');
                     return;
                 }
-                $time = strtotime($this->$attribute);
+
+                // Если узазан только час
+                if (is_numeric($value)) {
+                    $value = $value . ':00';
+                }
+                $time = strtotime($value);
                 if (!$time) {
                     $this->addError($attribute, 'Неправильно указано время');
                 } else {
@@ -136,11 +142,15 @@ class Order extends ActiveRecord
             ['order_status_id', 'filter', 'filter' => 'intval'],
             ['worker_id', 'in', 'range' => array_keys(User::getWorkersList())],
             ['worker_id', 'required', 'when' => function(/** @var self $model */$model) {
-                return OrderStatus::getAlias($model->order_status_id) == OrderStatus::STATUS_DELEGATED;
+                return $model->order_status_id == OrderStatus::STATUS_DELEGATED;
             },  'enableClientValidation' => false],
             ['worker_id', 'filter', 'filter' => function ($value) {
-                $workerNeeded = OrderStatus::getAlias($this->order_status_id) == OrderStatus::STATUS_DELEGATED;
-                return $workerNeeded ? $value : null;
+                $workerNeeded = $this->order_status_id == OrderStatus::STATUS_DELEGATED;
+                $oldValue = isset($this->oldAttributes['worker_id'])
+                    ? $this->oldAttributes['worker_id']
+                    : null;
+
+                return $workerNeeded ? $value : $oldValue;
             }],
         ];
     }
@@ -233,7 +243,7 @@ class Order extends ActiveRecord
             $this->save(false);
 
             // Отправка письма о новом заказе, если заказ с фронта
-            if ($this->order_provider_id !== OrderProvider::getId(OrderProvider::PROVIDER_ADMIN_PANEL)) {
+            if ($this->order_provider_id !== OrderProvider::PROVIDER_ADMIN_PANEL) {
                 Yii::$app->mailer->compose(['html' => 'new-order'], [
                     'link' => Yii::$app->urlManagerBackend->createAbsoluteUrl(['order/view', 'id' => $this->id]),
                     'uid' => $this->uid,

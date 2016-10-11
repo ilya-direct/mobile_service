@@ -52,7 +52,7 @@ JS
             [
                 'attribute' => 'order_status_id',
                 'value' => 'orderStatus.name',
-                'filter' => OrderStatus::getList(),
+                'filter' => OrderStatus::statusLabels(Yii::$app->user->identity->role),
             ],
             [
                 'label' => 'Имя',
