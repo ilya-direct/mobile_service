@@ -22,7 +22,6 @@ use linslin\yii2\curl\Curl;
  * @property string $uid
  * @property string $created_at
  * @property integer $order_status_id
- * @property integer $order_person_id
  * @property integer $order_provider_id
  * @property string $preferable_date
  * @property string $time_from

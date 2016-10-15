@@ -17,16 +17,31 @@ class m161012_172828_drop_orderperson extends Migration
         $this->addColumn(Order::tableName(), 'address_longitude', $this->float());
 
         /** @var Order[] $orders */
-        $orders = Order::find()->innerJoinWith('orderPerson')->all();
+        $orders = Order::find()->all();
+        $orderPersons = (new \yii\db\Query)
+            ->select([
+                'first_name',
+                'last_name',
+                'middle_name',
+                'phone',
+                'email',
+                'address',
+                'address_latitude',
+                'address_longitude'
+            ])
+            ->indexBy('id')
+            ->from('{{%order_person}}')
+            ->all();
+
         foreach ($orders as $order) {
-            $order->first_name = $order->orderPerson->first_name;
-            $order->last_name = $order->orderPerson->last_name;
-            $order->middle_name = $order->orderPerson->middle_name;
-            $order->phone = $order->orderPerson->phone;
-            $order->email = $order->orderPerson->email;
-            $order->address = $order->orderPerson->address;
-            $order->address_latitude = $order->orderPerson->address_latitude;
-            $order->address_longitude = $order->orderPerson->address_longitude;
+            $order->first_name = $orderPersons[$order->order_person_id]['first_name'];
+            $order->last_name = $orderPersons[$order->order_person_id]['last_name'];
+            $order->middle_name = $orderPersons[$order->order_person_id]['middle_name'];
+            $order->phone = $orderPersons[$order->order_person_id]['phone'];
+            $order->email = $orderPersons[$order->order_person_id]['email'];
+            $order->address = $orderPersons[$order->order_person_id]['address'];
+            $order->address_latitude = $orderPersons[$order->order_person_id]['address_latitude'];
+            $order->address_longitude = $orderPersons[$order->order_person_id]['address_longitude'];
             $order->save(false);
         }
 
