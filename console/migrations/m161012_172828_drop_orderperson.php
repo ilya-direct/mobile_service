@@ -16,10 +16,13 @@ class m161012_172828_drop_orderperson extends Migration
         $this->addColumn(Order::tableName(), 'address_latitude', $this->float());
         $this->addColumn(Order::tableName(), 'address_longitude', $this->float());
 
+        Yii::$app->runAction('fix/revision', [Order::className()]);
+
         /** @var Order[] $orders */
         $orders = Order::find()->all();
         $orderPersons = (new \yii\db\Query)
             ->select([
+                'id',
                 'first_name',
                 'last_name',
                 'middle_name',
