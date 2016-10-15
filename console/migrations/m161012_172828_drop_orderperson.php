@@ -2,7 +2,6 @@
 
 use yii\db\Migration;
 use common\models\ar\Order;
-use common\models\ar\OrderPerson;
 
 class m161012_172828_drop_orderperson extends Migration
 {
@@ -35,9 +34,7 @@ class m161012_172828_drop_orderperson extends Migration
         $this->execute('ALTER TABLE ' . Order::tableName() . ' ALTER COLUMN [[phone]]  SET NOT NULL');
 
         $this->dropColumn(Order::tableName(), 'order_person_id');
-        $this->dropTable(OrderPerson::tableName());
-
-
+        $this->dropTable('{{%order_person}}');
     }
 
     public function safeDown()
