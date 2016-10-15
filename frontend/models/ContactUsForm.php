@@ -2,7 +2,7 @@
 
 namespace frontend\models;
 
-use yii\base\Model;
+use common\models\ar\Order;
 
 /**
  * Форма "Оставьте нам сообщение" на странице Контакты
@@ -10,27 +10,26 @@ use yii\base\Model;
  *
  * @package frontend\models
  */
-class ContactUsForm extends Model
+class ContactUsForm extends Order
 {
-    public $name;
-    public $phone;
-    public $email;
-    public $message;
-    public $db; // Для вывода ошибок БД
 
 
     public function rules()
     {
         return [
-            [['name', 'phone'], 'required', 'message' => 'Необходимо заполнить'],
+            [['first_name', 'phone'], 'required', 'message' => 'Необходимо заполнить'],
             ['phone', 'match',
                 'pattern' => '/^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/',
                 'message' => '+7 (XXX) XXX-XX-XX'],
+            ['phone', 'filter', 'filter' => function ($value) {
+                $newValue = '+' . preg_replace('/\D/', '', $value);
+                return $newValue;
+            }],
             ['email', 'email', 'message' => 'Email некорректен'],
-            ['db', 'string'],
-            ['name', 'string', 'max' => 30],
+            ['first_name', 'string', 'max' => 30],
             ['email', 'string', 'max' => 50],
-            ['message', 'string', 'max' => 255],
+            ['client_comment', 'string', 'max' => 255],
+            [['client_comment', 'email'], 'default'],
         ];
     }
 

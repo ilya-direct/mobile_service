@@ -3,6 +3,7 @@
 namespace common\models\ar;
 
 use Yii;
+use yii\base\Exception;
 use yii\behaviors\AttributeBehavior;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -12,6 +13,7 @@ use yii\web\IdentityInterface;
 use common\components\behaviors\RevisionBehavior;
 use common\components\db\ActiveRecord;
 use common\components\db\ActiveQuery;
+use linslin\yii2\curl\Curl;
 
 /**
  * This is the model class for table "{{%order}}".
@@ -36,8 +38,16 @@ use common\components\db\ActiveQuery;
  * @property string $session_id id сессии заказавшего
  * @property integer $operator_id id оператора
  * @property integer $worker_id id мастера
+ * // Данные клиента
+ * @property string $first_name
+ * @property string $last_name
+ * @property string $middle_name
+ * @property string $phone
+ * @property string $email
+ * @property string $address
+ * @property float $address_longitude Долгота
+ * @property float $address_latitude Широта
  *
- * @property OrderPerson $orderPerson
  * @property OrderProvider $orderProvider
  * @property OrderStatus $orderStatus
  * @property OrderService[] $orderServices
@@ -79,6 +89,14 @@ class Order extends ActiveRecord
                     'time_to',
                     'operator_id',
                     'worker_id',
+                    'address',
+                    'address_latitude',
+                    'address_longitude',
+                    'email',
+                    'first_name',
+                    'last_name',
+                    'middle_name',
+                    'phone',
                 ]
             ],
         ];
@@ -86,8 +104,30 @@ class Order extends ActiveRecord
 
     public function scenarios()
     {
-        $scenarios[self::SCENARIO_WORKER] = ['order_status_id', 'client_lead', 'comment'];
-        $scenarios[self::SCENARIO_OPERATOR] = ['order_status_id', 'client_lead', 'comment', 'worker_id', 'preferable_date', 'time_from', 'time_to', 'client_lead'];
+        $scenarios = parent::scenarios();
+
+        $scenarios[self::SCENARIO_WORKER] = [
+            'order_status_id',
+            'client_lead',
+            'comment',
+        ];
+
+        $scenarios[self::SCENARIO_OPERATOR] = [
+            'order_status_id',
+            'client_lead',
+            'comment',
+            'worker_id',
+            'preferable_date',
+            'time_from',
+            'time_to',
+            'client_lead',
+            'address',
+            'email',
+            'first_name',
+            'last_name',
+            'middle_name',
+            'phone',
+        ];
 
         return $scenarios;
     }
@@ -101,7 +141,6 @@ class Order extends ActiveRecord
     }
 
     /**
-     * TODO: Убрать из валидации client_comment, так как он не редактируется в карточке заказа
      * @inheritdoc
      */
     public function rules()
@@ -110,7 +149,7 @@ class Order extends ActiveRecord
             [['order_status_id'], 'required'],
             [['created_at', 'preferable_date', 'time_from', 'time_to'], 'safe'],
             [['order_status_id'], 'integer'],
-            [['client_lead', 'comment', 'referer', 'client_comment'], 'string', 'max' => 255],
+            [['client_lead', 'comment', 'referer'], 'string', 'max' => 255],
             [['order_status_id'], function ($attribute, $params) {
                 $oldStatus = $this->oldAttributes ? $this->oldAttributes[$attribute] : null;
                 $statusIds = array_keys(OrderStatus::availableStatuses($oldStatus, Yii::$app->user->identity->role));
@@ -138,7 +177,7 @@ class Order extends ActiveRecord
                 }
             }],
             ['time_to', 'compare', 'compareAttribute' => 'time_from', 'operator' => '>=', 'message' => '< время с'],
-            [['preferable_date', 'time_from', 'time_to', 'client_lead', 'comment', 'client_comment'], 'default'],
+            [['preferable_date', 'time_from', 'time_to', 'client_lead', 'comment'], 'default'],
             ['order_status_id', 'filter', 'filter' => 'intval'],
             ['worker_id', 'in', 'range' => array_keys(User::getWorkersList())],
             ['worker_id', 'required', 'when' => function(/** @var self $model */$model) {
@@ -152,6 +191,18 @@ class Order extends ActiveRecord
 
                 return $workerNeeded ? $value : $oldValue;
             }],
+            [['first_name', 'phone'], 'required'],
+            [['first_name', 'last_name', 'middle_name'], 'string', 'max' => 30],
+            ['phone', 'match', 'pattern' => '/^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/', 'message' => 'Формат +7 (XXX) XXX-XX-XX'],
+            ['phone', 'filter', 'filter' => function ($value) {
+                $newValue = '+' . preg_replace('/\D/', '', $value);
+                return $newValue;
+            }],
+            ['email', 'string', 'max' => 50],
+            ['email', 'email'],
+            ['address', 'string', 'max' => 255],
+            ['address', 'validateAddress', 'skipOnEmpty' => false],
+            [['last_name', 'middle_name', 'address', 'email'], 'default'],
         ];
     }
     /**
@@ -179,15 +230,13 @@ class Order extends ActiveRecord
             'user_agent' => 'User Agent',
             'client_comment' => 'Комментарий клиента',
             'worker_id' => 'Мастер по заказу',
+            'first_name' => 'Имя',
+            'last_name' => 'Фамилия',
+            'middle_name' => 'Отчество',
+            'phone' => 'Телефон',
+            'email' => 'Email',
+            'address' => 'Адрес проживания',
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getOrderPerson()
-    {
-        return $this->hasOne(OrderPerson::className(), ['id' => 'order_person_id']);
     }
 
     /**
@@ -265,7 +314,6 @@ class Order extends ActiveRecord
     public function afterDelete()
     {
         parent::afterDelete();
-        OrderPerson::findOne($this->order_person_id)->delete(false);
         OrderService::deleteAll(['order_id' => $this->id], false);
         $this->transaction->commit();
     }
@@ -337,4 +385,98 @@ class Order extends ActiveRecord
         return $query;
     }
 
+    public function validateAddress($attribute)
+    {
+        if (empty($this->getDirtyAttributes([$attribute]))) {
+
+            return null;
+        }
+
+        $value = trim($this->$attribute);
+
+        if (empty($value)) {
+            $this->address = null;
+            $this->address_longitude = null;
+            $this->address_latitude = null;
+
+            return null;
+        }
+
+        $yandexGeocoder = new Curl();
+        // если у библиотеки Curl не установлены сертификаты раскоментировать
+        $yandexGeocoder->setOption(CURLOPT_SSL_VERIFYPEER, 0);
+        try {
+            $result = $yandexGeocoder->get(
+                'https://geocode-maps.yandex.ru/1.x/?&format=json&results=1&bbox=36.044480,54.983701~38.835007,56.495778&geocode=' . urlencode($value),
+                false);
+        } catch (Exception $e) {
+            $this->addError($attribute, 'Не удалось подключиться к Яндекс.Картам');
+
+            return null;
+        }
+        if (!$result) {
+            $this->addError($attribute, 'Не удалось проверить адрес (timeout)');
+
+            return null;
+        }
+
+        $yandexGeocoderResult = $result['response']['GeoObjectCollection'];
+        if ($yandexGeocoderResult['metaDataProperty']['GeocoderResponseMetaData']['found'] != "0") {
+            $yandexGeoObject = $yandexGeocoderResult['featureMember'][0]['GeoObject'];
+            $meta = $yandexGeoObject['metaDataProperty']['GeocoderMetaData'];
+            if ($meta['kind'] == 'house') {
+                if ($meta['precision'] == 'exact') {
+                    $address = $meta['text'];
+                    $this->$attribute = $address;
+                    list($longitude, $latitude) = explode(' ', $yandexGeoObject['Point']['pos']);
+                    $this->address_longitude = (float)$longitude;
+                    $this->address_latitude = (float)$latitude;
+
+                    return null;
+                } else {
+                    $this->addError($attribute, 'Данный дом не найден на Яндекс.Картах');
+                }
+            } else {
+                $this->addError($attribute, 'Адрес должен быть с точностью до дома');
+            }
+        } else {
+            $this->addError($attribute, 'Адрес не найден на Яндекс.Картах');
+        }
+
+        return null;
+    }
+
+    /**
+     * Создание нового заказа
+     * @param $providerId
+     * @param $validate
+     * @param $deviceAssignIds array|string
+     * @return boolean
+     */
+    public function create($providerId, $validate = true, $deviceAssignIds = null)
+    {
+        if (!$validate || $this->validate()) {
+            $this->order_status_id = OrderStatus::STATUS_NEW;
+            $this->order_provider_id = $providerId;
+            $this->save(false);
+
+            if ($deviceAssignIds) {
+                if (!is_array($deviceAssignIds)) {
+                    $deviceAssignIds = [$deviceAssignIds];
+                }
+
+                foreach ($deviceAssignIds as $deviceAssignId) {
+                    $orderService = new OrderService();
+                    $orderService->device_assign_id = $deviceAssignId;
+                    $orderService->order_id = $this->id;
+                    $orderService->save(false);
+                }
+
+            }
+
+            return true;
+        }
+
+        return false;
+    }
 }

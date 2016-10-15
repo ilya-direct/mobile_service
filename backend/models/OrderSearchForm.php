@@ -4,7 +4,6 @@ namespace backend\models;
 
 use Yii;
 use common\models\ar\Order;
-use common\models\ar\OrderPerson;
 use yii\data\ActiveDataProvider;
 
 class OrderSearchForm extends Order
@@ -28,7 +27,7 @@ class OrderSearchForm extends Order
     public function search($params)
     {
         $query = Order::findOwnOrders(Yii::$app->user->identity)
-            ->innerJoinWith(['orderPerson', 'orderStatus'])
+            ->innerJoinWith('orderStatus')
             ->notDeleted();
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -59,8 +58,8 @@ class OrderSearchForm extends Order
             Order::tableName() . '.order_status_id' => $this->order_status_id,
         ]);
         $query->andFilterWhere(['ilike', 'uid', $this->uid]);
-        $query->andFilterWhere(['ilike', OrderPerson::tableName() . '.first_name', $this->name]);
-        $query->andFilterWhere(['ilike', OrderPerson::tableName() . '.phone', $this->phone]);
+        $query->andFilterWhere(['ilike', 'first_name', $this->name]);
+        $query->andFilterWhere(['ilike', 'phone', $this->phone]);
 
         return $dataProvider;
     }

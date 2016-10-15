@@ -4,17 +4,8 @@ namespace frontend\models;
 
 use common\models\ar\Order;
 
-/**
- * Калькулятор услуг
- * @package frontend\models
- */
-class PriceCalculatorForm extends Order
+class QuickOrderForm extends Order
 {
-    public $device_category_id;
-    public $vendor_id;
-    public $device_id;
-    public $service_id;
-
     public function rules()
     {
         return [
@@ -24,7 +15,9 @@ class PriceCalculatorForm extends Order
                 $newValue = '+' . preg_replace('/\D/', '', $value);
                 return $newValue;
             }],
+            ['email', 'string', 'max' => 50],
+            ['email', 'email'],
+            ['client_comment', 'string', 'max' => 255],
         ];
     }
-    
 }

@@ -38,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 При заказе сейчас устройство будет как новое в <?= date('H:i', time() + 4*60*60); ?>*
             </div>
             <?= $form->field($model, 'db',['options' => ['style' => 'text-align:center;']])->hiddenInput()->label(false); ?>
-            <?= $form->field($model, 'name')->textInput(['maxlength' => true]); ?>
+            <?= $form->field($model, 'first_name')->textInput(['maxlength' => true])->label('Имя *'); ?>
             <?= $form->field($model, 'phone')->widget(\yii\widgets\MaskedInput::className(), [
                 'mask' => '+7 (999) 999-99-99',
             ]); ?>

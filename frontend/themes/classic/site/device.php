@@ -3,7 +3,6 @@
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\helpers\HtmlPurifier;
-use yii\widgets\Breadcrumbs;
 use yii\widgets\MaskedInput;
 use frontend\assets\AppAsset;
 use frontend\models\DeviceOrderForm;
@@ -59,8 +58,8 @@ $this->registerJsFile($baseUrl . '/js/device.js', ['depends' => \yii\web\JqueryA
             <?php if (empty($model->description)): ?>
                 <div class = "col-xs-12">
                     <div class = "col-xs-12">
-                        <?php if ($model->image): ?>
-                                <img class="device-image" style="max-width: 150px" src="<?= $model->image; ?>" alt="<?= Html::encode($model->name); ?>" />
+                        <?php if ($model->imageWebPath): ?>
+                                <img class="device-image" style="max-width: 150px" src="<?= $model->imageWebPath; ?>" alt="<?= Html::encode($model->name); ?>" />
                         <?php endif; ?>
                         <a
                             data-toggle="modal"
@@ -73,9 +72,9 @@ $this->registerJsFile($baseUrl . '/js/device.js', ['depends' => \yii\web\JqueryA
                     </div>
                 </div>
             <?php else: ?>
-                <?php if ($model->image): ?>
+                <?php if ($model->imageWebPath): ?>
                     <div class = "col-xs-12 col-sm-3 col-md-2 col-lg-2">
-                        <img class="device-image" src="<?= $model->image; ?>" alt="<?= Html::encode($model->name); ?>" />
+                        <img class="device-image" src="<?= $model->imageWebPath; ?>" alt="<?= Html::encode($model->name); ?>" />
                     </div>
                 <?php endif; ?>
                 <div class = "col-xs-12 col-sm-9 col-md-10 col-lg-10">
@@ -122,7 +121,7 @@ $this->registerJsFile($baseUrl . '/js/device.js', ['depends' => \yii\web\JqueryA
                             data-target="#order-service"
                             data-device-id="<?= $model->id; ?>"
                             data-device-name="<?= $model->name; ?>"
-                            data-service-id="<?= $assign->service->id; ?>"
+                            data-device-assign-id="<?= $assign->id; ?>"
                             data-service-name="<?= $assign->service->name; ?>"
                             data-price="<?= number_format($assign->price, 0, '.', ' '); ?>"
                             class="price">заказать сейчас</a>
@@ -144,11 +143,10 @@ $this->registerJsFile($baseUrl . '/js/device.js', ['depends' => \yii\web\JqueryA
             <h2>Не нашли нужную услугу? Оформите заявку со скидкой 5%</h2>
         <?php endif; ?>
         <?php $form = ActiveForm::begin(['id' => 'device-order-discount-form']); ?>
-            <?= $form->field($orderWithDiscount, 'db', ['options' => ['style' => 'text-align:center']])->hiddenInput()->label(false); ?>
-            <?= Html::activeHiddenInput($orderWithDiscount, 'device_id', ['value' => $model->id]); ?>
+            <?= Html::activeHiddenInput($orderWithDiscount, 'device_provider_id', ['value' => $model->id]); ?>
             <div class="row">
                 <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4" >
-                    <?= $form->field($orderWithDiscount, 'name', ['options' => ['style' => 'margin-top:30px']])->textInput(['maxlength' => true]); ?>
+                    <?= $form->field($orderWithDiscount, 'first_name', ['options' => ['style' => 'margin-top:30px']])->textInput(['maxlength' => true]); ?>
                 </div>
                 <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
                     <?= $form->field($orderWithDiscount, 'phone', ['options' => ['style' => 'margin-top:30px']])->widget(MaskedInput::className(), [
@@ -156,7 +154,7 @@ $this->registerJsFile($baseUrl . '/js/device.js', ['depends' => \yii\web\JqueryA
                     ]); ?>
                 </div>
                 <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                    <?= $form->field($orderWithDiscount, 'time', ['options' => ['style' => 'margin-top:30px']])->widget(DateTimePicker::className(), [
+                    <?= $form->field($orderWithDiscount, 'time_to', ['options' => ['style' => 'margin-top:30px']])->widget(DateTimePicker::className(), [
                         'language' => 'ru',
                         'size' => 'ms',
                         'template' => '{input}',
@@ -167,7 +165,7 @@ $this->registerJsFile($baseUrl . '/js/device.js', ['depends' => \yii\web\JqueryA
                             'maxView' => 2,
                             'autoclose' => true,
                             'linkFormat' => 'HH:ii P', // if inline = true
-                            'format' => 'HH:ii dd.mm.yyyy',
+                            'format' => 'HH:ii',
                             'todayBtn' => true,
                             'minuteStep' => 15,
                             'todayHighlight' => true,
@@ -194,10 +192,9 @@ $this->registerJsFile($baseUrl . '/js/device.js', ['depends' => \yii\web\JqueryA
             <div class="modal-body">
                 <div class="well well-sm device-modal-description"></div>
                 <?php $form = ActiveForm::begin(['action' => '/site/device-order/', 'id' => 'device-order-form']); ?>
-                <?= $form->field($modalFormModel, 'db')->hiddenInput()->label(false); ?>
-                <?= Html::activeHiddenInput($modalFormModel, 'device_id'); ?>
-                <?= Html::activeHiddenInput($modalFormModel, 'service_id'); ?>
-                <?= $form->field($modalFormModel, 'name')->textInput(['maxlength' => true, 'placeholder' => 'Имя *'])->label(false); ?>
+                <?= Html::activeHiddenInput($modalFormModel, 'device_provider_id'); ?>
+                <?= Html::activeHiddenInput($modalFormModel, 'device_assign_id'); ?>
+                <?= $form->field($modalFormModel, 'first_name')->textInput(['maxlength' => true, 'placeholder' => 'Имя *'])->label(false); ?>
                 <?= $form->field($modalFormModel, 'phone')->widget(MaskedInput::className(), [
                     'mask' => '+7 (999) 999-99-99'
                 ])->textInput(['placeholder' => 'Телефон *'])->label(false); ?>
@@ -206,6 +203,5 @@ $this->registerJsFile($baseUrl . '/js/device.js', ['depends' => \yii\web\JqueryA
                 <?php $form->end(); ?>
             </div>
         </div>
-
     </div>
 </div>

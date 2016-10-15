@@ -26,11 +26,8 @@ $model = isset($model) ? $model : new NotFoundDeviceForm;
             ],]);
         ?>
         <div class="row">
-            <?= $form->field($model, 'db', ['options' => ['class' => '', 'style' => 'text-align: center;']])
-                ->hiddenInput()
-                ->label(false); ?>
             <div class = "col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                <?= $form->field($model, 'name')->textInput(['maxlength' => true]); ?>
+                <?= $form->field($model, 'first_name')->textInput(['maxlength' => true]); ?>
             </div>
             <div class = "col-xs-12 col-sm-4 col-md-4 col-lg-4">
                 <?= $form->field($model, 'phone')->widget(MaskedInput::className(), [
@@ -38,7 +35,7 @@ $model = isset($model) ? $model : new NotFoundDeviceForm;
                 ]); ?>
             </div>
             <div class = "col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                <?= $form->field($model, 'device')->textInput(['maxlength' => true]); ?>
+                <?= $form->field($model, 'client_comment')->textInput(['maxlength' => true]); ?>
             </div>
             <div class = "col-xs-12">
                 <?= Html::submitButton('Перезвонить'); ?>

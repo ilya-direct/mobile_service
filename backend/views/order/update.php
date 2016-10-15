@@ -5,7 +5,6 @@ use yii\helpers\Html;
 /**
  * @var yii\web\View $this
  * @var \common\models\ar\Order $order
- * @var \common\models\ar\OrderPerson $orderPerson
  * @var \yii\base\DynamicModel $deviceAssigns
  */
 $this->title = 'Заказ ' . $order->uid;
@@ -19,7 +18,6 @@ $this->params['breadcrumbs'][] = 'Редактирование';
 
     <?= $this->render('_form', [
         'order' => $order,
-        'orderPerson' => $orderPerson,
         'deviceAssigns' => $deviceAssigns,
     ]); ?>
 

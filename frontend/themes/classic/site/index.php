@@ -39,7 +39,7 @@ $baseUrl = $asset->baseUrl;
             ->label(false); ?>
         <div class="row">
             <div class="col-xs-6" style="padding: 5px">
-                <?= $form->field($model, 'name')->textInput(['maxlength' => true, 'placeholder' => 'Имя *'])->label(false); ?>
+                <?= $form->field($model, 'first_name')->textInput(['maxlength' => true, 'placeholder' => 'Имя *'])->label(false); ?>
             </div>
             <div class="col-xs-6" style="padding: 5px">
                 <?= $form->field($model, 'phone')->widget(\yii\widgets\MaskedInput::className(),

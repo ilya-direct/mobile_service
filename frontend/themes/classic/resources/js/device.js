@@ -2,11 +2,11 @@
 $('#order-service').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget);
     var device_id = button.data('device-id');
-    var service_id = button.data('service-id');
+    var device_assign_id = button.data('device-assign-id');
 
     var description = $(this).find('.device-modal-description')[0];
     var form = $(this).find('form');
-    var device = form.find('input[name*=device_id]')[0];
+    var device = form.find('input[name*=device_provider_id]')[0];
     if (device_id) {
         device.value = device_id;
         $(description).append('<p> Устройтво: <strong>' + button.data('device-name') + '</strong></p>');
@@ -14,13 +14,13 @@ $('#order-service').on('show.bs.modal', function (event) {
         device.value = 0;
     }
 
-    var service = form.find('input[name*=service_id]')[0];
-    if (service_id) {
-        service.value = service_id;
+    var deviceAssignId = form.find('input[name*=device_assign_id]')[0];
+    if (device_assign_id) {
+        deviceAssignId.value = device_assign_id;
         $(description).append('<p> Услуга: <strong>' + button.data('service-name') + '</strong></p>');
         $(description).append('<p> Стоимость: <strong>' + button.data('price') + ' руб.</strong></p>');
     } else {
-        service.value = 0;
+        deviceAssignId.value = 0;
     }
 
 });

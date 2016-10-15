@@ -4,19 +4,15 @@
 namespace frontend\models;
 
 
-use yii\base\Model;
+use common\models\ar\Order;
 
 /**
- * Class FooterCallbackForm
- *
- * Нижняя форма
+ * Нижняя форма Оставить заявку
  *
  * @package frontend\models
  */
-class FooterCallbackForm extends Model
+class FooterCallbackForm extends Order
 {
-    public $first_name;
-    public $phone;
 
     public function rules()
     {
@@ -28,6 +24,10 @@ class FooterCallbackForm extends Model
                 'pattern' => '/^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/',
                 'message' => 'Формат +7 (XXX) XXX-XX-XX',
             ],
+            ['phone', 'filter', 'filter' => function ($value) {
+                $newValue = '+' . preg_replace('/\D/', '', $value);
+                return $newValue;
+            }],
         ];
     }
 

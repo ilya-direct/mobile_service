@@ -10,7 +10,6 @@ use dosamigos\datepicker\DatePicker;
 /**
  * @var yii\web\View $this
  * @var \common\models\ar\Order $order
- * @var \common\models\ar\OrderPerson $orderPerson
  * @var \yii\base\DynamicModel $deviceAssigns
  */
 ?>
@@ -22,13 +21,13 @@ use dosamigos\datepicker\DatePicker;
     <div class="row">
         <div class="col-lg-5 well" style="margin-left: 10px;margin-right: 10px;">
             <h4>Данные клиента</h4>
-            <?= $form->field($orderPerson, 'first_name')->textInput(['maxlength' => true]); ?>
-            <?= $form->field($orderPerson, 'last_name')->textInput(['maxlength' => true]); ?>
-            <?= $form->field($orderPerson, 'middle_name')->textInput(['maxlength' => true]); ?>
-            <?= $form->field($orderPerson, 'phone')->widget(MaskedInput::className(),
+            <?= $form->field($order, 'first_name')->textInput(['maxlength' => true]); ?>
+            <?= $form->field($order, 'last_name')->textInput(['maxlength' => true]); ?>
+            <?= $form->field($order, 'middle_name')->textInput(['maxlength' => true]); ?>
+            <?= $form->field($order, 'phone')->widget(MaskedInput::className(),
                 ['mask' => '+7 (999) 999-99-99']); ?>
-            <?= $form->field($orderPerson, 'email')->textInput(); ?>
-            <?= $form->field($orderPerson, 'address')->textInput(['maxlength' => true]); ?>
+            <?= $form->field($order, 'email')->textInput(); ?>
+            <?= $form->field($order, 'address')->textInput(['maxlength' => true]); ?>
             <a href="https://yandex.ru/maps/" target="_blank">Найти адрес на карте</a>
         </div>
         <div class="col-lg-6 well" style="margin-left: 10px;margin-right: 10px;">

@@ -10,7 +10,7 @@ $(document).ready(function(){
     });
 
     /* Отправка нижней формы */
-    $('#footer-callback-form').submit(function () {
+    $('#footer-callback-form').on('beforeSubmit', function (e) {
         var formData = $(this).serialize();
         $.ajax({
             url : '/footer-form/',
@@ -34,10 +34,7 @@ $(document).ready(function(){
         return false;
     });
 });
-$(function($) {
-    $.mask.definitions['~']='[+-]';
-    $('#phone').mask('+7-999-999-99-99');
-});
+
 $(document).ready(function(){
     var $menu = $("#wr_main_menu");
     $(window).scroll(function(){

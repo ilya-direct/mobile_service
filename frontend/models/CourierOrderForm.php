@@ -2,7 +2,7 @@
 
 namespace frontend\models;
 
-use yii\base\Model;
+use common\models\ar\Order;
 
 /**
  * Форма на странице вызова мастера
@@ -11,21 +11,20 @@ use yii\base\Model;
  *
  * @package frontend\models
  */
-class CourierOrderForm extends Model
+class CourierOrderForm extends Order
 {
-    public $name;
-    public $phone;
-    public $db;
-
     public function rules()
     {
         return [
-            [['name', 'phone'], 'required', 'message' => 'Необходимо заполнить'],
+            [['first_name', 'phone'], 'required', 'message' => 'Необходимо заполнить'],
             ['phone', 'match',
                 'pattern' => '/^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/',
                 'message' => '+7 (XXX) XXX-XX-XX'],
-            ['db', 'string'],
-            ['name', 'string', 'max' => 30],
+            ['phone', 'filter', 'filter' => function ($value) {
+                $newValue = '+' . preg_replace('/\D/', '', $value);
+                return $newValue;
+            }],
+            ['first_name', 'string', 'max' => 30],
         ];
     }
 

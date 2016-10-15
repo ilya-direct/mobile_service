@@ -63,7 +63,6 @@ class OrderStatus extends ActiveRecord
         return [
             User::ROLE_ADMIN => [
                 self::STATUS_NULL => [
-                    self::STATUS_NEW,
                     self::STATUS_AMENDING,
                     self::STATUS_CONFIRMED,
                 ],

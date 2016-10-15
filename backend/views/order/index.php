@@ -57,12 +57,12 @@ JS
             [
                 'label' => 'Имя',
                 'attribute' => 'name',
-                'value' => 'orderPerson.first_name',
+                'value' => 'first_name',
             ],
             [
                 'label' => 'Телефон',
                 'attribute' => 'phone',
-                'value' => 'orderPerson.phone',
+                'value' => 'phone',
             ],
             'created_at',
             ['class' => 'yii\grid\ActionColumn'],

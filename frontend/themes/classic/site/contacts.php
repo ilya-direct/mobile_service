@@ -50,24 +50,19 @@ $baseUrl = $bundle->baseUrl;
             'action' => Url::current(),
         ]); ?>
         <div class="row">
-            <div class="col-xs-12" style="text-align: center">
-                <?= $form->field($model, 'db')->hiddenInput()->label(false); ?>
-            </div>
-        </div>
-        <div class="row">
             <div class = "col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                <?= $form->field($model, 'name')->textInput(['maxlength' => true]); ?>
+                <?= $form->field($model, 'first_name')->textInput(['maxlength' => true])->label('Ваше имя *'); ?>
             </div>
             <div class = "col-xs-12 col-sm-4 col-md-4 col-lg-4">
                 <?= $form->field($model, 'phone')->widget(MaskedInput::className(), [
                     'mask' => '+7 (999) 999-99-99',
-                ]); ?>
+                ])->label('Ваш телефон *'); ?>
             </div>
             <div class = "col-xs-12 col-sm-4 col-md-4 col-lg-4">
                 <?= $form->field($model, 'email')->textInput(['maxlength' => true]); ?>
             </div>
             <div class = "col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <?= $form->field($model, 'message')->textarea(['maxlength' => true]); ?>
+                <?= $form->field($model, 'client_comment')->textarea(['maxlength' => true])->label('Сообщение'); ?>
             </div>
         </div>
         <?= Html::submitButton('отправить'); ?>

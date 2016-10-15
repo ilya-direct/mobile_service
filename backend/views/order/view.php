@@ -13,7 +13,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $services = $model->orderServices;
 
-if ($model->orderPerson->address) {
+if ($model->address) {
     $this->registerJsFile('https://api-maps.yandex.ru/2.1/?lang=ru_RU');
 }
 $this->registerJs(<<<JS
@@ -22,10 +22,10 @@ if (typeof  ymaps == 'object') {
     var myMap;
     function init() {
         myMap = new ymaps.Map("map", {
-            center: [{$model->orderPerson->address_latitude}, {$model->orderPerson->address_longitude}],
+            center: [{$model->address_latitude}, {$model->address_longitude}],
             zoom: 11
         });
-        var myGeocoder = ymaps.geocode('{$model->orderPerson->address}');
+        var myGeocoder = ymaps.geocode('{$model->address}');
         myGeocoder.then(
             function (res) {
                 //var coords = res.geoObjects.get(0).geometry.getCoordinates();
@@ -75,7 +75,7 @@ JS
                 'created_at',
                 'orderProvider.name',
                 'client_comment',
-                'deviceProvider.name:raw:Устройство в заказе',
+                'deviceProvider.name:ntext:Устройство в заказе',
                 'preferable_date',
                 'time_from',
                 'time_to',
@@ -110,12 +110,12 @@ JS
             foreach (['first_name', 'last_name', 'middle_name', 'phone', 'email', 'address'] as $property) {
                 $attributes[] = [
                     'attribute' => $property,
-                    'visible' => isset($model->orderPerson->$property),
+                    'visible' => isset($model->$property),
                 ];
             }
             ?>
             <?= DetailView::widget([
-                'model' => $model->orderPerson,
+                'model' => $model,
                 'attributes' => $attributes,
             ]); ?>
         </div>

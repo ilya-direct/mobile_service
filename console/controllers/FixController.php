@@ -12,7 +12,6 @@ use common\models\ar\DeviceAssign;
 use common\models\ar\DeviceCategory;
 use common\models\ar\News;
 use common\models\ar\Order;
-use common\models\ar\OrderPerson;
 use common\models\ar\OrderProvider;
 use common\models\ar\OrderService;
 use common\models\ar\OrderStatus;
@@ -36,7 +35,6 @@ class FixController extends Controller
             DeviceAssign::className(),
             DeviceCategory::className(),
             Order::className(),
-            OrderPerson::className(),
             OrderService::className(),
             News::className(),
             Service::className(),
@@ -79,10 +77,10 @@ class FixController extends Controller
      * Создаёт начальную ревизию всех полей, которые не были проинициализированны
      *
      * @param string $table конкретная таблица
-     * @param string $field конкретное поле
+     * @param string $attribute конкретное поле
      * @throws ErrorException
      */
-    public function actionRevision($table = null, $field = null)
+    public function actionRevision($table = null, $attribute = null)
     {
         $tables = $this->tables;
         if ($table) {
@@ -101,12 +99,12 @@ class FixController extends Controller
                 }
                 $revisionTableId = RevisionTable::findOrCreateReturnScalar(['name' => $table::getTableSchema()->name]);
                 $attributes = $model->behaviors['revision']->attributes;
-                if ($field) {
-                    $attributes = array_intersect($attributes, [$field]);
+                if ($attribute) {
+                    $attributes = array_intersect($attributes, [$attribute]);
                 }
                 $revisionTableName = Revision::tableName();
                 $versionedFields = Revision::find()
-                    ->select( RevisionField::tableName() . '.name')
+                    ->select(RevisionField::tableName() . '.name')
                     ->joinWith('revisionField')
                     ->where([
                         $revisionTableName . '.revision_table_id' => $revisionTableId,

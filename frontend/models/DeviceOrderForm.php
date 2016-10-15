@@ -2,7 +2,9 @@
 
 namespace frontend\models;
 
-use yii\base\Model;
+use common\models\ar\Device;
+use common\models\ar\DeviceAssign;
+use common\models\ar\Order;
 
 /**
  * Class DeviceOrderForm
@@ -10,21 +12,15 @@ use yii\base\Model;
  *  Форма заказа со страницы Device
  * @package frontend\models
  */
-class DeviceOrderForm extends Model
+class DeviceOrderForm extends Order
 {
-    public $name;
-    public $phone;
-    public $email;
-    public $device_id;
-    public $service_id;
-    public $db; // свойство для вывода ошибок
-    public $time_from;
+    public $device_assign_id;
 
 
     public function rules()
     {
         return [
-            [['name', 'phone'], 'required', 'message' => 'Необходимо заполнить'],
+            [['first_name', 'phone', 'device_assign_id'], 'required', 'message' => 'Необходимо заполнить'],
             ['phone', 'match',
                 'pattern' => '/^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/',
                 'message' => '+7 (XXX) XXX-XX-XX'],
@@ -33,11 +29,27 @@ class DeviceOrderForm extends Model
                 return $newValue;
             }],
             ['email', 'email', 'message' => 'Email некорректен'],
-            [['device_id', 'service_id'], 'filter', 'filter' => 'intval'],
-            ['db', 'string'],
-            ['time_from', 'match',
-                'pattern' => '/^\d{2}:\d{2} \d{2}.\d{2}.\d{4}$/',
-                'message' => 'XX:XX XX.XX.XXXX'],
+            [['device_assign_id'], 'filter', 'filter' => 'intval'],
+            ['device_assign_id', 'default'],
+            ['device_assign_id', function($attribute) {
+                $value = (int)$this->$attribute;
+
+                $exists  = DeviceAssign::find()
+                    ->where(['id' => $value])
+                    ->enabled()
+                    ->exists();
+
+                if (!$exists) {
+                    $this->device_assign_id = null;
+                }
+            }],
+            ['device_provider_id', function($attribute) {
+                $value = (int)$this->$attribute;
+
+                if (!empty($value) && !Device::find()->where(['id' => $value])->exists()) {
+                    $this->device_provider_id = null;
+                }
+            }],
         ];
     }
 
@@ -46,7 +58,6 @@ class DeviceOrderForm extends Model
         return [
             'name' => 'Имя *',
             'phone' => 'Телефон',
-            'time_from' => 'Когда вам перезвонить?',
         ];
     }
     

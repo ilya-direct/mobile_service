@@ -4,38 +4,43 @@
 namespace frontend\models;
 
 
-use yii\base\Model;
+use common\models\ar\Device;
+use common\models\ar\Order;
 
-class OrderWithDiscountForm extends Model
+class OrderWithDiscountForm extends Order
 {
-    public $name;
-    public $phone;
-    public $device_id;
-    public $db; // свойство для вывода ошибок
-    public $time;
-
 
     public function rules()
     {
         return [
-            [['name', 'phone'], 'required', 'message' => 'Необходимо заполнить'],
+            [['first_name', 'phone'], 'required', 'message' => 'Необходимо заполнить'],
             ['phone', 'match',
                 'pattern' => '/^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/',
                 'message' => '+7 (XXX) XXX-XX-XX'],
-            ['time', 'match',
-                'pattern' => '/^\d{2}:\d{2} \d{2}.\d{2}.\d{4}$/',
+            ['phone', 'filter', 'filter' => function ($value) {
+                $newValue = '+' . preg_replace('/\D/', '', $value);
+                return $newValue;
+            }],
+            ['time_to', 'match',
+                'pattern' => '/^\d{2}:\d{2}$/',
                 'message' => 'XX:XX XX.XX.XXXX'],
-            ['db', 'string'],
-            ['device_id', 'filter', 'filter' => 'intval'],
+            ['device_provider_id', function($attribute) {
+                $value = (int)$this->$attribute;
+
+                if (!empty($value) && !Device::find()->where(['id' => $value])->exists()) {
+                    $this->device_provider_id = null;
+                }
+            }],
+            [['time_to', 'device_provider_id'], 'default'],
         ];
     }
 
     public function attributeLabels()
     {
         return [
-            'name' => 'Имя *',
+            'first_name' => 'Имя *',
             'phone' => 'Телефон *',
-            'time' => 'Когда вам перезвонить?',
+            'time_to' => 'Когда вам перезвонить?',
         ];
     }
 

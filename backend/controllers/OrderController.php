@@ -14,7 +14,6 @@ use yii\web\Response;
 use common\components\db\ActiveQuery;
 use common\models\ar\DeviceAssign;
 use common\models\ar\Order;
-use common\models\ar\OrderPerson;
 use common\models\ar\OrderProvider;
 use common\models\ar\OrderService;
 use common\models\ar\User;
@@ -56,7 +55,7 @@ class OrderController extends Controller
                         'roles' => [User::ROLE_OPERATOR],
                         'actions' => [
                             'create',
-                            'deleteTestOrders',
+                            'delete-test-orders',
                         ],
                     ],
                 ],
@@ -90,7 +89,6 @@ class OrderController extends Controller
         $model = Order::find()
             ->innerJoinWith('orderStatus')
             ->innerJoinWith('orderProvider')
-            ->innerJoinWith('orderPerson')
             ->with([
                 'orderServices' => function (ActiveQuery $query) {
                     $query->innerJoinWith('deviceAssign.device');
@@ -122,9 +120,8 @@ class OrderController extends Controller
     public function actionCreate()
     {
         $order = new Order(['scenario' => Order::SCENARIO_OPERATOR]);
-        $orderPerson = new OrderPerson(['scenario' => OrderPerson::SCENARIO_OPERATOR]);
 
-        return $this->proceed($order, $orderPerson, true);
+        return $this->proceed($order, true);
     }
 
     /**
@@ -139,19 +136,14 @@ class OrderController extends Controller
         /** @var Order $order */
         $order = Order::findOneOrFail($id);
 
-        /** @var OrderPerson $orderPerson */
-        $orderPerson = OrderPerson::findOneOrFail([$order->order_person_id]);
-
         if (Yii::$app->user->can('orderAccess', ['order' => $order, 'action' => 'update'])) {
             if (Yii::$app->user->can(User::ROLE_OPERATOR)) {
                 $order->scenario = Order::SCENARIO_OPERATOR;
-                $orderPerson->scenario = OrderPerson::SCENARIO_OPERATOR;
             } elseif (Yii::$app->user->can(User::ROLE_WORKER)) {
                 $order->scenario = Order::SCENARIO_WORKER;
-                $orderPerson->scenario = OrderPerson::SCENARIO_WORKER;
             }
 
-            return $this->proceed($order, $orderPerson, false);
+            return $this->proceed($order, false);
         } else {
             throw new ForbiddenHttpException('Вам не разрешено редактировать данный заказ');
         }
@@ -159,12 +151,11 @@ class OrderController extends Controller
 
     /**
      * @param Order $order
-     * @param OrderPerson $orderPerson
      * @param bool $isNew новый заказ
      * @return string|\yii\web\Response
      * @throws Exception
      */
-    private function proceed($order, $orderPerson, $isNew)
+    private function proceed($order, $isNew)
     {
         $deviceAssigns = new DynamicModel(['deviceAssignIds']);
         $deviceAssigns->addRule('deviceAssignIds', 'string');
@@ -180,29 +171,20 @@ class OrderController extends Controller
         }
 
         $post = Yii::$app->request->post();
-        if ($order->load($post) && $orderPerson->load($post) && $deviceAssigns->load($post)) {
+        if ($order->load($post) && $deviceAssigns->load($post)) {
             $validator = DeviceAssign::validateCommaStr($deviceAssigns->deviceAssignIds);
             if (!$validator['valid']) {
                 $deviceAssigns->addError('deviceAssignIds', 'Неизвестные id: ' . implode(',', $validator['errors']));
             }
 
             $valid = $order->validate();
-            $valid = $orderPerson->validate() && $valid;
             $valid = (!$deviceAssigns->hasErrors()) && $valid;
 
             if ($valid) {
                 $transaction = Yii::$app->db->beginTransaction();
                 $flag = true;
                 try {
-                    // Обновление время обновление заказа и того, кто изменил, если изменён OrderPerson
-                    if (!$isNew && $orderPerson->dirtyAttributes) {
-                        $order->getBehavior('blameable')->skipUpdateOnClean = false;
-                        $order->getBehavior('timestamp')->skipUpdateOnClean = false;
-                    }
-
-                    $orderPerson->save(false);
                     if ($isNew) {
-                        $order->order_person_id = $orderPerson->id;
                         $order->order_provider_id = OrderProvider::PROVIDER_ADMIN_PANEL;
                     }
                     if (!$order->operator_id) {
@@ -252,7 +234,6 @@ class OrderController extends Controller
 
         return $this->render($isNew ? 'create' : 'update', [
             'order' => $order,
-            'orderPerson' => $orderPerson,
             'deviceAssigns' => $deviceAssigns,
         ]);
     }
@@ -325,9 +306,9 @@ class OrderController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
         /** @var Order[] $orders */
         $orders = Order::find()
-            ->joinWith('orderPerson')
-            ->where(['ilike', OrderPerson::tableName() . '.first_name', '%тест', false])
-            ->orWhere(['ilike', OrderPerson::tableName() . '.first_name', '%тестовый', false])
+            ->where(['ilike', 'first_name', '%тест', false])
+            ->orWhere(['ilike', 'first_name', '%тестовый', false])
+            ->notDeleted()
             ->all();
 
         $i = 0;

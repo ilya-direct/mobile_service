@@ -5,8 +5,6 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\MaskedInput;
 use common\components\app\Formatter;
-use common\models\ar\Order;
-use common\models\ar\OrderPerson;
 use common\widgets\Alert;
 use frontend\assets\AppAsset;
 use frontend\models\FooterCallbackForm;
@@ -63,10 +61,7 @@ $callbackModel = isset($this->params['footerCallbackForm'])
                         'class' => 'oform_order',
                     ],
                 ]); ?>
-                <?= $this->render('//site/quick-order-form', [
-                        'order' => new Order(),
-                        'orderPerson' => new OrderPerson(),
-                ]); ?>
+                <?= $this->render('//site/quick-order-form'); ?>
                 <?php $modalWindow->end(); ?>
             <?php else: ?>
                 <div class="oform_order">

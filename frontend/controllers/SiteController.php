@@ -4,21 +4,14 @@ namespace frontend\controllers;
 use Yii;
 use yii\bootstrap\ActiveForm;
 use yii\db\Exception;
-use yii\helpers\FileHelper;
-use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\Controller;;
 use yii\web\NotFoundHttpException;;
 use yii\web\Response;
 use common\components\db\ActiveQuery;
 use common\models\ar\Device;
-use common\models\ar\DeviceAssign;
 use common\models\ar\DeviceCategory;
-use common\models\ar\Order;
-use common\models\ar\OrderPerson;
 use common\models\ar\OrderProvider;
-use common\models\ar\OrderService;
-use common\models\ar\OrderStatus;
 use common\models\ar\Vendor;
 use frontend\models\CourierOrderForm;
 use frontend\models\DeviceOrderForm;
@@ -26,6 +19,7 @@ use frontend\models\FooterCallbackForm;
 use frontend\models\NotFoundDeviceForm;
 use frontend\models\ContactUsForm;
 use frontend\models\OrderWithDiscountForm;
+use frontend\models\QuickOrderForm;
 use frontend\models\PriceCalculatorForm;
 
 /**
@@ -33,15 +27,6 @@ use frontend\models\PriceCalculatorForm;
  */
 class SiteController extends Controller
 {
-    private $dbErrorMessage;
-
-    public function init()
-    {
-        parent::init();
-        $this->dbErrorMessage = 'Ошибка базы данных! Пожалуйста попробуйте ещё раз или оформите заказ по телефону '
-            . Yii::$app->formatter->asPhone(Yii::$app->params['phone'])
-            . '. Вас ждёт приятный бонус!';
-    }
 
     /**
      * @inheritdoc
@@ -64,31 +49,12 @@ class SiteController extends Controller
     {
         $model = new PriceCalculatorForm();
 
-        // Форма калькулятора
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $transaction = Yii::$app->db->beginTransaction();
-            $flag = true;
-            try {
-                $orderPerson = new OrderPerson();
-                $orderPerson->first_name = $model->name;
-                $orderPerson->phone = $model->phone;
-                $orderPerson->save(false);
-                $order = new Order();
-                $order->order_person_id = $orderPerson->id;
-                $order->order_status_id = OrderStatus::STATUS_NEW;
-                $order->order_provider_id = OrderProvider::PROVIDER_CALCULATOR;
-                $order->save(false);
-                $transaction->commit();
-            } catch (Exception $e) {
-                $flag = false;
-                $transaction->rollBack();
-                $model->addError('db', $this->dbErrorMessage);
-            }
-            if ($flag) {
-                Yii::$app->session->set('uid', $order->uid);
-                return $this->redirect(Url::to(['site/success']));
-            }
+        if ($model->load(Yii::$app->request->post()) && $model->create(OrderProvider::PROVIDER_CALCULATOR)) {
+            Yii::$app->session->set('uid', $model->uid);
+
+            return $this->redirect(Url::to(['site/success']));
         }
+
         return $this->render('index', [
             'model' => $model,
         ]);
@@ -108,34 +74,10 @@ class SiteController extends Controller
     {
         $model = new ContactUsForm();
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $transaction = Yii::$app->db->beginTransaction();
-            $flag = true;
-            try {
-                $orderPerson = new OrderPerson();
-                $orderPerson->first_name = $model->name;
-                $orderPerson->phone = '+' . preg_replace('/\D/', '', $model->phone);
-                if ($model->email) {
-                    $orderPerson->email = $model->email;
-                }
-                $orderPerson->save(false);
+        if ($model->load(Yii::$app->request->post()) && $model->create(OrderProvider::PROVIDER_CONTACT_US_FORM)) {
+            Yii::$app->session->set('uid', $model->uid);
 
-                $order = new Order();
-                $order->order_person_id = $orderPerson->id;
-                $order->order_status_id = OrderStatus::STATUS_NEW;
-                $order->order_provider_id = OrderProvider::PROVIDER_CONTACT_US_FORM;
-                $order->client_comment = $model->message ?: null;
-                $order->save(false);
-                $transaction->commit();
-            } catch (Exception $e) {
-                $flag = false;
-                $transaction->rollBack();
-                $model->addError('db', $this->dbErrorMessage);
-            }
-            if ($flag) {
-                Yii::$app->session->set('uid', $order->uid);
-                return $this->redirect(Url::to(['site/success']));
-            }
+            return $this->redirect(Url::to(['site/success']));
         }
 
         return $this->render('contacts', [
@@ -155,40 +97,21 @@ class SiteController extends Controller
 
     public function actionQuickOrder()
     {
-        $order = new Order();
-        $orderPerson = new OrderPerson();
+        $order = new QuickOrderForm();
         $request = Yii::$app->request;
-        if ($orderPerson->load($request->post()) && $order->load($request->post())) {
-            $order->order_status_id = OrderStatus::STATUS_NEW;
-            $isValid = $orderPerson->validate();
-            $isValid = $order->validate() && $isValid;
-            if ($isValid) {
-                $transaction = Yii::$app->db->beginTransaction();
-                $flag = true;
-                try {
-                    $orderPerson->save(false);
-                    $order->order_person_id = $orderPerson->id;
-                    $order->order_provider_id = $request->post('fullForm', false)
-                        ? OrderProvider::PROVIDER_TOP_FORM_FULL
-                        : OrderProvider::PROVIDER_TOP_FORM;
-                    $order->save(false);
-                    $transaction->commit();
-                } catch (Exception $e) {
-                    $flag = false;
-                    $transaction->rollBack();
-                    $order->addError('db', $this->dbErrorMessage);
-                }
-                if ($flag) {
-                    Yii::$app->session->set('uid', $order->uid);
-                    return $this->redirect(Url::to(['site/success']));
-                }
-            }
+
+        $orderProviderId = $request->post('fullForm', false)
+            ? OrderProvider::PROVIDER_TOP_FORM_FULL
+            : OrderProvider::PROVIDER_TOP_FORM;
+        if ($order->load($request->post()) && $order->create($orderProviderId)) {
+            Yii::$app->session->set('uid', $order->uid);
+
+            return $this->redirect(Url::to(['site/success']));
         }
         $this->view->params['hideTopModalForm'] = true;
 
         return $this->render('quick-order', [
             'order' => $order,
-            'orderPerson' => $orderPerson,
         ]);
     }
 
@@ -214,42 +137,17 @@ class SiteController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
         $model = new FooterCallbackForm();
 
-        $success = false;
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $transaction = Yii::$app->db->beginTransaction();
-
-            try {
-                $orderPerson = new OrderPerson();
-                $orderPerson->first_name = $model->first_name;
-                $orderPerson->phone = '+' . preg_replace('/\D/', '', $model->phone);
-                $orderPerson->save(false);
-
-                $order = new Order();
-                $order->order_person_id = $orderPerson->id;
-                $order->order_status_id = OrderStatus::STATUS_NEW;
-                $order->order_provider_id = OrderProvider::PROVIDER_FOOTER_CALLBACK_FORM;
-                $order->save(false);
-            } catch(Exception $e) {
-                $transaction->rollBack();
-
-                return [
-                    'success' => $success,
-                    'msg' => $this->dbErrorMessage,
-                ];
-            }
-
-            $success = true;
-            $transaction->commit();
+        if ($model->load(Yii::$app->request->post()) && $model->create(OrderProvider::PROVIDER_FOOTER_CALLBACK_FORM)) {
 
             return [
-                'success' => $success,
+                'success' => true,
                 'msg' => 'Спасибо за заявку! Наши специалисты свяжутся с Вами в ближайшее время. Номер заявки: '
-                    . $order->uid,
+                    . $model->uid,
             ];
         }
 
         return [
-            'success' => $success,
+            'success' => false,
             'validation_failed' => true,
             'msg' => 'validation failed',
             'errors' => ActiveForm::validate($model),
@@ -265,45 +163,15 @@ class SiteController extends Controller
     public function actionDevice($alias)
     {
         // Форма заказа со скидкой
-        $orderWithDiscount = new OrderWithDiscountForm();
+        $order = new OrderWithDiscountForm();
 
-        if ($orderWithDiscount->load(Yii::$app->request->post()) && $orderWithDiscount->validate()) {
-            $transaction = Yii::$app->db->beginTransaction();
-            $time = strtotime($orderWithDiscount->time);
-            $device = Device::findOne(['id' => $orderWithDiscount->device_id, 'enabled' => true]);
-            $flag = true;
-            try {
-                $orderPerson = new OrderPerson();
-                $orderPerson->first_name = $orderWithDiscount->name;
-                $orderPerson->phone = '+' . preg_replace('/\D/', '', $orderWithDiscount->phone);
-                $orderPerson->save(false);
+        if ($order->load(Yii::$app->request->post()) && $order->create(OrderProvider::PROVIDER_ORDER_WITH_DISCOUNT)) {
+            Yii::$app->session->set('uid', $order->uid);
 
-                $order = new Order();
-                $order->order_person_id = $orderPerson->id;
-                $order->order_provider_id = OrderProvider::PROVIDER_ORDER_WITH_DISCOUNT;
-                $order->order_status_id = OrderStatus::STATUS_NEW;
-                if ($device) {
-                    $order->device_provider_id = $device->id;
-                }
-
-                if ($time) {
-                    $order->preferable_date = date('Y-m-d', $time);
-                    $order->time_from = date('H:i:s', $time);
-                }
-                $order->save(false);
-            } catch(Exception $e) {
-                $flag = false;
-                $orderWithDiscount->addError('db', $this->dbErrorMessage);
-                $transaction->rollBack();
-            }
-            if ($flag) {
-                $transaction->commit();
-                Yii::$app->session->set('uid', $order->uid);
-
-                return $this->redirect(Url::to(['site/success']));
-            }
-
+            return $this->redirect(Url::to(['site/success']));
         }
+
+
         $query = Device::find()
             ->where([
                 Device::tableName() . '.alias' => $alias,
@@ -328,95 +196,33 @@ class SiteController extends Controller
         $model= $query->one();
 
         if ($model) {
-            // Image
-            $path = Yii::getAlias(Device::IMAGE_SAVE_PATH);
-            $images = FileHelper::findFiles($path, ['filter' => function ($path) use ($model) {
-                return (boolean)preg_match('/'. preg_quote($model->alias, '/') . '\.\w{3,4}$/u', $path);
-            }]);
-            $model->image = empty($images) ? false : Device::IMAGE_WEB_PATH . '/' .basename($images[0]);
-            // Image
 
             return $this->render('device', [
                 'model' => $model,
-                'orderWithDiscount' => $orderWithDiscount,
+                'orderWithDiscount' => $order,
             ]);
         } else {
             throw new NotFoundHttpException();
         }
     }
 
-    // Заказ со страницы устройства
+    /**
+     * Ajax - заказ со страницы устройства (POST only)
+     * @return array|Response
+     * @throws Exception
+     */
     public function actionDeviceOrder()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
 
         $model = new DeviceOrderForm();
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $device = $model->device_id
-                ? Device::findOne(['id' => $model->device_id, 'enabled' => true])
-                : null;
+        if ($model->load(Yii::$app->request->post()) && $model->create(OrderProvider::PROVIDER_DEVICE_FORM, true, $model->device_assign_id)) {
+            Yii::$app->session->set('uid', $model->uid);
 
-            if ($device) {
-                $deviceAssign = $model->service_id
-                    ? DeviceAssign::findOne([
-                        'device_id' => $model->device_id,
-                        'service_id' => $model->service_id,
-                        'enabled' => true,
-                    ])
-                    : null;
-            }
-
-            $transaction = Yii::$app->db->beginTransaction();
-
-            $time = strtotime($model->time_from);
-
-            $flag = true;
-            try {
-                $orderPerson = new OrderPerson();
-                $orderPerson->first_name = $model->name;
-                $orderPerson->phone = $model->phone;
-                $orderPerson->email = $model->email ?: null;
-                $orderPerson->save(false);
-                $order = new Order();
-                $order->order_person_id = $orderPerson->id;
-                $order->order_status_id = OrderStatus::STATUS_NEW;
-                $order->order_provider_id = OrderProvider::PROVIDER_DEVICE_FORM;
-                if ($device) {
-                    $order->device_provider_id = $device->id;
-                }
-
-                if ($time) {
-                    $order->preferable_date = date('Y-m-d', $time);
-                    $order->time_from = date('H:i:s', $time);
-                }
-                $order->save(false);
-                if (!empty($deviceAssign)) {
-                    $orderService = new OrderService();
-                    $orderService->device_assign_id = $deviceAssign->id;
-                    $orderService->order_id = $order->id;
-                    $orderService->save(false);
-                }
-            } catch(Exception $e) {
-                $transaction->rollBack();
-                $flag = false;
-                $model->addError('db', $this->dbErrorMessage);
-            }
-
-            if ($flag) {
-                $transaction->commit();
-                Yii::$app->session->set('uid', $order->uid);
-
-                return $this->redirect(Url::to(['site/success']));
-            }
-
+            return $this->redirect(Url::to(['site/success']));
         }
 
-        $errors = [];
-        foreach ($model->errors as $attribute => $attributeErrors) {
-            $errors[Html::getInputId($model, $attribute)] = $attributeErrors;
-        }
-
-        return $errors;
+        return $model->errors;
     }
 
 
@@ -466,42 +272,14 @@ class SiteController extends Controller
 
         $model = new NotFoundDeviceForm();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $transaction = Yii::$app->db->beginTransaction();
-            $flag = true;
-            try {
-                $orderPerson = new OrderPerson();
-                $orderPerson->first_name = $model->name;
-                $orderPerson->phone = '+' . preg_replace('/\D/' , '', $model->phone);
-                $orderPerson->save(false);
-                $order = new Order();
-                $order->order_person_id = $orderPerson->id;
-                $order->order_status_id = OrderStatus::STATUS_NEW;
-                $order->order_provider_id = OrderProvider::PROVIDER_NOT_FOUND_DEVICE_FORM;
-                if (trim($model->device)) {
-                    $order->client_comment = 'Не нашёл модель: ' . trim($model->device);
-                }
-                $order->save(false);
-            } catch(Exception $e) {
-                $transaction->rollBack();
-                $flag = false;
-                $model->addError('db', $this->dbErrorMessage);
-            }
+            $model->client_comment = 'Не нашёл модель: ' . trim($model->client_comment);
+            $model->create(OrderProvider::PROVIDER_NOT_FOUND_DEVICE_FORM, false);
+            Yii::$app->session->set('uid', $model->uid);
 
-            if ($flag) {
-                $transaction->commit();
-                Yii::$app->session->set('uid', $order->uid);
-
-                return $this->redirect(Url::to(['site/success']));
-            }
-
+            return $this->redirect(Url::to(['site/success']));
         }
 
-        $errors = [];
-        foreach ($model->errors as $attribute => $attributeErrors) {
-            $errors[Html::getInputId($model, $attribute)] = $attributeErrors;
-        }
-
-        return $errors;
+        return $model->errors;
     }
 
 
@@ -569,31 +347,10 @@ class SiteController extends Controller
     {
         $model = new CourierOrderForm();
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $transaction = Yii::$app->db->beginTransaction();
-            $flag = true;
-            try {
-                $orderPerson = new OrderPerson();
-                $orderPerson->first_name = $model->name;
-                $orderPerson->phone = '+' . preg_replace('/\D/', '', $model->phone);
-                $orderPerson->save(false);
+        if ($model->load(Yii::$app->request->post()) && $model->create(OrderProvider::PROVIDER_COURIER_FORM)) {
+            Yii::$app->session->set('uid', $model->uid);
 
-                $order = new Order();
-                $order->order_person_id = $orderPerson->id;
-                $order->order_status_id = OrderStatus::STATUS_NEW;
-                $order->order_provider_id = OrderProvider::PROVIDER_COURIER_FORM;
-                $order->save(false);
-            } catch(Exception $e) {
-                $flag = false;
-                $model->addError('db', $this->dbErrorMessage);
-                $transaction->rollBack();
-            }
-            if ($flag) {
-                $transaction->commit();
-                Yii::$app->session->set('uid', $order->uid);
-
-                return $this->redirect(Url::to(['site/success']));
-            }
+            return $this->redirect(Url::to(['site/success']));
         }
 
         return $this->render('courier', [
