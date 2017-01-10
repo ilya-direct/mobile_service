@@ -9,6 +9,7 @@ use yii\web\IdentityInterface;
 class User extends \yii\web\User
 {
     public $authKeyParam = '__auth_key';
+    
     /**
      * @inheritdoc
      */

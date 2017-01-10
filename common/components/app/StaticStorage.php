@@ -11,7 +11,8 @@ use creocoder\flysystem\Filesystem;
 use League\Flysystem\FileNotFoundException;
 
 /**
- * Class Storage
+ * Class StaticStorage
+ * сохранение файлов на статик сервер
  */
 class StaticStorage extends Component
 {
