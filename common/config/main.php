@@ -57,6 +57,21 @@ return [
 
         'urlManagerFrontend' => require(dirname(dirname(__DIR__)) . '/frontend/config/url-manager.php'),
         'urlManagerBackend' => require(dirname(dirname(__DIR__)) . '/backend/config/url-manager.php'),
+    
+        'storage' => [
+            'class' => common\components\app\StaticStorage::class,
+            'nestingLevel' => 1, // Уровень вложенности(по умолчанию 1)
+            'defaultFolder' => 'default', // Корневая поддирректория по умолчанию для сохранения
+            'baseUrl' => 'http://static.mobile.dev', // Базовая ссылка к файлам
+            'sections' => [ // Список всевозможных корневых поддирректорий
+                'device-images',
+            ],
+            // Local filesystem
+            'filesystem' => [
+                'class' => creocoder\flysystem\LocalFilesystem::class,
+                'path' => dirname(dirname(__DIR__)) . '/static', // Путь к корневой дирректории сохранения
+            ],
+        ],
 
     ],
 ];

@@ -6,6 +6,7 @@ use yii\helpers\HtmlPurifier;
 use yii\widgets\MaskedInput;
 use frontend\assets\AppAsset;
 use frontend\models\DeviceOrderForm;
+use common\models\ar\Device;
 use dosamigos\datetimepicker\DateTimePicker;
 
 /**
@@ -58,9 +59,10 @@ $this->registerJsFile($baseUrl . '/js/device.js', ['depends' => \yii\web\JqueryA
             <?php if (empty($model->description)): ?>
                 <div class = "col-xs-12">
                     <div class = "col-xs-12">
-                        <?php if ($model->imageWebPath): ?>
-                                <img class="device-image" style="max-width: 150px" src="<?= $model->imageWebPath; ?>" alt="<?= Html::encode($model->name); ?>" />
-                        <?php endif; ?>
+                        <img class="device-image"
+                             style="max-width: 150px"
+                             src="<?= Yii::$app->storage->getUrl($model->image_name, Device::IMAGE_SAVE_FOLDER); ?>"
+                             alt="<?= Html::encode($model->name); ?>" />
                         <a
                             data-toggle="modal"
                             data-target="#order-service"
@@ -72,9 +74,9 @@ $this->registerJsFile($baseUrl . '/js/device.js', ['depends' => \yii\web\JqueryA
                     </div>
                 </div>
             <?php else: ?>
-                <?php if ($model->imageWebPath): ?>
+                <?php if ($model->image_name): ?>
                     <div class = "col-xs-12 col-sm-3 col-md-2 col-lg-2">
-                        <img class="device-image" src="<?= $model->imageWebPath; ?>" alt="<?= Html::encode($model->name); ?>" />
+                        <img class="device-image" src="<?= Yii::$app->storage->getUrl($model->image_name, Device::IMAGE_SAVE_FOLDER); ?>" alt="<?= Html::encode($model->name); ?>" />
                     </div>
                 <?php endif; ?>
                 <div class = "col-xs-12 col-sm-9 col-md-10 col-lg-10">

@@ -37,9 +37,7 @@ $this->title = 'Категория ' . Html::encode($category->name);
                 <div class = "col-xs-12 col-sm-4 col-md-4 col-lg-4">
                     <div class="category-vendor-device">
                         <a href="<?= \yii\helpers\Url::to(['site/device', 'alias' => $device->alias]) ?>">
-                            <?php if ($device->imageWebPath): ?>
-                                <img src="<?= $device->imageWebPath; ?> " alt="" />
-                            <?php endif; ?>
+                            <img src="<?= Yii::$app->storage->getUrl($device->image_name, \common\models\ar\Device::IMAGE_SAVE_FOLDER); ?>" alt="" />
                             <p><?= $device->name; ?></p>
                         </a>
                     </div>

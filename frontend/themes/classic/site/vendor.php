@@ -1,8 +1,9 @@
 <?php
 
 use yii\helpers\Html;
-use frontend\assets\AppAsset;
 use yii\helpers\Url;
+use frontend\assets\AppAsset;
+use common\models\ar\Device;
 
 /**
  * @var \yii\web\View $this
@@ -31,8 +32,8 @@ $this->title = Html::encode($vendor->name);
                 <div class = "col-xs-12 col-sm-4 col-md-4 col-lg-4">
                     <div class="category-vendor-device">
                         <a href="<?= Url::to(['site/device', 'alias' => $device->alias]); ?>">
-                            <?php if ($device->imageWebPath): ?>
-                                <img src="<?= $device->imageWebPath; ?>" alt="<?= $device->name; ?>" />
+                            <?php if ($device->image_name): ?>
+                                <img src="<?= Yii::$app->storage->getUrl($device->image_name, Device::IMAGE_SAVE_FOLDER); ?>" alt="<?= $device->name; ?>" />
                             <?php endif; ?>
                             <p><?= $device->name; ?></p>
                         </a>

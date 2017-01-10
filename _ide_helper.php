@@ -4,7 +4,8 @@
  */
 
 namespace {
-
+    
+    use common\components\app\StaticStorage;
     use yii\web\UrlManager;
 
     exit("This file should not be included, only analyzed by your IDE");
@@ -24,6 +25,7 @@ namespace {
      *
      * @property UrlManager $urlManagerFrontend
      * @property UrlManager $urlManagerBackend
+     * @property StaticStorage $storage
      * @property \Mobile_Detect $deviceDetect
      */
     class IDE_PHPDocWebApp extends \yii\web\Application {}

@@ -36,8 +36,8 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'label' => 'Изображение',
                 'format' => 'html',
-                'value' => $model->getImageWebPath()
-                    ? Html::img(Yii::$app->urlManagerFrontend->hostInfo . $model->getImageWebPath(), ['style' => 'height:300px'])
+                'value' => $model->image_name
+                    ? Html::img(Yii::$app->storage->getUrl($model->image_name, \common\models\ar\Device::IMAGE_SAVE_FOLDER), ['style' => 'height:300px'])
                     : ' - ',
             ],
             'description:html',

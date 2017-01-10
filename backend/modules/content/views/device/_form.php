@@ -27,9 +27,9 @@ $this->registerAssetBundle(AssetBundle::className());
 
     <?= $form->field($model, 'image')->fileInput(); ?>
 
-    <?php if ($model->getImageWebPath()): ?>
+    <?php if ($model->image_name): ?>
         <p>Текущее изображение:</p>
-        <img src="<?= Yii::$app->urlManagerFrontend->hostInfo . $model->getImageWebPath(); ?>" style="height:300px">
+        <img src="<?= Yii::$app->storage->getUrl($model->image_name, \common\models\ar\Device::IMAGE_SAVE_FOLDER); ?>" style="height:300px">
     <?php endif; ?>
 
     <?= $form->field($model, 'vendor_id')->dropDownList(Vendor::getList(), ['prompt' => 'Выберете производителя']); ?>
