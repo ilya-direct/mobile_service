@@ -69,7 +69,7 @@ $baseUrl = AppAsset::register($this)->baseUrl;
     <div class="container">
         <p class="pull-left">&copy; Админ панель <?= date('Y') ?></p>
 
-        <p class="pull-right">Смирнов И. Н., Владышевский И. М. (ИУ8-91)</p>
+        <p class="pull-right">Смирнов И. Н.</p>
     </div>
 </footer>
 
