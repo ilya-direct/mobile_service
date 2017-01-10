@@ -30,12 +30,15 @@ class HelperController extends Controller
         }
     }
 
-    public function actionBackUp()
+    public function actionBackUpDb()
     {
         Console::output('Generating back-up ...');
         $folder = Yii::$app->params['dbBackUpFolder'];
-        $cmd = 'pg_dump -U postgres -h 127.0.0.1 -Fc' . ' mobile-service'
-            . ' > '  . $folder . '/mobile-service.' . time() . '.backup';
+        // TODO: get db name from DSN
+        $backUpFileName = 'mobile-service.' . time() . '.backup';
+        $cmd = 'pg_dump -U postgres -h 127.0.0.1 -Fc '
+            . 'mobile-service' . ' > '
+            . $folder . '/' . $backUpFileName;
         system($cmd , $return);
         if ($return) {
             Console::output('Error ' . $return);
@@ -43,6 +46,30 @@ class HelperController extends Controller
             Console::output('Successfully generated.');
         }
 
+    }
+    
+    public function actionRestoreDb($path)
+    {
+        Console::output('Restoring database...');
+        
+        if (!file_exists($path)) {
+            Console::output('File does not exist!');
+            
+            return;
+        }
+        // createdb -U postgres -E UTF8 -O postgres -T template0 mobile-service - creating DB
+        // TODO: get db name from DSN
+        $cmd = 'pg_restore -U postgres -d '
+            . 'mobile-service' . ' '
+            . realpath($path);
+        system($cmd , $return);
+        
+        if ($return) {
+            Console::output('Error ' . $return);
+        } else {
+            Console::output('Successfully restored');
+        }
+        
     }
 
     public function actionRestoreUser($email)
@@ -70,7 +97,8 @@ class HelperController extends Controller
      * @param string $role новая роль
      * @return null
      */
-    public function actionChangeRole($email, $role) {
+    public function actionChangeRole($email, $role)
+    {
         if (!in_array($role, User::getRoles())) {
             Console::output('Role ' . $role . ' undefined');
             return null;
@@ -93,7 +121,8 @@ class HelperController extends Controller
      * @param string $email email пользователя
      * @return null
      */
-    public function actionLogOut($email) {
+    public function actionLogOut($email)
+    {
         /** @var User|null $user */
         $user = User::findByUsername($email);
         if (!$user) {

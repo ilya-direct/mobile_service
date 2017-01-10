@@ -6,5 +6,5 @@ return [
     'phone' => '9636568377',
     'email' => 'ilya-direct@ya.ru',
     'companyName' => 'Company Name',
-    'dbBackUpFolder' => '/home',
+    'dbBackUpFolder' => dirname(dirname(__DIR__)) . '/dumps',
 ];
