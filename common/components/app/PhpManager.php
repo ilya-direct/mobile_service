@@ -8,7 +8,6 @@ use yii\base\InvalidCallException;
 use yii\base\InvalidParamException;
 use yii\helpers\VarDumper;
 use yii\rbac\Assignment;
-use yii\rbac\BaseManager;
 use yii\rbac\Item;
 use yii\rbac\Permission;
 use yii\rbac\Role;
@@ -34,7 +33,7 @@ use yii\rbac\Rule;
  * @author Alexander Makarov <sam@rmcreative.ru>
  * @since 2.0
  */
-class PhpManager extends BaseManager
+class PhpManager extends \yii\rbac\PhpManager
 {
     /**
      * @var string the path of the PHP script that contains the authorization items.
