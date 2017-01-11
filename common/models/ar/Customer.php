@@ -32,7 +32,7 @@ class Customer extends ActiveRecord  implements IdentityInterface
         return [
             'timestamp' => [
                 'class' => TimestampBehavior::className(),
-                'value' => new Expression('NOW()'),
+                'value' => (new \DateTime())->format('Y-m-d H:i:s'),
             ],
         ];
     }

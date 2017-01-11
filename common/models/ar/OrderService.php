@@ -35,7 +35,7 @@ class OrderService extends ActiveRecord
             ],
             'timestamp' => [
                 'class' => TimestampBehavior::className(),
-                'value' => new Expression('NOW()'),
+                'value' => (new \DateTime())->format('Y-m-d H:i:s'),
                 'updatedAtAttribute' => false,
             ],
             'revision' => [

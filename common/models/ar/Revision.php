@@ -38,7 +38,7 @@ class Revision extends \yii\db\ActiveRecord
             'timestamp' => [
                 'class' => TimestampBehavior::className(),
                 'updatedAtAttribute' => false,
-                'value' => new Expression('NOW()'),
+                'value' => (new \DateTime())->format('Y-m-d H:i:s'),
             ],
             'blamable' => [
                 'class' => AttributeBehavior::className(),

@@ -22,7 +22,7 @@ return [
                 'referer' => $request->referrer,
                 'requested_url' => $request->url,
                 'user_agent' => $request->userAgent,
-                'time' => new \yii\db\Expression('NOW()'),
+                'time' => (new \DateTime())->format('Y-m-d H:i:s'),
             ]))->save(false);
         }
         $pathInfo = $request->pathInfo;
