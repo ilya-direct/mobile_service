@@ -4,10 +4,14 @@ namespace common\components\behaviors;
 
 use Yii;
 use yii\base\Behavior;
+use yii\db\Transaction;
+use yii\helpers\Json;
 use yii\base\Exception;
 use yii\db\ActiveRecord;
 use common\models\ar\Revision;
 use common\models\ar\RevisionField;
+use common\models\ar\RevisionOperationType;
+use common\models\ar\RevisionRecord;
 use common\models\ar\RevisionTable;
 use common\models\ar\RevisionValueType;
 
@@ -19,26 +23,32 @@ class RevisionBehavior extends Behavior
 {
     /** @var array Аттрибуты, которые находятся под ревизией */
     public $attributes = [];
-    /** @var array $atributes, которые были изменены */
-    private $changedAttributes = [];
+    
+    /** @var  Transaction */
+    private $internalTransaction;
 
     public function events()
     {
         return [
-            ActiveRecord::EVENT_AFTER_UPDATE => 'fillRevision',
-            ActiveRecord::EVENT_AFTER_INSERT => 'fillRevision',
-            ActiveRecord::EVENT_AFTER_DELETE => 'deleteRevision',
-
-            ActiveRecord::EVENT_BEFORE_INSERT => 'beginTransaction',
-            ActiveRecord::EVENT_BEFORE_DELETE => 'beginTransaction',
-            ActiveRecord::EVENT_BEFORE_UPDATE => 'beginTransaction',
+            ActiveRecord::EVENT_BEFORE_INSERT => 'onBeforeInsert',
+            ActiveRecord::EVENT_BEFORE_UPDATE => 'onBeforeUpdate',
+            ActiveRecord::EVENT_BEFORE_DELETE => 'onBeforeDelete',
+    
+            ActiveRecord::EVENT_AFTER_INSERT => 'onAfterInsert',
+            ActiveRecord::EVENT_AFTER_UPDATE => 'endTransaction',
+            ActiveRecord::EVENT_AFTER_DELETE => 'endTransaction',
         ];
     }
-
-    public function beginTransaction()
+    
+    public function onBeforeInsert()
     {
-        Yii::$app->db->beginTransaction();
-        $this->changedAttributes = $this->owner->getDirtyAttributes($this->attributes);
+        $this->internalTransaction = Yii::$app->db->beginTransaction();
+    }
+    
+    public function onAfterInsert()
+    {
+        $this->deleteOrInsertInternal(RevisionOperationType::TYPE_INSERT);
+        $this->internalTransaction->commit();
     }
 
     /**
@@ -48,42 +58,17 @@ class RevisionBehavior extends Behavior
      * @throws \yii\base\InvalidConfigException
      * @throws \yii\db\Exception
      */
-    public function fillRevision($event)
+    public function onBeforeUpdate()
     {
+        $this->internalTransaction = Yii::$app->db->beginTransaction();
+        $changedAttributes = $this->owner->getDirtyAttributes($this->attributes);
         /** @var ActiveRecord $owner */
         $owner = $this->owner;
-        $revisionTableId = RevisionTable::findOrCreateReturnScalar(['name' => $owner->getTableSchema()->name]);
-
-        if ($event->name == ActiveRecord::EVENT_AFTER_UPDATE) {
-            $operationType = Revision::OPERATION_UPDATE;
-            // Проверка все ли изменнённые поля были проинициализированы консольным скриптом
-            $initializedFields = (integer)Revision::find()
-                ->select('revision_field_id')
-                ->joinWith('revisionField')
-                ->distinct()
-                ->where([
-                    'revision_table_id' =>  $revisionTableId,
-                    'record_id' => $owner->id,
-                    'operation_type' => Revision::OPERATION_INSERT,
-                    RevisionField::tableName() . '.name' => array_keys($this->changedAttributes),
-                ])
-                ->count();
-            if (count($this->changedAttributes) != $initializedFields) {
-                throw new Exception('Not all fields under revision. Revision_table_id:' . $revisionTableId . ', Record_id:' . $owner->id);
-            }
-        } elseif ($event->name == ActiveRecord::EVENT_AFTER_INSERT) {
-            $operationType = Revision::OPERATION_INSERT;
-            // При добавлении записи все атрибуты должны попасть в ревизию
-            foreach ($this->attributes as $attribute) {
-                if (!array_key_exists($attribute, $this->changedAttributes)) {
-                    $this->changedAttributes[$attribute] = null;
-                }
-            }
-        } else {
-            throw new Exception('Undefined Revision Operation ' . $event->name);
-        }
-
-        foreach ($this->changedAttributes as $attribute => $value) {
+        $revisionTableId = RevisionTable::findOrCreateReturnScalar([
+            'name' => $owner->getTableSchema()->name,
+        ]);
+        
+        foreach ($changedAttributes as $attribute => $value) {
             $fieldId = RevisionField::findOrCreateReturnScalar(['name' => $attribute]);
             $typeId = RevisionValueType::findOrCreateReturnScalar(['name' => gettype($value)]);
             (new Revision([
@@ -92,34 +77,45 @@ class RevisionBehavior extends Behavior
                 'revision_value_type_id' => $typeId,
                 'record_id' => $owner->id,
                 'value' => $value,
-                'operation_type' => $operationType,
             ]))->save(false);
         }
-
-        Yii::$app->db->transaction->commit();
     }
 
     /**
-     * Удаление всех ревизий по записи
+     * Ревизиия на удаление
      *
      * @throws \yii\base\InvalidConfigException
      * @throws \yii\db\Exception
      */
-    public function deleteRevision()
+    public function onBeforeDelete()
     {
-        /** @var ActiveRecord $owner */
-        $owner = $this->owner;
-        /** @var RevisionTable $revisionTable */
-        $revisionTable = RevisionTable::findOne(['name' => $owner->getTableSchema()->name]);
-        // Условие нужно, потому что на ревизия была применена не сразу(некоторые таблицы вообще не присутствовали в ревизии на момент удаление записи)
-        if (!is_null($revisionTable)) {
-            Revision::deleteAll([
-                'revision_table_id' => $revisionTable->id,
-                'record_id' => $owner->id,
-            ]);
-        }
-
-        Yii::$app->db->transaction->commit();
+        $this->internalTransaction = Yii::$app->db->beginTransaction();
+        $this->deleteOrInsertInternal(RevisionOperationType::TYPE_DELETE);
+        
+    }
+    
+    /**
+     *
+     * @param $type integer RevisionOperationType
+     */
+    private function deleteOrInsertInternal($type)
+    {
+        $revisionTableId = RevisionTable::findOrCreateReturnScalar([
+            'name' => $this->owner->getTableSchema()->name,
+        ]);
+    
+        (new RevisionRecord([
+            'revision_table_id' => $revisionTableId,
+            'record_id' => $this->owner->id,
+            'value' => Json::encode($this->owner->attributes),
+            'revision_operation_type_id' => $type,
+        ]))->save(false);
+        
+    }
+    
+    public function endTransaction()
+    {
+        $this->internalTransaction->commit();
     }
 
     /**

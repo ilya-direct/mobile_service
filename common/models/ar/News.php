@@ -2,10 +2,9 @@
 
 namespace common\models\ar;
 
-use Yii;
+use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
-use yii\db\Expression;
 use common\components\behaviors\RevisionBehavior;
 
 /**
@@ -26,7 +25,7 @@ class News extends ActiveRecord
         return [
             'timestamp' => [
                 'class' => TimestampBehavior::className(),
-                'value' => new Expression('NOW()'),
+                'value' => (new \DateTime())->format('Y-m-d H:i:s'),
             ],
             'revision' => [
                 'class' => RevisionBehavior::className(),
@@ -36,7 +35,10 @@ class News extends ActiveRecord
                     'description_short',
                     'title',
                 ]
-            ]
+            ],
+            'blameable' => [
+                'class' => BlameableBehavior::className(),
+            ],
         ];
     }
 

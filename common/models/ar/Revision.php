@@ -3,6 +3,8 @@
 namespace common\models\ar;
 
 use Yii;
+use yii\base\Exception;
+use yii\helpers\Json;
 use yii\behaviors\AttributeBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Expression;
@@ -21,7 +23,6 @@ use common\helpers\SystemHelper;
  * @property string $value
  * @property integer $user_id
  * @property string $created_at
- * @property boolean $operation_type
  *
  * @property User $user
  * @property RevisionField $revisionField
@@ -30,11 +31,7 @@ use common\helpers\SystemHelper;
  */
 class Revision extends \yii\db\ActiveRecord
 {
-    const OPERATION_INSERT = true;
-    const OPERATION_UPDATE = false;
-
-    private static $consoleUserId;
-
+    
     public function behaviors()
     {
         return [
@@ -51,7 +48,7 @@ class Revision extends \yii\db\ActiveRecord
                 'value' => function() {
                     // Если изменения в БД происходят через консольный скрипт, то пользователь console
                     if (SystemHelper::isConsole()) {
-                        $value = self::getConsoleUserId();
+                        $value = SystemHelper::getConsoleUserId();
                     } else {
                         $user = Yii::$app->user;
                         $value = $user && !$user->isGuest ? $user->id : null;
@@ -132,12 +129,15 @@ class Revision extends \yii\db\ActiveRecord
     }
 
     /**
-     * Значение поле у таблицы в определённый момент времени. Если время неуказано или указано некорректно вернётся текущее значение
+     * Значение поле у таблицы в определённый момент времени.
+     * Если время неуказано или указано некорректно вернётся текущее значение.
      *
      * @param string $table Название таблицы
      * @param integer $recordId id записи в таблице
      * @param string $field название поле таблицы
      * @param string $dateTime время
+     *
+     * @throws Exception не найдено время создания в ревизии
      * @return bool|mixed|string значение
      */
     public static function getValue($table, $recordId, $field, $dateTime = null)
@@ -160,39 +160,44 @@ class Revision extends \yii\db\ActiveRecord
             ->where(['name' => $field])
             ->scalar();
 
-        /** @var Revision $revision */
+        /** @var Revision $revision  Ревизии только на Update */
         $revision = self::find()
             ->where([
                 'revision_table_id' => $tableId,
                 'revision_field_id' => $fieldId,
                 'record_id' => $recordId,
             ])
-            ->andWhere(['<=', 'created_at', $dateTime])
+            ->andWhere(['<', 'created_at', $dateTime])
             ->orderBy(['created_at' => SORT_DESC])
             ->one();
-
-        $revisionValueType = RevisionValueType::find()
-            ->select('name')
-            ->where(['id' => $revision->revision_value_type_id])
-            ->scalar();
-
-        $value = $revision->value;
-        if (isset(RevisionValueType::$castFunctions[$revisionValueType])) {
-            $value = call_user_func(RevisionValueType::$castFunctions[$revisionValueType], $revision->value);
+        
+        if ($revision) {
+            $revisionValueType = RevisionValueType::find()
+                ->select('name')
+                ->where(['id' => $revision->revision_value_type_id])
+                ->scalar();
+    
+            $value = $revision->value;
+            if (isset(RevisionValueType::$castFunctions[$revisionValueType])) {
+                $value = call_user_func(RevisionValueType::$castFunctions[$revisionValueType], $revision->value);
+            }
+        } else {
+            /** @var RevisionRecord $revisionRecord */
+            $revisionRecord = RevisionRecord::find()
+                ->select('value')
+                ->where([
+                    'revision_table_id' => $tableId,
+                    'record_id' => $recordId,
+                ])->one();
+            if (!$revisionRecord) {
+                throw new Exception('RevisionRecord was not initialized: table = '
+                    . $table . '. record_id = ' . $recordId);
+            }
+            
+            $value = Json::decode($revisionRecord->value)[$field];
         }
 
         return $value;
     }
-
-    private static function getConsoleUserId()
-    {
-        if (!self::$consoleUserId) {
-            self::$consoleUserId = User::find()
-                ->select('id')
-                ->where(['email' => 'console@console.ru'])
-                ->scalar();
-        }
-
-        return self::$consoleUserId;
-    }
+    
 }

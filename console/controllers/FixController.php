@@ -6,7 +6,7 @@ use Yii;
 use yii\base\ErrorException;
 use yii\console\Controller;
 use yii\helpers\Console;
-use yii\db\Expression;
+use yii\helpers\Json;
 use common\models\ar\Device;
 use common\models\ar\DeviceAssign;
 use common\models\ar\DeviceCategory;
@@ -16,9 +16,9 @@ use common\models\ar\OrderProvider;
 use common\models\ar\OrderService;
 use common\models\ar\OrderStatus;
 use common\models\ar\Revision;
-use common\models\ar\RevisionField;
+use common\models\ar\RevisionOperationType;
+use common\models\ar\RevisionRecord;
 use common\models\ar\RevisionTable;
-use common\models\ar\RevisionValueType;
 use common\models\ar\Service;
 use common\models\ar\User;
 use common\models\ar\Vendor;
@@ -26,7 +26,6 @@ use common\models\ar\Vendor;
 class FixController extends Controller
 {
     protected $tables = [];
-    protected $consoleUserId;
 
     public function init()
     {
@@ -41,21 +40,6 @@ class FixController extends Controller
             User::className(),
             Vendor::className(),
         ];
-
-        $user = User::findOne(['email' => 'console@console.ru']);
-        if (is_null($user)) {
-            $user = (new User([
-                'first_name' => 'console',
-                'last_name' => 'console',
-                'auth_key' => '',
-                'email' => 'console@console.ru',
-                'phone' => '+77777777777',
-                'enabled' => false,
-            ]));
-            $user->save(false);
-        }
-
-        $this->consoleUserId = $user->id;
     }
 
     /**
@@ -80,7 +64,7 @@ class FixController extends Controller
      * @param string $attribute конкретное поле
      * @throws ErrorException
      */
-    public function actionRevision($table = null, $attribute = null)
+    public function actionRevision($table = null)
     {
         $tables = $this->tables;
         if ($table) {
@@ -91,45 +75,42 @@ class FixController extends Controller
             }
         }
         foreach ($tables as $table) {
-
+            Console::output('Revisioning table ' . $table::tableName());
             $models = $table::find()->all();
             foreach ($models as $model) {
                 if (!isset($model->behaviors['revision'])) {
                     continue;
                 }
                 $revisionTableId = RevisionTable::findOrCreateReturnScalar(['name' => $table::getTableSchema()->name]);
-                $attributes = $model->behaviors['revision']->attributes;
-                if ($attribute) {
-                    $attributes = array_intersect($attributes, [$attribute]);
-                }
-                $revisionTableName = Revision::tableName();
-                $versionedFields = Revision::find()
-                    ->select(RevisionField::tableName() . '.name')
-                    ->joinWith('revisionField')
-                    ->where([
-                        $revisionTableName . '.revision_table_id' => $revisionTableId,
-                        $revisionTableName . '.operation_type' => Revision::OPERATION_INSERT,
-                        $revisionTableName . '.record_id' => $model->id,
-                        RevisionField::tableName() . '.name' => $attributes,
-                    ])
-                    ->distinct()
-                    ->column();
-
-                $notVersionedFields = array_diff($attributes, $versionedFields);
-
-                foreach ($notVersionedFields as $field) {
-                    Yii::$app->db->createCommand()
-                        ->insert($revisionTableName, [
-                                'revision_table_id' => $revisionTableId,
-                                'revision_field_id' => RevisionField::findOrCreateReturnScalar(['name' => $field]),
-                                'record_id' => $model->id,
-                                'revision_value_type_id' => RevisionValueType::findOrCreateReturnScalar(['name' => gettype($model->{$field})]),
-                                'value' => $model->{$field},
-                                'user_id' => $this->consoleUserId,
-                                'operation_type' => Revision::OPERATION_INSERT,
-                                'created_at' => new Expression('NOW()'),
-                            ]
-                        )->execute();
+                $searchAttributes = [
+                    'revision_table_id' => $revisionTableId,
+                    'record_id' => $model->id,
+                    'revision_operation_type_id' => RevisionOperationType::TYPE_INSERT,
+                ];
+                $revisionRecord = RevisionRecord::findOne($searchAttributes);
+                
+                if (!$revisionRecord) {
+                    /** @var Revision $maxTimeModel */
+                    $maxTimeModel = Revision::find()
+                        ->where([
+                            'revision_table_id' => $revisionTableId,
+                            'record_id' => $model->id,
+                        ])
+                        ->orderBy(['created_at' => SORT_DESC])
+                        ->one();
+                    
+                    $revisionRecord = new RevisionRecord(
+                        $searchAttributes + [
+                            'value' => Json::encode($model->attributes),
+                            'place' => 'fix/revision'
+                        ]
+                    );
+                    if ($maxTimeModel) {
+                        $revisionRecord->detachBehavior('timestamp');
+                        $revisionRecord->created_at = $maxTimeModel->created_at;
+                    }
+                    
+                    $revisionRecord->save();
                 }
             }
         }
@@ -173,6 +154,25 @@ class FixController extends Controller
 
         }
         Console::output('Statuses have filled');
+    }
+    
+    /**
+     * Заполнение типов ревизий в БД
+     */
+    public function actionFillRevisionOperationTypes()
+    {
+        $types = RevisionOperationType::typeNames();
+        foreach ($types as $typeId => $name) {
+            /** @var RevisionOperationType $revision */
+            $revision = RevisionOperationType::findOrNew(['id' => $typeId]);
+            $revision->name = $name;
+            if ($revision->dirtyAttributes) {
+                Console::output('Type ' . $revision->name . ' has changed');
+            }
+            $revision->save(false);
+        }
+        
+        Console::output('Types have filled');
     }
     
 }

@@ -56,6 +56,7 @@ class OrderController extends Controller
                         'actions' => [
                             'create',
                             'delete-test-orders',
+                            'delete',
                         ],
                     ],
                 ],
