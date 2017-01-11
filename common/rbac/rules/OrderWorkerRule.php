@@ -10,6 +10,12 @@ use yii\rbac\Rule;
 
 class OrderWorkerRule extends Rule
 {
+    public function init()
+    {
+        $this->name = (new \ReflectionClass($this))->getShortName();
+        parent::init();
+    }
+    
     public function execute($userId, $item, $params)
     {
         /** @var Order $order */

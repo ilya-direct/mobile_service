@@ -17,6 +17,7 @@ use common\models\ar\Order;
 use common\models\ar\OrderProvider;
 use common\models\ar\OrderService;
 use common\models\ar\User;
+use common\rbac\Permission;
 use backend\models\OrderSearchForm;
 use linslin\yii2\curl\Curl;
 
@@ -103,7 +104,7 @@ class OrderController extends Controller
             throw new NotFoundHttpException('Страница не существует');
         }
 
-        if (Yii::$app->user->can('orderAccess', ['order' => $model, 'action' => 'view'])) {
+        if (Yii::$app->user->can(Permission::ORDER_ACCESS, ['order' => $model, 'action' => 'view'])) {
 
             return $this->render('view', [
                 'model' => $model,
@@ -137,7 +138,7 @@ class OrderController extends Controller
         /** @var Order $order */
         $order = Order::findOneOrFail($id);
 
-        if (Yii::$app->user->can('orderAccess', ['order' => $order, 'action' => 'update'])) {
+        if (Yii::$app->user->can(Permission::ORDER_ACCESS, ['order' => $order, 'action' => 'update'])) {
             if (Yii::$app->user->can(User::ROLE_OPERATOR)) {
                 $order->scenario = Order::SCENARIO_OPERATOR;
             } elseif (Yii::$app->user->can(User::ROLE_WORKER)) {

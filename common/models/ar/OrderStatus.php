@@ -185,9 +185,7 @@ class OrderStatus extends ActiveRecord
             $statusId = self::STATUS_NULL;
         }
 
-        $availableTransitions = isset(self::statusTransitions()[$role][$statusId])
-            ? self::statusTransitions()[$role][$statusId]
-            : [];
+        $availableTransitions = self::statusTransitions()[$role][$statusId] ?? [];
 
         $statusLabels = self::statusLabels($role);
 

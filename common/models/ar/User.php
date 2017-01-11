@@ -335,7 +335,11 @@ class User extends ActiveRecord implements IdentityInterface
             ->setSubject('Восстановление пароля для ' . Yii::$app->name)
             ->send();
     }
-
+    
+    /**
+     * Роль -> название роли
+     * @return array
+     */
     public static function getRolesList()
     {
         return [
@@ -345,8 +349,12 @@ class User extends ActiveRecord implements IdentityInterface
             self::ROLE_LOGIN_ONLY => 'Базовый пользователь',
         ];
     }
-
-
+    
+    
+    /**
+     * Список ролей
+     * @return array
+     */
     public static function getRoles()
     {
         return array_keys(self::getRolesList());
