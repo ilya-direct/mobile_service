@@ -198,13 +198,7 @@ class OrderController extends Controller
                     }
 
                     $order->save(false);
-                    if (!$isNew) {
-                        OrderService::deleteAll([
-                            'and',
-                            ['order_id' => $order->id],
-                            ['not', ['device_assign_id' => $validator['ids']]]
-                        ]);
-                    }
+                    
                     $usedIds = []; // id у OrderService
                     foreach ($validator['ids'] as $id) {
                         $orderService = OrderService::find()->where([
@@ -221,6 +215,15 @@ class OrderController extends Controller
                         }
                         $usedIds[] = $orderService->id;
                     }
+    
+                    if (!$isNew) {
+                        OrderService::deleteAll([
+                            'and',
+                            ['order_id' => $order->id],
+                            ['not', ['id' => $usedIds]]
+                        ]);
+                    }
+                    
                 } catch (Exception $e) {
                     $transaction->rollBack();
                     Yii::$app->session->setFlash('error', $e->getMessage());
