@@ -6,6 +6,6 @@ return [
     'showScriptName' => false,
     'baseUrl' => '/',
     'rules' => [
-        'OPTIONS v1/<controller:\w+>/<action:\w+>' => 'v1/<controller>/options',
+        'OPTIONS v1/<controller:\w+>/<actionId:\w+>' => 'v1/<controller>/options',
     ],
 ];

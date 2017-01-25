@@ -10,6 +10,7 @@ $params = array_merge(
 return [
     'id' => 'mobile-api',
     'basePath' => dirname(__DIR__),
+    'controllerNamespace' => 'api\controllers',
     'modules' => [
         'v1' => [
             'class' => api\modules\v1\V1::className(),
@@ -30,6 +31,9 @@ return [
         'response' => [
             'class' => yii\web\Response::class,
             'format' => yii\web\Response::FORMAT_JSON,
+        ],
+        'errorHandler' => [
+            'class' => api\components\app\ErrorHandler::className(),
         ],
     ],
 

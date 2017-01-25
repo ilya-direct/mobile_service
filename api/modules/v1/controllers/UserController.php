@@ -3,13 +3,14 @@
 
 namespace api\modules\v1\controllers;
 
+use Yii;
+use yii\filters\VerbFilter;
+use yii\web\BadRequestHttpException;
 use api\components\app\RestController;
 use common\models\ar\Order;
 use common\models\ar\UserToken;
 use common\rbac\Permission;
-use Yii;
 use common\models\ar\User;
-use yii\web\BadRequestHttpException;
 
 class UserController extends RestController
 {
@@ -23,14 +24,15 @@ class UserController extends RestController
             'actions'  => ['token'],
         ];
         
-        return $behaviors;
-    }
-    
-    protected function verbs()
-    {
-        return [
-            'token' => ['post'],
+        $behaviors['verbs'] = [
+            'class' => VerbFilter::className(),
+            'actions' => [
+                'token' => ['post'],
+                'detail' => ['get']
+            ],
         ];
+        
+        return $behaviors;
     }
     
     public function actionToken()

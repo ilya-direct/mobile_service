@@ -2,10 +2,12 @@
 
 namespace api\components\app;
 
+use Yii;
 use yii\filters\AccessControl;
 use yii\filters\Cors;
 use yii\rest\Controller;
-use yii\rest\OptionsAction;
+use yii\web\NotFoundHttpException;
+use yii\web\Response;
 
 class RestController extends Controller
 {
@@ -32,12 +34,18 @@ class RestController extends Controller
         ];
     }
     
-    public function actions()
+    public function init()
     {
-        return [
-            'options' => [
-                'class' => OptionsAction::className(),
-            ],
-        ];
+        Yii::$app->response->format = Response::FORMAT_JSON;
     }
+    
+    public function actionOptions($actionId)
+    {
+        if (in_array($actionId, $this->actions()) || $this->hasMethod('action' . ucfirst($actionId))) {
+            return;
+        } else {
+            throw new NotFoundHttpException('Action not found');
+        }
+    }
+    
 }
