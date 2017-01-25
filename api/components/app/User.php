@@ -46,7 +46,7 @@ class User extends \yii\web\User
         }
     }
     
-    public function getIdentity()
+    public function getIdentity($autoRenew = true)
     {
         if ($this->_identity === false) {
             $this->_identity = null;
@@ -68,7 +68,7 @@ class User extends \yii\web\User
         }
     }
     
-    public function login(IdentityInterface $identity)
+    public function login(IdentityInterface $identity, $duration = 0)
     {
         $this->setIdentity($identity);
         $id = $identity->getId();
@@ -78,7 +78,7 @@ class User extends \yii\web\User
         return !$this->getIsGuest();
     }
     
-    public function logout()
+    public function logout($destroySession = true)
     {
         /** @var IdentityInterface|null $identity */
         $identity = $this->getIdentity();
@@ -180,7 +180,7 @@ class User extends \yii\web\User
         return $this->accessChecker !== null ? $this->accessChecker : Yii::$app->authManager;
     }
     
-    public function loginRequired()
+    public function loginRequired($checkAjax = true, $checkAcceptHeader = true)
     {
         throw new UnauthorizedHttpException('Login Required');
     }

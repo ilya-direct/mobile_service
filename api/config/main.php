@@ -11,6 +11,7 @@ return [
     'id' => 'mobile-api',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'api\controllers',
+    'bootstrap' => ['log'],
     'modules' => [
         'v1' => [
             'class' => api\modules\v1\V1::className(),
@@ -34,6 +35,15 @@ return [
         ],
         'errorHandler' => [
             'class' => api\components\app\ErrorHandler::className(),
+        ],
+        'log' => [
+            'traceLevel' => YII_DEBUG ? 3 : 0,
+            'targets' => [
+                'file' => [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['error'],
+                ],
+            ],
         ],
     ],
 
