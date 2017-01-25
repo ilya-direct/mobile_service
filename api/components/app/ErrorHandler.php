@@ -138,15 +138,10 @@ class ErrorHandler extends Component
         $error = error_get_last();
         
         if (ErrorException::isFatalError($error)) {
-            if (!empty($this->_hhvmException)) {
-                $exception = $this->_hhvmException;
-            } else {
-                $exception = new ErrorException($error['message'], $error['type'], $error['type'], $error['file'], $error['line']);
-            }
+            
+            $exception = new ErrorException($error['message'], $error['type'], $error['type'], $error['file'], $error['line']);
             $this->exception = $exception;
-            
             $this->logException($exception);
-            
             $this->clearOutput();
             $this->renderException($exception);
             
