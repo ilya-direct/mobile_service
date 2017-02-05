@@ -135,7 +135,7 @@ class Device extends ActiveRecord
     public function getImageUrl()
     {
         $imageUrl = null;
-        if ($this->image_name) {
+        if (trim($this->image_name)) {
             $imageUrl = Yii::$app->storage->getUrl($this->image_name, self::IMAGE_SAVE_FOLDER);
         }
         
