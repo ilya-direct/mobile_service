@@ -17,7 +17,9 @@ $this->registerAssetBundle(AssetBundle::className());
 
 <div class="device-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(['options' => [
+            'enctype'=>'multipart/form-data',
+    ]]); ?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
@@ -25,7 +27,7 @@ $this->registerAssetBundle(AssetBundle::className());
 
     <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
 
-    <?= $form->field($model, 'image')->fileInput(); ?>
+    <?= Html::fileInput('image'); ?>
 
     <?php if ($model->image_name): ?>
         <p>Текущее изображение:</p>

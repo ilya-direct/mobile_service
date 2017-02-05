@@ -2,6 +2,7 @@
 
 namespace common\models\ar;
 
+use Yii;
 use yii\behaviors\SluggableBehavior;
 use common\components\behaviors\RevisionBehavior;
 use common\components\validators\UniqueInsensitiveValidator;
@@ -28,8 +29,6 @@ use common\components\db\ActiveRecord;
 class Device extends ActiveRecord
 {
     const IMAGE_SAVE_FOLDER = 'device-images';
-
-    public $image;
 
     public function behaviors()
     {
@@ -91,7 +90,6 @@ class Device extends ActiveRecord
                 'targetClass' => Vendor::className(),
                 'targetAttribute' => ['vendor_id' => 'id']
             ],
-            ['image', 'image'],
         ];
     }
 
@@ -134,4 +132,13 @@ class Device extends ActiveRecord
         return $this->hasOne(Vendor::className(), ['id' => 'vendor_id']);
     }
 
+    public function getImageUrl()
+    {
+        $imageUrl = null;
+        if ($this->image_name) {
+            $imageUrl = Yii::$app->storage->getUrl($this->image_name, self::IMAGE_SAVE_FOLDER);
+        }
+        
+        return $imageUrl ?: null;
+    }
 }

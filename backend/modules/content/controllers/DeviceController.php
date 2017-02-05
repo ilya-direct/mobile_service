@@ -75,7 +75,7 @@ class DeviceController extends Controller
     public function actionView($id)
     {
         $model = Device::find()
-            ->joinWith(['deviceCategory'])
+            ->joinWith(['deviceCategory', 'vendor'])
             ->where([ Device::tableName() . '.id' => $id])
             ->one();
         if (!$model) {
@@ -96,7 +96,7 @@ class DeviceController extends Controller
         $model = new Device();
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $image = UploadedFile::getInstance($model, 'image');
+            $image = UploadedFile::getInstanceByName('image');
             if ($image) {
                 Yii::$app->storage->saveFileByPath($image->tempName, $image->name, Device::IMAGE_SAVE_FOLDER);
                 $model->image_name = $image->name;
@@ -121,7 +121,7 @@ class DeviceController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $image = UploadedFile::getInstance($model, 'image');
+            $image = UploadedFile::getInstanceByName('image');
             
             if ($image) {
                 Yii::$app->storage->saveFileByPath($image->tempName, $image->name, Device::IMAGE_SAVE_FOLDER);
