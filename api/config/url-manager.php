@@ -6,6 +6,29 @@ return [
     'showScriptName' => false,
     'baseUrl' => '/',
     'rules' => [
-        'OPTIONS v1/<controller:\w+>/<actionId:\w+>' => 'v1/<controller>/options',
+//        'OPTIONS v1/<controller:\w+>/<actionId:\w+>' => 'v1/<controller>/options',
+        [
+            'class' => yii\rest\UrlRule::className(),
+            'controller' => 'v1/device',
+        ],
+        [
+            'class' => yii\rest\UrlRule::className(),
+            'controller' => 'v1/device-category',
+        ],
+        [
+            'class' => yii\rest\UrlRule::className(),
+            'controller' => 'v1/vendor',
+        ],
+        [
+            'class' => yii\rest\UrlRule::className(),
+            'controller' => 'v1/token',
+        ],
+        [
+            'class' => yii\rest\UrlRule::className(),
+            'controller' => 'v1/user',
+            'extraPatterns' => [
+                'GET,HEAD current' => 'view',
+            ],
+        ],
     ],
 ];

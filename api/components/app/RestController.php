@@ -6,7 +6,6 @@ use Yii;
 use yii\filters\AccessControl;
 use yii\filters\Cors;
 use yii\rest\Controller;
-use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
 class RestController extends Controller
@@ -39,13 +38,13 @@ class RestController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
     }
     
-    public function actionOptions($actionId)
+    public function actionOptions($id = 0)
     {
-        if (in_array($actionId, $this->actions()) || $this->hasMethod('action' . ucfirst($actionId))) {
-            return;
-        } else {
-            throw new NotFoundHttpException('Action not found');
-        }
+        $method = Yii::$app->request->method;
+    
+//        in_array($method, $this->actions()) || $this->hasMethod('action' . ucfirst($method))
+        
+        return;
     }
     
 }
