@@ -45,9 +45,9 @@ trait ApiResultBase
                 if (!is_scalar($this->$value && !is_null($this->$value))) {
                     throw new Exception('ResultArray attribute ' . $value . ' must be a string');
                 }
-                $data[$value] = $this->$value;
+                $data[$value] = $model->$value;
             } else if (is_array($value)) {
-                $data[$key] = $this->toArrayInternal($this->$value, $value);
+                $data[$key] = $this->toArrayInternal($model->$value, $value);
             }
         }
         

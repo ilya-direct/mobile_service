@@ -20,12 +20,14 @@ class DeviceApiResult extends Device
             'description',
             'image_url',
             'deviceCategory' => [
+                'id',
                 'name',
             ],
             'vendor' => [
                 'id',
                 'name',
             ],
+            'enabled',
         ];
     }
     
