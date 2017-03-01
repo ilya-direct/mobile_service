@@ -19,6 +19,7 @@ class DeviceApiResult extends Device
             'alias',
             'description',
             'image_url',
+            'image_name',
             'deviceCategory' => [
                 'id',
                 'name',

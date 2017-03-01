@@ -71,29 +71,29 @@ class DeviceController extends RestController
             $response = Yii::$app->response;
             $response->setStatusCode(201);
             $response->headers->set('Location', Url::toRoute(['view', 'id' => $model->id], true));
+        } else {
+            Yii::$app->response->setStatusCode(400, 'Wrong Validation');
+            
+            return $model->errors;
         }
         
-        return $model;
+        return new DeviceApiResult($model);
     }
     
-    public function actionUploadImage($id)
+    public function actionImageUpload()
     {
-        $model = Device::findOne($id);
-        if (!$model) {
-            throw new NotFoundHttpException('The requested device_id does not exist.');
-        }
         $image = UploadedFile::getInstanceByName('image');
         if (!$image) {
             throw new BadRequestHttpException('Image was not specified');
         }
+        $fileHash = substr(hash_file('sha256', $image->tempName), 0, 8);
+        $imageName = $image->baseName . '_' . $fileHash . '.' . $image->extension;
+        Yii::$app->storage->saveFileByPath($image->tempName, $imageName, Device::IMAGE_SAVE_FOLDER);
         
-        Yii::$app->storage->saveFileByPath($image->tempName, $image->name, Device::IMAGE_SAVE_FOLDER);
-        $model->image_name = $image->name;
-        $model->save(false);
-        
-        Yii::$app->response->setStatusCode(204);
-        
-        return;
+        return [
+            'image_name' => $imageName,
+            'image_url' => Yii::$app->storage->getUrl($imageName, Device::IMAGE_SAVE_FOLDER),
+        ];
     }
     
     
@@ -106,11 +106,12 @@ class DeviceController extends RestController
         $post = Yii::$app->request->bodyParams;
         $model->load($post, '');
         if (!$model->save()) {
-            throw new BadRequestHttpException('Wrong Validation');
+            Yii::$app->response->setStatusCode(400, 'Wrong Validation');
+            
+            return $model->errors;
         }
-        Yii::$app->response->setStatusCode(204);
         
-        return;
+        return new DeviceApiResult($model);
     }
     
     public function actionDelete($id)

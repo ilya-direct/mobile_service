@@ -42,7 +42,7 @@ trait ApiResultBase
         $data = [];
         foreach ($values as $key => $value) {
             if (is_string($value)) {
-                if (!is_scalar($this->$value && !is_null($this->$value))) {
+                if (!is_scalar($model->$value && !is_null($model->$value))) {
                     throw new Exception('ResultArray attribute ' . $value . ' must be a string');
                 }
                 $data[$value] = $model->$value;

@@ -38,6 +38,7 @@ class Device extends ActiveRecord
                 'slugAttribute' => 'alias',
                 'attribute' => 'name',
                 'ensureUnique' => true,
+                'immutable' => true,
             ],
             'revision' => [
                 'class' => RevisionBehavior::className(),
@@ -83,13 +84,18 @@ class Device extends ActiveRecord
             ],
             ['enabled', 'filter', 'filter' => 'boolval'],
             [['device_category_id', 'vendor_id'], 'filter', 'filter' => 'intval'],
-            [['device_category_id', 'vendor_id', 'description', 'alias'] , 'default', 'isEmpty' => function($var) { return empty($var); }],
+            [['device_category_id', 'vendor_id', 'description', 'alias', 'image_name'] , 'default', 'isEmpty' => function($var) { return empty($var); }],
             [
                 'vendor_id',
                 'exist',
                 'targetClass' => Vendor::className(),
                 'targetAttribute' => ['vendor_id' => 'id']
             ],
+            ['image_name', 'string'],
+            ['image_name', 'filter', 'skipOnEmpty' => true, 'filter' => function($value) {
+                $exists = Yii::$app->storage->fileExists($value, self::IMAGE_SAVE_FOLDER);
+                return $exists ? $value : null;
+            }],
         ];
     }
 

@@ -10,6 +10,10 @@ return [
         [
             'class' => yii\rest\UrlRule::className(),
             'controller' => 'v1/device',
+            'extraPatterns' => [
+                'POST image-upload' => 'image-upload',
+                'OPTIONS image-upload' => 'options',
+            ]
         ],
         [
             'class' => yii\rest\UrlRule::className(),
