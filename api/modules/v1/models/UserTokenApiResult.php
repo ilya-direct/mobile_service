@@ -21,6 +21,7 @@ class UserTokenApiResult extends UserToken
                 'id',
                 'email',
                 'first_name',
+                'role',
             ],
         ];
     }

@@ -30,11 +30,15 @@ class TokenController extends RestController
         $user = User::findByUsername($params['username']);
         
         if (!$user) {
-            throw new BadRequestHttpException('Email not found');
+            Yii::$app->response->setStatusCode(400, 'Wrong Validation');
+    
+            return ['username' => 'Не найдено'];
         }
         
         if (!$user->validatePassword($params['password'])) {
-            throw new BadRequestHttpException('Wrong email or password');
+            Yii::$app->response->setStatusCode(400, 'Wrong Validation');
+    
+            return ['password' => 'Неверный пароль'];
         }
         
         $token = new UserTokenApiResult(UserToken::create($user->id));

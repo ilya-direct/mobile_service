@@ -34,5 +34,9 @@ return [
                 'GET,HEAD current' => 'view',
             ],
         ],
+        [
+            'class' => yii\rest\UrlRule::className(),
+            'controller' => 'v1/order',
+        ],
     ],
 ];

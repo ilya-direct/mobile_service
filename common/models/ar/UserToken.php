@@ -4,6 +4,7 @@ namespace common\models\ar;
 
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\Json;
 
 /**
  * This is the model class for table "{{%user_token}}".
@@ -88,5 +89,51 @@ class UserToken extends \yii\db\ActiveRecord
         }
         
         return true;
+    }
+    
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+    
+        $jsonData = Json::encode([
+            'token' => $this->value,
+            'userId' => $this->user->id,
+            'firstName' => $this->user->first_name,
+            'lastName' => $this->user->last_name,
+            'role' => $this->user->role,
+            'expiresAt' => $this->expire_date,
+        ]);
+    
+        $url = Yii::getAlias('@nodeApiUrl/token');
+    
+        $ch = curl_init();
+        $headers = [
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($jsonData),
+//            'Host: node.mobile.local',
+//            'Host: ' . parse_url($url)['host'],
+//            'Accept: */*',
+//            'Accept-Language: ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4',
+//            'Connection: keep-alive',
+//            'Accept-Encoding: gzip, deflate, sdch',
+//            'Upgrade-Insecure-Requests: 1',
+//            'cache-control: no-cache',
+        ];
+    
+        $options = [
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_URL => $url,
+//            CURLOPT_REFERER => parse_url($url)['host'],
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_CONNECTTIMEOUT => 120,
+            CURLOPT_TIMEOUT => 120,
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_ENCODING => '',
+        ];
+        $options[CURLOPT_CUSTOMREQUEST] = $insert ? 'POST' : 'PUT';
+        $options[CURLOPT_POSTFIELDS] = $jsonData;
+        curl_setopt_array($ch, $options);
+        $response = curl_exec($ch);
+        curl_close($ch);
     }
 }
